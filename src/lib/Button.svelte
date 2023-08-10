@@ -1,19 +1,27 @@
 <script lang="ts">
 
+    import  { navigate } from "svelte-routing";
+
     export let type : ButtonType;
-    export let url : string;
+    export let url : string = "";
 </script>
 
 {#if type === "readme"}
     <div class="readme-box">
-        <button>
+        <button on:click={() => navigate(url)}>
             Read me
         </button>
     </div>
 {:else if type === "tool"}
     <div class="tool-box">
-        <button>
+        <button on:click={() => navigate(url)}>
             Tool
+        </button>
+    </div>
+{:else if type === "back"}
+    <div class="back-box">
+        <button on:click={() => navigate(url)}>
+            Back
         </button>
     </div>
 {/if}
@@ -21,37 +29,38 @@
 
 
 <style>
-
-    /*.read-more-button {*/
-    /*  width: 35%;*/
-    /*  height: 3vh;*/
-    /*  font-size: 1vw;*/
-    /*}*/
-
-    /*.tool-box {*/
-    /*  padding-top: 2vw;*/
-    /*  text-align: center;*/
-
-    /*.tool-button {*/
-    /*  width: 66%;*/
-    /*  height: 5.5vh;*/
-    /*  min-width: fit-content;*/
-    /*  font-size: 1.5em;*/
-    /*}*/
-
     .readme-box {
         display: flex;
         justify-content: center;
+        margin: auto;
 
+        height: 3vh;
+        width: 6vw;
     }
 
     .tool-box {
+        position: absolute;
+        left: 50%;
+        bottom: 2vh;
+
+        -ms-transform: translateX(-50%);
+        -webkit-transform: translateX(-50%);
+        -moz-transform: translateX(-50%);
+        -o-transform: translateX(-50%);
+        transform: translateX(-50%);
+
+        font-size: 1.8rem;
+
         display: flex;
         justify-content: center;
 
+        height: 5vh;
+        width: 15vw;
     }
 
     button {
+        width: 100%;
+
         border-radius: 25px;
         border: 1px solid transparent;
         font-size: 1em;
