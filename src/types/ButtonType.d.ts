@@ -1,5 +1,5 @@
 export enum ButtonType {
-    README = "readme",
+    READMORE = "read-more",
     TOOL = "tool",
     BACK = "back",
 }

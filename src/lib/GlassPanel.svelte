@@ -38,15 +38,18 @@
         padding-bottom: 1.25vw;
         border-radius: 2vw;
 
-        background-image: linear-gradient(to bottom right, rgba(0,0,0,50%), rgba(0,0,0,25%), rgba(0,0,0,25%), rgba(0,0,0,50%));
+        background-image: linear-gradient(to bottom right, rgba(255,255,255,80%), rgba(255,255,255,35%), rgba(255,255,255,35%), rgba(255,255,255,10%));
         backdrop-filter: blur(15px);
         -webkit-backdrop-filter: blur(15px);
+    }
+
+    :global(body.dark-mode) .glass-panel {
+        background-image: linear-gradient(to bottom right, rgba(0,0,0,50%), rgba(0,0,0,25%), rgba(0,0,0,25%), rgba(0,0,0,50%));
     }
 
     .title-box {
         margin: auto;
         width: fit-content;
-        /*border: 2px dashed green;*/
     }
 
     .script-box {

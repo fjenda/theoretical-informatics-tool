@@ -18,3 +18,12 @@ html, body {
   -moz-osx-font-smoothing: grayscale;
   -webkit-text-size-adjust: 100%;
 }
+
+:global(body) {
+  background-color: #c5c5c5;
+  transition: background-color 0.3s
+}
+
+:global(body.dark-mode) :root {
+  background-color: #181818;
+}

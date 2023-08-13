@@ -5,7 +5,7 @@
 </script>
 
 <Router>
-    <Route path="/pushdown-automaton" component={PushdownAutomatonPage}/>
+    <Route path="/tool/pushdown-automaton" component={PushdownAutomatonPage}/>
     <Route path="/" component={LandingPage} />
     <Route>404</Route>
 </Router>
