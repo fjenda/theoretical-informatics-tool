@@ -1,15 +1,11 @@
 <script lang="ts">
-    // import cytoscape from "cytoscape";
-    //
-    // let cy = cytoscape({
-    //     container: document.getElementById("cy"),
-    // });
+    let graphDiv;
+
 </script>
 
 <div class="window">
-    <div id="cy">
-        Graph not loaded properly
-    </div>
+    <slot />
+    <div bind:this={graphDiv} id="graph" />
 </div>
 
 <style>
@@ -27,7 +23,9 @@
         background: #c5c5c5;
     }
 
-    #cy {
-
+    #graph {
+        overflow: hidden;
+        border-radius: 2vw;
+        height: calc(100% - 5vh);
     }
 </style>

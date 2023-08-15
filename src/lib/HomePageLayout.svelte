@@ -58,7 +58,7 @@
     :global(body) {
       color: #480d25;
       background-color: #c5c5c5;
-      transition: background-color 0.3s, background-image 0.3s
+      transition: background-color 0.3s;
     }
 
     :global(body.dark-mode) {
