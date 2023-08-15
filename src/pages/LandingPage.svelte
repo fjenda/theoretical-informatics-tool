@@ -27,7 +27,7 @@
 <DebugView>
     <main>
         <Flare />
-        <HomePageLayout title="Theoretical Informatics Tool for Students (TITS)">
+        <HomePageLayout title="Theoretical Informatics Tool for Students">
             {#each tools as tool}
                 <GlassPanel info={tool}>
                     <Button type="read-more" text="Read more" url={tool.scriptsUrl} />

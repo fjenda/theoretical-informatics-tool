@@ -2,7 +2,7 @@
     // import cytoscape from "cytoscape";
     //
     // let cy = cytoscape({
-    //     container: document.getElementById("cy")
+    //     container: document.getElementById("cy"),
     // });
 </script>
 
@@ -20,6 +20,10 @@
         max-width: 90%;
         height: 80rem;
         max-height: 85%;
+        background: #ffffff;
+    }
+
+    :global(body.dark-mode) .window {
         background: #c5c5c5;
     }
 

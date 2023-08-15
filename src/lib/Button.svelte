@@ -121,6 +121,7 @@
         cursor: pointer;
         transition: border-color 0.25s;
         filter: drop-shadow(4px 4px 4px #000000);
+        color: #ffffff;
         /*text-shadow: 2px 2px 6px #000000;*/
     }
 

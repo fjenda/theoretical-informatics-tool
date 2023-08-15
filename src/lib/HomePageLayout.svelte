@@ -39,4 +39,30 @@
     .header {
       display: flex;
     }
+
+    :root {
+      font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+      font-weight: 400;
+
+      //color-scheme: light dark;
+      //color: #ffffff;
+      //background-color: #181818;
+
+      font-synthesis: none;
+      text-rendering: optimizeLegibility;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      -webkit-text-size-adjust: 100%;
+    }
+
+    :global(body) {
+      color: #480d25;
+      background-color: #c5c5c5;
+      transition: background-color 0.3s, background-image 0.3s
+    }
+
+    :global(body.dark-mode) {
+      color: #ffffff;
+      background-color: #181818;
+    }
 </style>
