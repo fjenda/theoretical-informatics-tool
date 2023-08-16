@@ -3,7 +3,7 @@ export enum ToolbarButtonType {
     NEWEDGE = "new-edge",
     ZOOMIN = "zoom-in",
     ZOOMOUT = "zoom-out",
-    DELETE = "delete",
+    DELETEELEMENT = "delete-element",
     SAVEGRAPH = "save-graph",
     LOADGRAPH = "load-graph",
     DELETEGRAPH = "delete-graph",

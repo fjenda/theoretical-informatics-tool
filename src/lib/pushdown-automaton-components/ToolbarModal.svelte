@@ -3,24 +3,30 @@
 
     export let showModal : boolean;
     export let type : ToolbarButtonType;
+    export let func : Function;
     let dialog;
     let label : string, source : string, target : string;
 
     $: if (dialog && showModal) dialog.showModal();
 
+    function resetInput() {
+        label = "", source = "", target = "";
+        return true;
+    }
+
     function checkInput(type) {
-        if (type != "new-node" && type != "new-edge") {
-            console.log("no input");
+        if (!["new-node", "new-edge"].includes(type)) {
+            func();
             return true;
         }
 
-        if (label == undefined || label.trim() == "") {
+        if (!label?.trim()) {
             console.log("bad input");
             return false;
         }
 
-        if (type === "new-edge") {
-            if (source == undefined || target == undefined || source.trim() == "" || target.trim() == "") {
+        if (type == "new-edge") {
+            if (!source?.trim() || !target?.trim()) {
                 console.log("bad input");
                 return false;
             }
@@ -31,6 +37,7 @@
         switch (type) {
             case "new-node": {
                 console.log("new-node - " + modifiedLabel);
+                func({ id: label, label: label});
                 return true;
             }
 
@@ -38,6 +45,7 @@
                 const modifiedSource = source.trim();
                 const modifiedTarget = target.trim();
                 console.log("new-edge - " + modifiedLabel + " " + modifiedSource + " -> " + modifiedTarget);
+                func({id: `${source}-${target}`, label: label, source: source, target: target});
                 return true;
             }
         }
@@ -55,7 +63,7 @@
         <slot />
 
         <div class="input-box">
-            {#if type === "new-node" || type === "new-edge"}
+            {#if ["new-node", "new-edge"].includes(type)}
                 <input bind:value={label} maxlength="8" placeholder="Label">
             {/if}
 
@@ -67,7 +75,7 @@
 
         <hr />
         <button on:click={() => dialog.close()}>Cancel</button>
-        <button on:click={() => checkInput(type) && dialog.close()}>Apply</button>
+        <button on:click={() => checkInput(type) && resetInput() && dialog.close()}>Apply</button>
     </div>
 </dialog>
 
@@ -77,16 +85,25 @@
         border-radius: 0.2em;
         border: none;
         padding: 0;
+        background: #ffffff;
     }
+
+    :global(body.dark-mode) dialog {
+        background: #d0d0d0;
+    }
+
     dialog::backdrop {
         background: rgba(0, 0, 0, 0.3);
     }
+
     dialog > div {
         padding: 1em;
     }
+
     dialog[open] {
         animation: zoom 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
     }
+
     @keyframes zoom {
         from {
             transform: scale(0.95);
@@ -95,6 +112,7 @@
             transform: scale(1);
         }
     }
+
     dialog[open]::backdrop {
         animation: fade 0.2s ease-out;
     }
@@ -106,6 +124,7 @@
             opacity: 1;
         }
     }
+
     button {
         display: block;
     }
