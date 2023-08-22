@@ -4,4 +4,5 @@ export enum ButtonType {
     BACK = "back",
     TEST = "test",
     TAB = "tab",
+    PROCESS = "process",
 }

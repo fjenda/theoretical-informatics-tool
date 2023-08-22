@@ -1,12 +1,5 @@
 <script lang="ts">
     let width = 250, height = 250, x = 150, y = 100, xspeed = 5, yspeed = 5;
-
-    // while (true) {
-    //     x += xspeed;
-    //     y += yspeed;
-    //
-    //     //if (x + width > )
-    // }
 </script>
 
 <div class="flare" style="left: {x}px;top: {y}px" />

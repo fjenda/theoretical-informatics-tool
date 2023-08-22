@@ -1,4 +1,4 @@
-export interface GraphEdge {
+export interface GraphEdgeMeta {
     id : string,
     label : string,
     source : string,

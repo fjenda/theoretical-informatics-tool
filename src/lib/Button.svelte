@@ -4,12 +4,13 @@
 
     export let type : ButtonType;
     export let url : string = "";
+    export let func : Function = () => {};
     export let text : string = "";
 </script>
 
 {#if type !== ""}
     <div class="{type}-box">
-        <button class="{type}-button" on:click={() => navigate(url)}>
+        <button class="{type}-button" on:click={() => navigate(url)} on:click={() => func()}>
             {text}
         </button>
     </div>
@@ -17,49 +18,24 @@
     <!-- todo -->
 {/if}
 
-<!--{#if type === "read-more"}-->
-<!--    <div class="read-more-box">-->
-<!--        <button on:click={() => navigate(url)}>-->
-<!--            Read more-->
-<!--        </button>-->
-<!--    </div>-->
-<!--{:else if type === "tool"}-->
-<!--    <div class="tool-box">-->
-<!--        <button on:click={() => navigate(url)}>-->
-<!--            Tool-->
-<!--        </button>-->
-<!--    </div>-->
-<!--{:else if type === "back"}-->
-<!--    <div class="back-box">-->
-<!--        <button on:click={() => navigate(url)}>-->
-<!--            Back-->
-<!--        </button>-->
-<!--    </div>-->
-<!--{:else if type === "test"}-->
-<!--    <div class="test-box">-->
-<!--        <button class="test-button">-->
-<!--            Test-->
-<!--        </button>-->
-<!--    </div>-->
-<!--{:else if type === "tab"}-->
-<!--    <div class="tab-box">-->
-<!--        <button>-->
-<!--            {text}-->
-<!--        </button>-->
-<!--    </div>-->
-<!--{/if}-->
-
-
-
 <style>
-    .test-box {
+    .process-box {
         display: flex;
         justify-content: center;
         margin: auto;
 
+        width: 9.5vw;
+        height: 4vh;
+    }
+
+    .test-box {
+        display: flex;
+        justify-content: center;
+        margin: 1rem auto;
+
         font-size: 1.8rem;
         height: 6vh;
-        width: 12vw;
+        width: 10.5vw;
     }
 
     .test-button {
@@ -82,11 +58,11 @@
     .back-box {
         display: flex;
         justify-content: center;
-        margin: auto;
+        margin: 1rem auto;
 
         font-size: 1.8rem;
         height: 6vh;
-        width: 12vw;
+        width: 10.5vw;
     }
 
     .tool-box {

@@ -8,4 +8,6 @@ export enum ToolbarButtonType {
     LOADGRAPH = "load-graph",
     DELETEGRAPH = "delete-graph",
     RESETLAYOUT = "reset-layout",
+    SHOWTRANSITIONS = "show-transitions",
+    STACK = "stack",
 }

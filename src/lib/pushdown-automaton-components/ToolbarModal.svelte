@@ -1,16 +1,17 @@
 <script lang="ts">
-    import type {ToolbarButtonType} from "../../types/ToolbarButtonType";
-
     export let showModal : boolean;
     export let type : ToolbarButtonType;
     export let func : Function;
+    let transitions : string;
     let dialog;
     let label : string, source : string, target : string;
+    let isFinishState : boolean = false;
 
     $: if (dialog && showModal) dialog.showModal();
 
     function resetInput() {
         label = "", source = "", target = "";
+        isFinishState = false;
         return true;
     }
 
@@ -37,7 +38,7 @@
         switch (type) {
             case "new-node": {
                 console.log("new-node - " + modifiedLabel);
-                func({ id: label, label: label});
+                func({ id: label, label: label, class: isFinishState ? "finish" : "" });
                 return true;
             }
 
@@ -49,6 +50,15 @@
                 return true;
             }
         }
+    }
+
+    function handleTransitions() {
+        if (type === "show-transitions") {
+            transitions = func();
+            return true;
+        }
+
+        return false;
     }
 </script>
 
@@ -62,20 +72,42 @@
         <hr />
         <slot />
 
+        {#if type === "show-transitions"}
+            <textarea class="transitions-input"
+                      cols="30" rows="20"
+                      readonly = {true}
+                      value={transitions}
+                      placeholder="Transitions"></textarea>
+
+            <hr />
+            <button on:click={() => handleTransitions() && dialog.close()}>Cancel</button>
+
+        {:else}
+
         <div class="input-box">
             {#if ["new-node", "new-edge"].includes(type)}
                 <input bind:value={label} maxlength="8" placeholder="Label">
             {/if}
 
-            {#if type === "new-edge"}
+            {#if type === "new-node"}
+                <div class="checkbox-box">
+                    <label>
+                        <input type="checkbox" bind:checked={isFinishState} />
+                        Finish state
+                    </label>
+                </div>
+            {:else if type === "new-edge"}
                 <input bind:value={source} maxlength="8" placeholder="Source">
                 <input bind:value={target} maxlength="8" placeholder="Target">
             {/if}
         </div>
 
-        <hr />
-        <button on:click={() => dialog.close()}>Cancel</button>
-        <button on:click={() => checkInput(type) && resetInput() && dialog.close()}>Apply</button>
+            <hr />
+            <button on:click={() => resetInput() && dialog.close()}>Cancel</button>
+            <button on:click={() => checkInput(type) && resetInput() && dialog.close()}>Apply</button>
+        {/if}
+
+
     </div>
 </dialog>
 
@@ -139,5 +171,14 @@
     input {
         text-align: center;
         width: 5rem;
+    }
+
+    .checkbox-box {
+        display: flex;
+        gap: 0;
+    }
+
+    .transitions-input {
+        resize: none;
     }
 </style>

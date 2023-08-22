@@ -14,6 +14,7 @@
         max-height: 85%;
         border-radius: 2vw;
         background: #ffffff;
+        text-align: center;
     }
 
     :global(body.dark-mode) .control-panel {

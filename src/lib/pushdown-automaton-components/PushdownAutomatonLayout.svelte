@@ -5,8 +5,7 @@
 
     const tabs = [
         ["Pushdown automaton", "pushdown-automaton"],
-        ["CF -> PA", "cf-to-pa"],
-        ["Word acceptance (PA) / generation (CF)", "word-acceptance-generation"]
+        ["CF -> PA", "cf-to-pa"]
     ];
 </script>
 
