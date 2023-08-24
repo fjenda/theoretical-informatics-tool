@@ -16,6 +16,7 @@
         loadGraph,
         deleteGraph,
         resetLayout,
+        generateAutomata,
     } as ToolbarFunctions;
 
     function addNode(node : GraphNodeMeta) {
@@ -146,15 +147,109 @@
 
         });
 
-        nodes.forEach(node => {
+        // nodes.forEach(node => {
+        //     addNode(node);
+        // });
+        //
+        // edges.forEach(edge => {
+        //     addEdge(edge);
+        // });
+        //
+        // resetLayout();
+    }
+
+    function generateAutomata(AutomatInput : AutomataMeta) {
+        const rules = AutomatInput.input.split("\n");
+        let graphDict = {};
+
+        rules.forEach(rule => {
+            const ruleSplit = rule.split("=");
+            graphDict[ruleSplit[0].trim()] = ruleSplit[1].trim();
+        });
+
+        const regex = /[^a-zA-Z0-9\s]/g;
+        let graphNodes : GraphNodeMeta[] = Object.keys(graphDict).map(key => {
+            return {id: key.split(",")[0], label: key.split(",")[0].replace(regex, ""), class: ""};
+        });
+
+        graphNodes.forEach(node => {
+            if (node.id.includes(">")) {
+                node.class = "start";
+                node.id = node.id.replace(">", "");
+            } else if (node.id.includes("<")) {
+                node.class = "finish";
+                node.id = node.id.replace("<", "");
+            }
+        });
+
+        graphNodes = graphNodes.filter((node, index, self) =>
+            index === self.findIndex((t) => (
+                t.id === node.id
+            ))
+        );
+
+        graphNodes.forEach(node => {
+            node.id = node.id.replace(regex, "");
+        });
+
+        let graphEdges : GraphEdgeMeta[] = [];
+        Object.keys(graphDict).forEach(key => {
+            const keySplit = key.split(",");
+            const valueSplit = graphDict[key].split(",");
+
+            if (valueSplit.length > 1) {
+                valueSplit.forEach(value => {
+                    graphEdges.push({id: `${keySplit[0].replace(regex, "")}-${value.replace(regex, "")}`,
+                        label: keySplit[1].replace(regex, ""),
+                        source: keySplit[0].replace(regex, ""),
+                        target: value.replace(regex, "")});
+                })
+            } else{
+                graphEdges.push({id: `${keySplit[0].replace(regex, "")}-${valueSplit[0].replace(regex, "")}`,
+                    label: keySplit[1].replace(regex, ""),
+                    source: keySplit[0].replace(regex, ""),
+                    target: valueSplit[0].replace(regex, "")});
+            }
+        });
+
+        const labelDictionary = {};
+        graphEdges.forEach((node) => {
+            if (labelDictionary[node.id]) {
+                labelDictionary[node.id].push(node.label);
+            } else {
+                labelDictionary[node.id] = [node.label];
+            }
+        });
+
+        const combinedArray = Object.entries(labelDictionary).map(([id, labels]) => ({
+            id,
+            label: labels.join(", ")
+        }));
+
+        graphEdges.forEach((edge) => {
+            combinedArray.forEach((node) => {
+                if (edge.id === node.id) {
+                    edge.label = node.label;
+                }
+            })
+        });
+
+        graphEdges = graphEdges.filter((node, index, self) =>
+            index === self.findIndex((t) => (
+                t.id === node.id
+            ))
+        );
+
+        graphNodes.forEach(node => {
             addNode(node);
         });
 
-        edges.forEach(edge => {
+        graphEdges.forEach(edge => {
             addEdge(edge);
         });
 
         resetLayout();
+
     }
 
     function handleRemovingNode(node: string) {
@@ -187,13 +282,13 @@
     onMount(() => {
         createGraph(graphNodes, graphEdges);
         // console.log(graph);
-
-        graph.on('cxttap', 'node', function(evt){
-            console.log( 'clicked ' + this.id() );
-            const clickedNode = this.id();
-
-            handleRemovingNode(clickedNode);
-        });
+        //
+        // graph.on('cxttap', 'node', function(evt){
+        //     console.log( 'clicked ' + this.id() );
+        //     const clickedNode = this.id();
+        //
+        //     handleRemovingNode(clickedNode);
+        // });
     });
 
 

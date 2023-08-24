@@ -33,6 +33,7 @@ import FinGraphToolbar from "../lib/finite-state-machine-components/FinGraphTool
                     <FinToolbarButton type="load-graph" text="Load graph" func={toolbarFunctions?.loadGraph} />
                     <FinToolbarButton type="delete-graph" text="Delete graph" func={toolbarFunctions?.deleteGraph}/>
                     <FinToolbarButton type="reset-layout" text="Reset layout" func={toolbarFunctions?.resetLayout} />
+                    <FinToolbarButton type="generate-automata" text="Generate Automata" func={toolbarFunctions?.generateAutomata} />
                 </FinGraphToolbar>
             </FinGraphWindow>
         </FiniteStateMachineLayout>

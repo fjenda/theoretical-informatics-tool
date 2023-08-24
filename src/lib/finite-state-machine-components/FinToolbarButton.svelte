@@ -10,7 +10,7 @@ let showModal = false;
 
 </script>
 
-{#if ["new-node", "new-edge"].includes(type)}
+{#if ["new-node", "new-edge", "generate-automata"].includes(type)}
     <button on:click={() => (showModal = true)}>
         {text}
     </button>

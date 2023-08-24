@@ -5,12 +5,12 @@
     export let type : ToolbarButtonType;
     export let func : Function;
     let dialog;
-    let label : string, source : string, target : string;
+    let label : string, source : string, target : string, rules : string;
 
     $: if (dialog && showModal) dialog.showModal();
 
     function resetInput() {
-        label = "", source = "", target = "";
+        label = "", source = "", target = "", rules = "";
         return true;
     }
 
@@ -50,6 +50,15 @@
             }
         }
     }
+
+    function checkRules(){
+        let automata : AutomataMeta = {
+            type : 'DFA',
+            input : rules,
+        }
+        func(automata);
+        return true;
+    }
 </script>
 
 <dialog
@@ -71,11 +80,24 @@
                 <input bind:value={source} maxlength="8" placeholder="Source">
                 <input bind:value={target} maxlength="8" placeholder="Target">
             {/if}
+
+            {#if type === "generate-automata"}
+                <textarea bind:value={rules} id="autInp"  rows="10" cols="33"></textarea>
+            {/if}
+
         </div>
 
         <hr />
-        <button on:click={() => dialog.close()}>Cancel</button>
-        <button on:click={() => checkInput(type) && resetInput() && dialog.close()}>Apply</button>
+
+        {#if type === "generate-automata"}
+            <button on:click={() => dialog.close()}>Cancel</button>
+            <button on:click={() => checkRules() && resetInput() && dialog.close()}>Apply</button>
+        {:else}
+            <button on:click={() => dialog.close()}>Cancel</button>
+            <button on:click={() => checkInput(type) && resetInput() && dialog.close()}>Apply</button>
+        {/if}
+
+
     </div>
 </dialog>
 
