@@ -13,18 +13,7 @@
 // aaabbb - patri
 // aabbb - nepatri
 // ----------------
-// (q0,a,Z)=(q0,aZ);
-// (q0,b,Z)=(q0,bZ);
-// (q0,a,a)=(q0,aa);
-// (q0,a,b)=(q0,ab);
-// (q0,b,a)=(q0,ba);
-// (q0,b,b)=(q0,bb);
-// (q0,c,a)=(q1,a);
-// (q0,c,b)=(q1,b);
-// (q1,a,a)=(q1,E);
-// (q1,b,b)=(q1,E);
-// (q1,E,Z)=(q1,E);
-// (q0,E,Z)=(q1,E);
+// a
 // abcba - patri
 // abca - nepatri
 // ----------------
@@ -81,16 +70,18 @@
     }
 </script>
 
-<textarea bind:value={textInput}
+<textarea id="function-input"
+          bind:value={textInput}
           class="function-input"
           rows="20"
-          placeholder="(q0,a,Z)=(q1,A);" />
+          placeholder="(q0,a,Z)=(q1,AZ);" />
 
 <style>
     .function-input {
         margin: 1rem 0;
         border-radius: 1rem;
         resize: none;
+        height: 15rem;
         width: 10.5rem;
     }
 </style>

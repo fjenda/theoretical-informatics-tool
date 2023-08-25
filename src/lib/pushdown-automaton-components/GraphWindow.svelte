@@ -34,7 +34,12 @@
         previousTransition,
         resetTestInput,
         showTransitions,
+        getStack,
     } as ToolbarFunctions;
+
+    function getStack() {
+        return graphObject.stack;
+    }
 
     function showTransitions() {
         // console.log("---------NODES---------");
@@ -46,7 +51,7 @@
 
         //parse graphTransitions to string
         let graphTransitionsString = "";
-        graphObject.graphTransitions.forEach(transition => {
+        graphObject.graphTransitions.forEach((transition : TransitionMeta) => {
             graphTransitionsString += `(${transition.state}, ${transition.input}, ${transition.stack}) = (${transition.stateAfter}, ${transition.stackAfter})\n`;
         });
 
@@ -61,12 +66,12 @@
     function testInput(wordCharacters : string[]) {
         resetTestInput();
         removeHighlighted();
-        graphObject.word = wordCharacters;
         initStack();
+        graphObject.word = wordCharacters;
         graphObject.graphState = "testing";
 
-        let tmpNode;
-        graphObject.graphNodes.forEach(node => {
+        let tmpNode : GraphNodeMeta;
+        graphObject.graphNodes.forEach((node : GraphNodeMeta) => {
             if (node.class === "start") {
                 tmpNode = node;
             }
@@ -104,7 +109,7 @@
 
                 if (tmpTransition.stackAfter.length > 1) {
                     graphObject.stack.push(...tmpTransition.stackAfter.slice(0, tmpTransition.stackAfter.length - 1));
-                } else if (tmpTransition.stackAfter === "E") {
+                } else if (tmpTransition.stackAfter === "E" && tmpTransition.stack !== "Z") {
                     graphObject.stack.pop();
                 }
 
@@ -113,7 +118,7 @@
                 break;
             }
         }
-
+        getStack();
         console.log(graphObject.currentStatus);
         console.log(graphObject.stack);
 
@@ -161,6 +166,7 @@
         if (tmpTransition.input !== "E") {
             graphObject.word.unshift(tmpTransition.input);
         }
+        getStack();
         console.log(graphObject.currentStatus);
         console.log(graphObject.stack);
 
@@ -171,6 +177,10 @@
     }
 
     function checkLastTransition() {
+        if (graphObject.stack.length !== 1) {
+            return;
+        }
+
         let tmpTransition : TransitionMeta;
         for (const transition of graphObject.graphTransitions) {
             if (transition.input === "E" && transition.stack === "Z" && transition.stackAfter === "E" && transition.state === graphObject.currentStatus.state) {
@@ -207,12 +217,14 @@
         graphObject.graphState = "idle";
 
         console.log(graphObject.graphTraversal);
-        if (graphObject.word.length === 0 && graphObject.graph.$id(graphObject.currentStatus.state).classes().includes("finish")) {
+        if (graphObject.word.length === 0 && graphObject.stack.length === 1 && graphObject.graph.$id(graphObject.currentStatus.state).classes().includes("finish")) {
             console.log("Accepted");
+            graphObject.stack = [];
             return;
         }
 
         console.log("Declined");
+        graphObject.stack = [];
     }
 
     function highlightElement(id : string | number) {
@@ -280,7 +292,7 @@
         }
 
         try {
-            if (graphObject.graphNodes.filter(graphNode => graphNode.id === node.id).length === 0) {
+            if (graphObject.graphNodes.filter((graphNode : GraphNodeMeta) => graphNode.id === node.id).length === 0) {
                 graphObject.graphNodes.push(node);
             }
 
@@ -301,7 +313,7 @@
             //if graphEdges already has this edge
             if (graphObject.graphEdges[edge.id]) {
                 //if graphEdges has this edge but with different label
-                if (graphObject.graphEdges[edge.id].filter(graphEdge => graphEdge.label == edge.label).length == 0) {
+                if (graphObject.graphEdges[edge.id].filter((graphEdge : GraphEdgeMeta) => graphEdge.label == edge.label).length == 0) {
                     graphObject.graphEdges[edge.id].push(edge);
                 }
             } else {
@@ -357,7 +369,7 @@
     }
 
     function deleteGraphElement() {
-        graphObject.graph.on("click", "*", function(evt) {
+        graphObject.graph.on("click", "*", function() {
             graphObject.graph.remove("#" + this.id());
 
             //if clicked object is edge
@@ -368,26 +380,26 @@
 
                 // remove edge from graphEdges
                 if (graphObject.graphEdges[tmpEdge].length > 1) {
-                    graphObject.graphEdges[tmpEdge] = graphObject.graphEdges[tmpEdge].filter(edge => edge.id !== tmpEdge);
+                    graphObject.graphEdges[tmpEdge] = graphObject.graphEdges[tmpEdge].filter((edge : GraphEdgeMeta) => edge.id !== tmpEdge);
                 } else {
                     delete graphObject.graphEdges[tmpEdge];
                 }
 
                 // remove edge from graphTransitions
-                graphObject.graphTransitions = graphObject.graphTransitions.filter(transition => {
+                graphObject.graphTransitions = graphObject.graphTransitions.filter((transition : TransitionMeta) => {
                     return !(transition.state === tmpEdgeSource && transition.stateAfter === tmpEdgeTarget);
                 });
             } else {
                 // remove node from graphNodes
-                graphObject.graphNodes = graphObject.graphNodes.filter(node => node.id !== this.id());
+                graphObject.graphNodes = graphObject.graphNodes.filter((node : GraphNodeMeta) => node.id !== this.id());
 
                 // remove edges from graphEdges
                 for (const edge in graphObject.graphEdges) {
-                    graphObject.graphEdges[edge] = graphObject.graphEdges[edge].filter(edge => edge.source !== this.id() && edge.target !== this.id());
+                    graphObject.graphEdges[edge] = graphObject.graphEdges[edge].filter((edge : GraphEdgeMeta) => edge.source !== this.id() && edge.target !== this.id());
                 }
 
                 // remove transitions from graphTransitions
-                graphObject.graphTransitions = graphObject.graphTransitions.filter(transition => {
+                graphObject.graphTransitions = graphObject.graphTransitions.filter((transition : TransitionMeta) => {
                     return !(transition.state === this.id() || transition.stateAfter === this.id());
                 });
             }
@@ -433,15 +445,29 @@
                         return;
                     }
 
-                    nodes.forEach(node => {
+                    //load nodes
+                    nodes.forEach((node : GraphNodeMeta) => {
                         graphObject.graphNodes.push({ id: node.data.id, label: node.data.label, class: node.classes });
                     });
 
-                    edges.forEach(edge => {
-                        graphObject.graphEdges[edge.data.id] = [{ id: edge.data.id, label: edge.data.label, source: edge.data.source, target: edge.data.target }];
+                    //split edges by label and load them
+                    edges.forEach((edge : GraphEdgeMeta) => {
+                        // graphObject.graphEdges[edge.data.id] = [{ id: edge.data.id, label: edge.data.label, source: edge.data.source, target: edge.data.target }];
+                        let edgeLabel = edge.data.label.split("\n");
+                        edgeLabel.forEach((label : string) => {
+                            graphObject.graphEdges[edge.data.id] = graphObject.graphEdges[edge.data.id] ?? [];
+                            graphObject.graphEdges[edge.data.id].push(
+                                {
+                                    id: edge.data.id,
+                                    label: label,
+                                    source: edge.data.source,
+                                    target: edge.data.target
+                                });
+                        });
                     });
 
                     createGraph();
+                    console.log(graphObject);
                     resetLayout();
                 };
             } catch (e) {
@@ -466,12 +492,12 @@
     }
 
     function createGraph() {
-        graphObject.graphNodes.forEach(node => {
+        graphObject.graphNodes.forEach((node : GraphNodeMeta) => {
             addNode(node);
         });
 
         for (const edge in graphObject.graphEdges) {
-            graphObject.graphEdges[edge].forEach(edge => {
+            graphObject.graphEdges[edge].forEach((edge : GraphEdgeMeta) => {
                 addEdge(edge);
             });
         }
@@ -573,6 +599,12 @@
         "q1-qF": [{
             id: "q1-qF",
             label: "E;Z;E",
+            source: "q1",
+            target: "qF"
+        },
+        {
+            id: "q1-qF",
+            label: "a;a;E",
             source: "q1",
             target: "qF"
         }],

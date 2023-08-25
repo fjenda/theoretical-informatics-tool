@@ -43,7 +43,8 @@
     }
 
     :global(body.dark-mode) .test-button {
-        background-image: linear-gradient(to right, rgba(28,24,241,100%), rgba(45,142,233,50%), rgba(21,240,135,50%), rgba(15,222,73,100%));
+        background-image: linear-gradient(to right, #0ccb34, #15d2c5);
+        /*background-image: linear-gradient(to right, rgba(28,24,241,100%), rgba(45,142,233,50%), rgba(21,240,135,50%), rgba(15,222,73,100%));*/
     }
 
     .read-more-box {
@@ -56,9 +57,20 @@
     }
 
     .back-box {
+        position: absolute;
+        bottom: 1vh;
+        left: 50%;
+
+        -ms-transform: translateX(-50%);
+        -webkit-transform: translateX(-50%);
+        -moz-transform: translateX(-50%);
+        -o-transform: translateX(-50%);
+        transform: translateX(-50%);
+
+
         display: flex;
         justify-content: center;
-        margin: 1rem auto;
+        margin: 2rem auto;
 
         font-size: 1.8rem;
         height: 6vh;

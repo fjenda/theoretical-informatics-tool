@@ -10,6 +10,7 @@
     import GraphToolbar from "../lib/pushdown-automaton-components/GraphToolbar.svelte";
     import ToolbarButton from "../lib/pushdown-automaton-components/ToolbarButton.svelte";
     import TransitionFunctionInput from "../lib/pushdown-automaton-components/TransitionFunctionInput.svelte";
+    import StackVisualiser from "../lib/pushdown-automaton-components/StackVisualiser.svelte";
 
     const landingPageUrl = "/"
     let toolbarFunctions : ToolbarFunctions;
@@ -46,6 +47,7 @@
                     <ToolbarButton type="delete-graph" text="Delete graph" func={toolbarFunctions?.deleteGraph} />
                     <ToolbarButton type="reset-layout" text="Reset layout" func={toolbarFunctions?.resetLayout} />
                     <ToolbarButton type="show-transitions" text="Show transitions" func={toolbarFunctions?.showTransitions} />
+                    <StackVisualiser stackFunction={toolbarFunctions?.getStack} />
                 </GraphToolbar>
             </GraphWindow>
         </PushdownAutomatonLayout>

@@ -8,6 +8,7 @@
 
 <style>
     .control-panel {
+        position: relative;
         margin-left: 3rem;
         width: 15rem;
         height: 80rem;

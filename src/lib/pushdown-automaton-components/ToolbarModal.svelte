@@ -73,7 +73,8 @@
         <slot />
 
         {#if type === "show-transitions"}
-            <textarea class="transitions-input"
+            <textarea id="transitions"
+                      class="transitions-input"
                       cols="30" rows="20"
                       readonly = {true}
                       value={transitions}
@@ -92,13 +93,13 @@
             {#if type === "new-node"}
                 <div class="checkbox-box">
                     <label>
-                        <input type="checkbox" bind:checked={isFinishState} />
+                        <input id="finish-state-checkbox" type="checkbox" bind:checked={isFinishState} />
                         Finish state
                     </label>
                 </div>
             {:else if type === "new-edge"}
-                <input bind:value={source} maxlength="8" placeholder="Source">
-                <input bind:value={target} maxlength="8" placeholder="Target">
+                <input id="source-input" bind:value={source} maxlength="8" placeholder="Source">
+                <input id="target-input" bind:value={target} maxlength="8" placeholder="Target">
             {/if}
         </div>
 

@@ -36,7 +36,8 @@
 </script>
 
 <div class="input-box">
-    <input bind:value={input}
+    <input id="test-input"
+           bind:value={input}
            class="test-input"
            placeholder="ex. aa">
 </div>
