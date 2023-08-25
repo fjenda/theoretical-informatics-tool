@@ -29,7 +29,8 @@
                            stopFunc={toolbarFunctions?.resetTestInput}
                 />
                 <Button type="test" text="Test" func={processTestInputFunction} />
-                <TransitionFunctionInput bind:processFunction={processTransitionsFunction} updateGraphFunction={toolbarFunctions?.generateGraphFromTransitions}/>
+                <TransitionFunctionInput bind:processFunction={processTransitionsFunction}
+                                         updateGraphFunction={toolbarFunctions?.generateGraphFromTransitions}/>
                 <Button type="process" text="Process" func={processTransitionsFunction} />
                 <Button type="back" text="Back" url={landingPageUrl} />
             </GraphControlPanel>

@@ -2,21 +2,18 @@
     import cytoscape from "cytoscape";
     import {onMount} from "svelte";
 
-    type GraphEdgeDictionary = {
-        [key: string] : GraphEdgeMeta[]
-    }
-
-    let graph;
-    let graphDiv : HTMLDivElement;
-
-    let graphNodes : GraphNodeMeta[] = [];
-    let graphEdges : GraphEdgeDictionary = {};
-    let graphTransitions : TransitionMeta[] = [];
-
-    let stack : string[] = [];
-    let currentStatus : AutomatonState;
-    let word : string[] = [];
-    let graphTraversal : (GraphNodeMeta | GraphEdgeMeta)[] = [];
+    let graphObject : GraphObject = {
+        graph: null,
+        graphDiv: null,
+        graphState: "idle",
+        graphNodes: [],
+        graphEdges: {},
+        graphTransitions: [],
+        stack: [],
+        currentStatus: {},
+        word: [],
+        graphTraversal: [],
+    };
 
     let highlightedElementsId : string[] = [];
     let deleteButtonActive : boolean = false;
@@ -49,7 +46,7 @@
 
         //parse graphTransitions to string
         let graphTransitionsString = "";
-        graphTransitions.forEach(transition => {
+        graphObject.graphTransitions.forEach(transition => {
             graphTransitionsString += `(${transition.state}, ${transition.input}, ${transition.stack}) = (${transition.stateAfter}, ${transition.stackAfter})\n`;
         });
 
@@ -57,30 +54,42 @@
     }
 
     function initStack() {
-        stack = [];
-        stack.push("Z");
+        graphObject.stack = [];
+        graphObject.stack.push("Z");
     }
 
     function testInput(wordCharacters : string[]) {
         resetTestInput();
-        word = wordCharacters;
+        removeHighlighted();
+        graphObject.word = wordCharacters;
         initStack();
+        graphObject.graphState = "testing";
 
         let tmpNode;
-        graphNodes.forEach(node => {
+        graphObject.graphNodes.forEach(node => {
             if (node.class === "start") {
                 tmpNode = node;
             }
         });
 
+        if (!tmpNode) {
+            return;
+        }
+
         highlightElement(tmpNode.id);
-        graphTraversal.push();
-        currentStatus = {state: tmpNode.id, stack: stack[stack.length - 1]};
-        console.log(currentStatus);
+        graphObject.currentStatus = {state: tmpNode.id, stack: graphObject.stack[graphObject.stack.length - 1]};
+        console.log(graphObject.currentStatus);
     }
 
     function nextTransition() {
-        if (word.length === 0) {
+        removeHighlighted();
+
+        if (graphObject.graphState !== "testing") {
+            return;
+        }
+
+        if (graphObject.word.length === 0) {
+            checkLastTransition();
             stopTestInput();
             return;
         }
@@ -88,17 +97,25 @@
         let tmpTransition : TransitionMeta;
         let nextNode : GraphNodeMeta;
 
-        removeHighlighted();
-
-        for (const transition of graphTransitions) {
-            if (transition.state === currentStatus.state && transition.input === word[0] && transition.stack === currentStatus.stack) {
+        for (const transition of graphObject.graphTransitions) {
+            if (transition.state === graphObject.currentStatus.state && transition.input === graphObject.word[0] && transition.stack === graphObject.currentStatus.stack) {
                 tmpTransition = transition;
                 nextNode = tmpTransition.stateAfter;
-                currentStatus = { state: tmpTransition.stateAfter, stack: tmpTransition.stackAfter };
-                word.splice(0, 1);
+
+                if (tmpTransition.stackAfter.length > 1) {
+                    graphObject.stack.push(...tmpTransition.stackAfter.slice(0, tmpTransition.stackAfter.length - 1));
+                } else if (tmpTransition.stackAfter === "E") {
+                    graphObject.stack.pop();
+                }
+
+                graphObject.currentStatus = { state: tmpTransition.stateAfter, stack: graphObject.stack[graphObject.stack.length - 1] };
+                graphObject.word.splice(0, 1);
                 break;
             }
         }
+
+        console.log(graphObject.currentStatus);
+        console.log(graphObject.stack);
 
         if (tmpTransition) {
             highlightElement(nextNode);
@@ -106,7 +123,7 @@
             let tmpEdge = tmpTransition.state + "-" + tmpTransition.stateAfter;
             highlightElement(tmpEdge);
 
-            graphTraversal.push(tmpTransition);
+            graphObject.graphTraversal.push(tmpTransition);
         }
 
         if (!tmpTransition) {
@@ -115,7 +132,10 @@
     }
 
     function previousTransition() {
-        if (graphTraversal.length === 0) {
+        graphObject.graphState = "testing";
+
+        if (graphObject.graphTraversal.length === 0) {
+            stopTestInput();
             return;
         }
 
@@ -124,10 +144,25 @@
 
         removeHighlighted();
 
-        tmpTransition = graphTraversal.pop();
-        currentStatus = { state: tmpTransition.state, stack: tmpTransition.stack };
+        tmpTransition = graphObject.graphTraversal.pop();
+
+
+        console.log(tmpTransition);
+        if (tmpTransition.stack !== "Z") {
+            if (tmpTransition.stackAfter === "E") {
+                graphObject.stack.push(tmpTransition.stack);
+            } else if (tmpTransition.stackAfter !== tmpTransition.stack) {
+                graphObject.stack.pop();
+            }
+        }
+
+        graphObject.currentStatus = { state: tmpTransition.state, stack: graphObject.stack[graphObject.stack.length - 1] };
         previousNode = tmpTransition.state;
-        word.unshift(tmpTransition.input);
+        if (tmpTransition.input !== "E") {
+            graphObject.word.unshift(tmpTransition.input);
+        }
+        console.log(graphObject.currentStatus);
+        console.log(graphObject.stack);
 
         highlightElement(previousNode);
 
@@ -135,18 +170,44 @@
         highlightElement(tmpEdge);
     }
 
+    function checkLastTransition() {
+        let tmpTransition : TransitionMeta;
+        for (const transition of graphObject.graphTransitions) {
+            if (transition.input === "E" && transition.stack === "Z" && transition.stackAfter === "E" && transition.state === graphObject.currentStatus.state) {
+                tmpTransition = transition;
+                graphObject.currentStatus = { state: tmpTransition.stateAfter, stack: graphObject.stack[graphObject.stack.length - 1] };
+                break;
+            }
+        }
+
+        if (tmpTransition) {
+            highlightElement(tmpTransition.stateAfter);
+
+            let tmpEdge = tmpTransition.state + "-" + tmpTransition.stateAfter;
+            highlightElement(tmpEdge);
+
+            graphObject.graphTraversal.push(tmpTransition);
+            graphObject.graphState = "idle";
+        }
+    }
+
     function resetTestInput() {
         removeHighlighted();
-        stack = [];
-        graphTraversal = [];
-        currentStatus = {};
+        graphObject.stack = [];
+        graphObject.graphTraversal = [];
+        graphObject.currentStatus = {};
+        graphObject.word = [];
     }
 
     function stopTestInput() {
-        console.log(graphTraversal);
-        removeHighlighted();
+        if (graphObject.stack.length === 0) {
+            return;
+        }
 
-        if (word.length === 0 && graph.$id(currentStatus.state).classes().includes("finish")) {
+        graphObject.graphState = "idle";
+
+        console.log(graphObject.graphTraversal);
+        if (graphObject.word.length === 0 && graphObject.graph.$id(graphObject.currentStatus.state).classes().includes("finish")) {
             console.log("Accepted");
             return;
         }
@@ -155,7 +216,7 @@
     }
 
     function highlightElement(id : string | number) {
-        graph.elements().forEach(graphElement => {
+        graphObject.graph.elements().forEach(graphElement => {
             if (id == graphElement.id()) {
                 highlightedElementsId.push(graphElement.id());
                 graphElement.addClass("highlight");
@@ -164,7 +225,7 @@
     }
 
     function removeHighlighted() {
-        graph.elements().forEach(graphElement => {
+        graphObject.graph.elements().forEach(graphElement => {
             if (highlightedElementsId.includes(graphElement.id())) {
                 graphElement.removeClass("highlight");
             }
@@ -174,8 +235,9 @@
     }
 
     function generateGraphFromTransitions(transitions : TransitionMeta[]) {
-        graphTransitions = transitions;
+        graphObject.graphTransitions = transitions;
         let nodesArray = [];
+        let finishedNodes = [];
 
         deleteGraph();
 
@@ -184,8 +246,8 @@
            nodesArray.push(transition.stateAfter);
 
             let key = transition.state + "-" + transition.stateAfter;
-            graphEdges[key] = graphEdges[key] ?? [];
-            graphEdges[key].push(
+            graphObject.graphEdges[key] = graphObject.graphEdges[key] ?? [];
+            graphObject.graphEdges[key].push(
             {
                 id: (transition.state + "-" + transition.stateAfter),
                 label: (transition.input + ";" + transition.stack + ";" + transition.stackAfter),
@@ -193,18 +255,23 @@
                 target: transition.stateAfter
             });
 
+            if (transition.stack === "Z" && transition.stackAfter === "E" && transition.input === "E") {
+                finishedNodes.push(transition.stateAfter);
+            }
         });
         nodesArray = nodesArray.filter((value, index) => nodesArray.indexOf(value) === index);
 
         nodesArray.forEach(node => {
             if (node === "q0") {
-                graphNodes.push({id: node, label: node, class: "start"});
+                graphObject.graphNodes.push({id: node, label: node, class: "start"});
+            } else if (finishedNodes.includes(node)) {
+                graphObject.graphNodes.push({id: node, label: node, class: "finish"});
             } else {
-                graphNodes.push({id: node, label: node});
+                graphObject.graphNodes.push({id: node, label: node});
             }
         });
 
-        createGraph(graphNodes, graphEdges);
+        createGraph();
     }
 
     function addNode(node : GraphNodeMeta) {
@@ -213,11 +280,11 @@
         }
 
         try {
-            if (graphNodes.filter(graphNode => graphNode.id === node.id).length === 0) {
-                graphNodes.push(node);
+            if (graphObject.graphNodes.filter(graphNode => graphNode.id === node.id).length === 0) {
+                graphObject.graphNodes.push(node);
             }
 
-            graph.add({
+            graphObject.graph.add({
                 group: "nodes",
                 data: {id: node.id, label: node.label},
                 classes: node.class,
@@ -232,32 +299,32 @@
     function addEdge(edge : GraphEdgeMeta) {
         try {
             //if graphEdges already has this edge
-            if (graphEdges[edge.id]) {
+            if (graphObject.graphEdges[edge.id]) {
                 //if graphEdges has this edge but with different label
-                if (graphEdges[edge.id].filter(graphEdge => graphEdge.label == edge.label).length == 0) {
-                    graphEdges[edge.id].push(edge);
+                if (graphObject.graphEdges[edge.id].filter(graphEdge => graphEdge.label == edge.label).length == 0) {
+                    graphObject.graphEdges[edge.id].push(edge);
                 }
             } else {
-                graphEdges[edge.id] = [edge];
+                graphObject.graphEdges[edge.id] = [edge];
             }
 
-            if (graph.$id(edge.id).length != 0) {
-                let tmpEdge = graph.$id(edge.id);
+            if (graphObject.graph.$id(edge.id).length != 0) {
+                let tmpEdge = graphObject.graph.$id(edge.id);
 
                 if (tmpEdge.data("label") === edge.label) {
                     return;
                 }
 
                 let combinedLabel = tmpEdge.data("label") + "\n" + edge.label;
-                graph.$id(edge.id).data("label", combinedLabel);
+                graphObject.graph.$id(edge.id).data("label", combinedLabel);
             } else {
-                graph.add({
+                graphObject.graph.add({
                     group: "edges",
                     data: { id: edge.id, label: edge.label, source: edge.source, target: edge.target }
                 });
             }
 
-            graphTransitions.push({
+            graphObject.graphTransitions.push({
                 state: edge.source,
                 input: edge.label.split(";")[0],
                 stack: edge.label.split(";")[1],
@@ -285,13 +352,13 @@
         if (deleteButtonActive) {
             deleteGraphElement();
         } else {
-            graph.removeAllListeners();
+            graphObject.graph.removeAllListeners();
         }
     }
 
     function deleteGraphElement() {
-        graph.on("click", "*", function(evt) {
-            graph.remove("#" + this.id());
+        graphObject.graph.on("click", "*", function(evt) {
+            graphObject.graph.remove("#" + this.id());
 
             //if clicked object is edge
             if (this.isEdge()) {
@@ -300,27 +367,27 @@
                 let tmpEdgeTarget = this.target().id();
 
                 // remove edge from graphEdges
-                if (graphEdges[tmpEdge].length > 1) {
-                    graphEdges[tmpEdge] = graphEdges[tmpEdge].filter(edge => edge.id !== tmpEdge);
+                if (graphObject.graphEdges[tmpEdge].length > 1) {
+                    graphObject.graphEdges[tmpEdge] = graphObject.graphEdges[tmpEdge].filter(edge => edge.id !== tmpEdge);
                 } else {
-                    delete graphEdges[tmpEdge];
+                    delete graphObject.graphEdges[tmpEdge];
                 }
 
                 // remove edge from graphTransitions
-                graphTransitions = graphTransitions.filter(transition => {
+                graphObject.graphTransitions = graphObject.graphTransitions.filter(transition => {
                     return !(transition.state === tmpEdgeSource && transition.stateAfter === tmpEdgeTarget);
                 });
             } else {
                 // remove node from graphNodes
-                graphNodes = graphNodes.filter(node => node.id !== this.id());
+                graphObject.graphNodes = graphObject.graphNodes.filter(node => node.id !== this.id());
 
                 // remove edges from graphEdges
-                for (const edge in graphEdges) {
-                    graphEdges[edge] = graphEdges[edge].filter(edge => edge.source !== this.id() && edge.target !== this.id());
+                for (const edge in graphObject.graphEdges) {
+                    graphObject.graphEdges[edge] = graphObject.graphEdges[edge].filter(edge => edge.source !== this.id() && edge.target !== this.id());
                 }
 
                 // remove transitions from graphTransitions
-                graphTransitions = graphTransitions.filter(transition => {
+                graphObject.graphTransitions = graphObject.graphTransitions.filter(transition => {
                     return !(transition.state === this.id() || transition.stateAfter === this.id());
                 });
             }
@@ -328,7 +395,7 @@
     }
 
     function saveGraph () {
-        let jsonData = graph.json(false);
+        let jsonData = graphObject.graph.json(false);
         jsonData = JSON.stringify(jsonData);
         const blob = new Blob([jsonData], { type: "application/json" });
         const url = URL.createObjectURL(blob);
@@ -367,14 +434,14 @@
                     }
 
                     nodes.forEach(node => {
-                        graphNodes.push({ id: node.data.id, label: node.data.label, class: node.classes });
+                        graphObject.graphNodes.push({ id: node.data.id, label: node.data.label, class: node.classes });
                     });
 
                     edges.forEach(edge => {
-                        graphEdges[edge.data.id] = [{ id: edge.data.id, label: edge.data.label, source: edge.data.source, target: edge.data.target }];
+                        graphObject.graphEdges[edge.data.id] = [{ id: edge.data.id, label: edge.data.label, source: edge.data.source, target: edge.data.target }];
                     });
 
-                    createGraph(graphNodes, graphEdges);
+                    createGraph();
                     resetLayout();
                 };
             } catch (e) {
@@ -386,25 +453,25 @@
     }
 
     function deleteGraph () {
-        graph.elements().remove();
-        graphNodes = [];
-        graphEdges = {};
-        graphTransitions = [];
+        graphObject.graph.elements().remove();
+        graphObject.graphNodes = [];
+        graphObject.graphEdges = {};
+        graphObject.graphTransitions = [];
     }
 
     function resetLayout() {
-        const layout = graph.makeLayout({ name: "circle" });
-        layout.options.eles = graph.elements();
+        const layout = graphObject.graph.makeLayout({ name: "circle" });
+        layout.options.eles = graphObject.graph.elements();
         layout.run();
     }
 
-    function createGraph(nodes : GraphNodeMeta[], edges : GraphEdgeDictionary) {
-        nodes.forEach(node => {
+    function createGraph() {
+        graphObject.graphNodes.forEach(node => {
             addNode(node);
         });
 
-        for (const edge in edges) {
-            edges[edge].forEach(edge => {
+        for (const edge in graphObject.graphEdges) {
+            graphObject.graphEdges[edge].forEach(edge => {
                 addEdge(edge);
             });
         }
@@ -413,9 +480,9 @@
     }
 
     function graphInit() {
-        graph = cytoscape({
+        graphObject.graph = cytoscape({
 
-            container: graphDiv,
+            container: graphObject.graphDiv,
             wheelSensitivity: 0.2,
             minZoom: 0.5,
             maxZoom: 2,
@@ -490,28 +557,28 @@
     }
 
 
-    graphNodes = [
-        { id: "q0", label: "q0", class: "start"},
+    graphObject.graphNodes = [
+        { id: "q0", label: "q0", class: "start" },
         { id: "q1", label: "q1" },
         { id: "qF", label: "qF", class: "finish" },
     ];
 
-    graphEdges = {
+    graphObject.graphEdges = {
         "q0-q1": [{
             id: "q0-q1",
-            label: "a;Z;a",
+            label: "a;Z;aZ",
             source: "q0",
             target: "q1",
         }],
         "q1-qF": [{
             id: "q1-qF",
-            label: "a;a;Z",
+            label: "E;Z;E",
             source: "q1",
             target: "qF"
         }],
         "q1-q0": [{
             id: "q1-q0",
-            label: "b;a;Z",
+            label: "b;a;E",
             source: "q1",
             target: "q0"
         }]
@@ -519,13 +586,13 @@
 
     onMount(() => {
         graphInit();
-        createGraph(graphNodes, graphEdges);
+        createGraph();
     });
 </script>
 
 <div class="window">
     <slot />
-    <div bind:this={graphDiv} class="graph" />
+    <div bind:this={graphObject.graphDiv} class="graph" />
 </div>
 
 <style>
