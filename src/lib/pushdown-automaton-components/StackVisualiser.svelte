@@ -4,8 +4,11 @@
     export let stackFunction : () => string[] = () => {};
 
     function getStack() {
-        stackElements = stackFunction()?.reverse();
-        console.log("stack: " + stackElements);
+        stackElements = stackFunction()?.slice().reverse();
+
+        if (stackElements?.length) {
+            console.log("stack: " + stackElements);
+        }
     }
 </script>
 

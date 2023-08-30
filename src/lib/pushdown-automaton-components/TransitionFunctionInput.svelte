@@ -13,7 +13,18 @@
 // aaabbb - patri
 // aabbb - nepatri
 // ----------------
-// a
+// (q0,a,Z)=(q0,aZ);
+// (q0,c,a)=(q1,a);
+// (q0,c,b)=(q1,b);
+// (q0,b,Z)=(q0,bZ);
+// (q0,c,Z)=(q1,E);
+// (q0,a,a)=(q0,aa);
+// (q0,a,b)=(q0,ab);
+// (q1,a,a)=(q1,E);
+// (q1,b,b)=(q1,E);
+// (q0,b,a)=(q0,ba);
+// (q0,b,b)=(q0,bb);
+// (q1,E,Z)=(q1,E);
 // abcba - patri
 // abca - nepatri
 // ----------------
@@ -25,6 +36,7 @@
 // aabbbb - patri
 // ab - nepatri
 // ----------------
+// Context-free grammar (Not implemented yet)
 // (q,E,S)=(q,abSba);
 // (q,E,S)=(q,A);
 // (q,E,A)=(q,cAc);

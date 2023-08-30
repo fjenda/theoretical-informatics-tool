@@ -6,17 +6,16 @@
     export let previousFunc : Function = () => {};
     export let stopFunc : Function = () => {};
 
-    let input : string = '';
+    let input : HTMLInputElement;
     let showArrows : boolean = false;
 
-    $: if (!/^[a-zA-Z0-9]+$/.test(input) && input !== '') {
+    $: if (!/^[a-zA-Z0-9]+$/.test(input) && input.value !== '') {
         alert("Test input can be made of alphanumeric characters only!")
-        input = input.substring(0, input.length - 1);
+        input.value = input.value.substring(0, input.length - 1);
     }
-
     function processTestInput() {
         showArrows = true;
-        testInputFunction(input.trim().split(""));
+        testInputFunction(input.value.trim().split(""));
     }
 
     function next() {
@@ -37,7 +36,7 @@
 
 <div class="input-box">
     <input id="test-input"
-           bind:value={input}
+           bind:this={input}
            class="test-input"
            placeholder="ex. aa">
 </div>
