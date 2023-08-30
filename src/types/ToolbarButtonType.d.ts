@@ -10,4 +10,5 @@ export enum ToolbarButtonType {
     RESETLAYOUT = "reset-layout",
     SHOWTRANSITIONS = "show-transitions",
     STACK = "stack",
+    GENERATEAUTOMATA = "generate-automata",
 }

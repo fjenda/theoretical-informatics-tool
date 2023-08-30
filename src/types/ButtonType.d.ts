@@ -5,4 +5,5 @@ export enum ButtonType {
     TEST = "test",
     TAB = "tab",
     PROCESS = "process",
+    DFA = "dfa",
 }
