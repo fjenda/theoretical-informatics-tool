@@ -82,7 +82,7 @@
             {/if}
 
             {#if type === "generate-automata"}
-                <textarea bind:value={rules} id="autInp"  rows="10" cols="33"></textarea>
+                <textarea bind:value={rules} id="autInp"  rows="10" cols="33" placeholder=">(q0,0) = q0"></textarea>
             {/if}
 
         </div>

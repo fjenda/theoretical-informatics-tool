@@ -55,6 +55,17 @@
         width: 10vw;
     }
 
+    .dfa-box{
+        display: inline-block;
+        /*display: flex;*/
+        justify-content: center;
+        margin: 1rem auto;
+
+        font-size: 1.8rem;
+        height: 6vh;
+        width: 5vw;
+    }
+
     .back-box {
         display: flex;
         justify-content: center;

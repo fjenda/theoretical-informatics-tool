@@ -16,5 +16,6 @@ export interface ToolbarFunctions {
  previousTransition : () => void,
  resetTestInput : () => void,
  showTransitions : () => void,
+ getStack : () => string[],
  generateAutomata : (AutomataMeta) => void,
 }

@@ -12,14 +12,27 @@ import FinGraphToolbar from "../lib/finite-state-machine-components/FinGraphTool
 
     const landingPageUrl = "/"
     let toolbarFunctions : ToolbarFunctions;
+
+    let processTestInputFunction : Function = () => {};
 </script>
 
 <DebugView>
     <main>
         <FiniteStateMachineLayout title="Finite state machine">
             <FinGraphControlPanel>
-                <FinTestInput/>
-                <Button type="test" text="Test" />
+                <div style='text-align: center;'>
+                    <Button type="dfa" text="NFA" />
+                    <Button type="dfa" text="DFA" />
+                </div>
+                <FinTestInput phText="ex. ABA" bind:processFunction={processTestInputFunction}
+                                                testInputFunction={toolbarFunctions?.testInput}
+                                                nextFunc={toolbarFunctions?.nextTransition}
+                                                previousFunc={toolbarFunctions?.previousTransition}
+                                                stopFunc={toolbarFunctions?.resetTestInput}
+                />
+                <Button type="test" text="Test" func={processTestInputFunction} />
+                <FinTestInput phText="ex. (A+B)*" />
+                <Button type="test" text="Generate" />
                 <Button type="back" text="Back" url={landingPageUrl} />
             </FinGraphControlPanel>
             <FinGraphWindow bind:toolbarFunctions={toolbarFunctions}>
@@ -28,7 +41,7 @@ import FinGraphToolbar from "../lib/finite-state-machine-components/FinGraphTool
                     <FinToolbarButton type="new-edge" text="New edge" func={toolbarFunctions?.addEdge} />
                     <FinToolbarButton type="zoom-in" text="Zoom in" func={toolbarFunctions?.zoomIn} />
                     <FinToolbarButton type="zoom-out" text="Zoom out" func={toolbarFunctions?.zoomOut} />
-                    <FinToolbarButton type="delete-element" text="Delete element" func={toolbarFunctions?.deleteGraphElement}/>
+                    <FinToolbarButton type="delete-element" text="Delete element" func={toolbarFunctions?.toggleDelete}/>
                     <FinToolbarButton type="save-graph" text="Save graph" func={toolbarFunctions?.saveGraph} />
                     <FinToolbarButton type="load-graph" text="Load graph" func={toolbarFunctions?.loadGraph} />
                     <FinToolbarButton type="delete-graph" text="Delete graph" func={toolbarFunctions?.deleteGraph}/>

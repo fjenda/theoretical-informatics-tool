@@ -4,19 +4,18 @@
     export let title : string;
 
     const tabs = [
-        ["Pushdown automaton", "pushdown-automaton"],
-        ["CF -> PA", "cf-to-pa"],
-        ["Word acceptance (PA) / generation (CF)", "word-acceptance-generation"]
+        ["Finite-state machine", "finite-state-machien"],
+        ["NFA -> DFA", "nfa-to-dfa"],
     ];
 </script>
 
 <div class="header">
     <h1>{title}</h1>
-<!--    <div class="tab-box">-->
-<!--        {#each tabs as tab}-->
-<!--            <Button type="tab" text={tab[0]} url={tab[1]} />-->
-<!--        {/each}-->
-<!--    </div>-->
+    <div class="tab-box">
+        {#each tabs as tab}
+            <Button type="tab" text={tab[0]} url={tab[1]} />
+        {/each}
+    </div>
 </div>
 <div class="wrap">
     <div class="layout">
@@ -49,4 +48,7 @@
     gap: 1.5rem;
   }
 
+  .wrap {
+
+  }
 </style>
