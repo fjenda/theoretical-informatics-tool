@@ -36,6 +36,35 @@
 // aabbbb - patri
 // ab - nepatri
 // ----------------
+// (q0,a,Z)=(q1,AZ);
+// (q1,a,A)=(q1,AA);
+// (q1,b,A)=(q2,E);
+// (q2,b,A)=(q2,E);
+// (q2,E,Z)=(q3,Z);
+// (q3,b,Z)=(q3,Z);
+// (q3,E,Z)=(q4,Z);
+// aaabbb - patri
+// aabbb - nepatri
+// ----------------
+// (q0,a,Z)=(q1,Z);
+// (q0,a,Z)=(q2,Z);
+// (q1,b,Z)=(q1,Z);
+// (q2,c,Z)=(q2,Z);
+// (q1,E,Z)=(q3,Z);
+// (q2,E,Z)=(q3,Z);
+// ab, ac - patri
+// aa - nepatri
+// ----------------
+// (q0,a,Z)=(q1,Z);
+// (q0,a,Z)=(q2,Z);
+// (q1,b,Z)=(q1,Z);
+// (q2,b,Z)=(q2,Z);
+// (q1,E,Z)=(q3,Z);
+// (q2,E,Z)=(q4,Z);
+// (q3,a,Z)=(q4,Z);
+// aa, aba, abba - patri
+// aab - nepatri
+// ----------------
 // Context-free grammar (Not implemented yet)
 // (q,E,S)=(q,abSba);
 // (q,E,S)=(q,A);
@@ -72,13 +101,15 @@
 
     function processTransitions() {
         transitions = [];
-        const rows = textInput.split(";");
+        let rows = textInput.split(";");
+        let type = rows[0];
+        rows.splice(0, 1);
 
         for (let row of rows) {
             parseRow(row);
         }
 
-        updateGraphFunction(transitions);
+        updateGraphFunction(transitions, type);
     }
 </script>
 
@@ -86,7 +117,7 @@
           bind:value={textInput}
           class="function-input"
           rows="20"
-          placeholder="(q0,a,Z)=(q1,AZ);" />
+          placeholder={`empty\n(q0,a,Z)=(q1,AZ);`} />
 
 <style>
     .function-input {
