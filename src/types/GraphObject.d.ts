@@ -16,6 +16,6 @@ export interface GraphObject {
     isAccepted : boolean; //    if a word is accepted
     traversal : (GraphNodeMeta | GraphEdgeMeta)[]; //   array of graph elements traversed by the automaton
     type : string; //   type of PA (empty/finish) - empty for accepting empty stack, finish for accepting on finish state or both
-    startState : GraphNodeMeta;
-    finishState? : GraphNodeMeta[];
+    startState : string; //   start state of the automaton
+    finishState? : string; //   finish state of the automaton
 }

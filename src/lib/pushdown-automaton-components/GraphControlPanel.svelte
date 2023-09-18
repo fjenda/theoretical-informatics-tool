@@ -13,7 +13,10 @@
         width: 15rem;
         height: 80rem;
         max-height: 85%;
-        border-radius: 2vw;
+
+        /*border-radius: 2vw;*/
+        border-radius: 0.5rem;
+
         background: #ffffff;
         text-align: center;
     }

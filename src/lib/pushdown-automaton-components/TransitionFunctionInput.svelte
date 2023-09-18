@@ -1,9 +1,9 @@
 <script lang="ts">
+    import { graph_store, resetInputVar } from "../../stores/graphInitStore";
+
     let transitions : TransitionMeta[] = [];
     let textInput : string = "";
-    export let updateGraphFunction : Function = () => {};
-    export const processFunction : Function = processTransitions;
-
+    let highlightedRow = null;
 // Test input
 // (q0,a,Z)=(q0,AZ);
 // (q0,a,A)=(q0,AA);
@@ -79,6 +79,10 @@
 // abaaba - patri
 // ----------------
 
+    $: if ($resetInputVar) {
+        textInput = "";
+    }
+
     function parseRow(row : string) {
         let rowSplit = row.split(/[=,\n)(]/);
         for (let i = rowSplit.length - 1; i > 0; i--) {
@@ -99,32 +103,76 @@
         }
     }
 
+    function storeNodes() {
+        //get nodes from transitions
+        let nodes : GraphNodeMeta[] = [];
+        for (let transition of transitions) {
+            if (!nodes.find(node => node.id === transition.state)) {
+                nodes.push({
+                    id: transition.state,
+                    label: transition.state,
+                });
+            }
+            if (!nodes.find(node => node.id === transition.stateAfter)) {
+                nodes.push({
+                    id: transition.stateAfter,
+                    label: transition.stateAfter,
+                });
+            }
+        }
+
+        graph_store.update((n) => {
+            n.nodes = nodes;
+            return n;
+        });
+    }
+
     function processTransitions() {
         transitions = [];
         let rows = textInput.split(";");
-        let type = rows[0];
-        rows.splice(0, 1);
 
         for (let row of rows) {
-            parseRow(row);
+            if (!validateTransition(row)) {
+                parseRow(row);
+            }
         }
 
-        updateGraphFunction(transitions, type);
+        graph_store.update((n) => {
+            n.transitions = transitions;
+            return n;
+        });
+        storeNodes();
     }
+
+    function validateTransition(transition) {
+        return /\([A-Za-z]+[0-9]+,[A-Za-z],[A-Za-z]\)=\([A-Za-z]+[0-9]+,[A-Za-z]+\);/.test(transition);
+    }
+
+    function highlightRow(rowNumber) {
+        highlightedRow = rowNumber;
+    }
+
 </script>
 
 <textarea id="function-input"
           bind:value={textInput}
+          on:input={processTransitions}
           class="function-input"
           rows="20"
-          placeholder={`empty\n(q0,a,Z)=(q1,AZ);`} />
+          placeholder={`d(q0,a,Z)=(q1,AZ);`} />
 
 <style>
     .function-input {
-        margin: 1rem 0;
-        border-radius: 1rem;
+        /*border-radius: 1rem;*/
+        border-radius: 0.3rem;
+        border: 0.1rem solid #c5c5c5;
+
         resize: none;
         height: 15rem;
         width: 10.5rem;
+    }
+
+    .highlight {
+        background-color: red;
     }
 </style>

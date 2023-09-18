@@ -98,13 +98,12 @@
 
     button {
         width: 100%;
-
-        border-radius: 25px;
-        border: 1px solid transparent;
+        border-radius: 2rem;
+        border: 0.01rem solid transparent;
         font-size: 1em;
         font-weight: 600;
         font-family: inherit;
-        background-image: linear-gradient(to right, #a024e4, #e5367e);
+        background-image: linear-gradient(to right, #A024E4, #E5367E);
 
         cursor: pointer;
         transition: border-color 0.25s;

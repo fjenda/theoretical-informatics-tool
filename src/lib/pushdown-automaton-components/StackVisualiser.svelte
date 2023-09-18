@@ -12,7 +12,7 @@
     }
 </script>
 
-<Button color="purple">Stack</Button>
+<Button>Stack</Button>
 <Dropdown on:show={getStack}>
     {#each stackElements as element}
         <DropdownItem>{element}</DropdownItem>
