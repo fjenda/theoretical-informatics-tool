@@ -1,5 +1,11 @@
 <script lang="ts">
     import type {ToolbarButtonType} from "../../types/ToolbarButtonType";
+    import Switch from "./Switch.svelte";
+
+    let currentState = false;
+    let startNode  : string;
+    let endNode : string;
+    let alphabet : string;
 
     export let showModal : boolean;
     export let type : ToolbarButtonType;
@@ -82,6 +88,12 @@
             {/if}
 
             {#if type === "generate-automata"}
+                <div><input bind:value={alphabet} maxlength="8" placeholder="Target"></div>
+                <div><input bind:value={startNode} maxlength="4" placeholder="Target"></div>
+                <div><input bind:value={endNode} maxlength="4" placeholder="Target"></div>
+                <div>
+                    <Switch bind:checked={currentState}></Switch>
+                </div>
                 <textarea bind:value={rules} id="autInp"  rows="10" cols="33" placeholder=">(q0,0) = q0"></textarea>
             {/if}
 
