@@ -1,5 +1,10 @@
 <script lang="ts">
     import type {ToolbarButtonType} from "../../types/ToolbarButtonType";
+    import FinAutomatonGeneratorLayout from "./FinAutomatonGeneratorLayout.svelte";
+    import ToggleSwitch from "./ToggleSwitch.svelte";
+    import StateComboBox from "../StateComboBox.svelte";
+    import StateMultiSelect from "../StateMultiSelect.svelte";
+
     import Switch from "./Switch.svelte";
 
     let currentState = false;
@@ -88,13 +93,9 @@
             {/if}
 
             {#if type === "generate-automata"}
-                <div><input bind:value={alphabet} maxlength="8" placeholder="Target"></div>
-                <div><input bind:value={startNode} maxlength="4" placeholder="Target"></div>
-                <div><input bind:value={endNode} maxlength="4" placeholder="Target"></div>
-                <div>
-                    <Switch bind:checked={currentState}></Switch>
-                </div>
-                <textarea bind:value={rules} id="autInp"  rows="10" cols="33" placeholder=">(q0,0) = q0"></textarea>
+                <FinAutomatonGeneratorLayout >
+                    <ToggleSwitch slot="type-switch" />
+                </FinAutomatonGeneratorLayout>
             {/if}
 
         </div>
