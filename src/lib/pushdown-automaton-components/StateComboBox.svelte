@@ -1,5 +1,6 @@
 <script lang="ts">
     import { graph_store, resetInputVar } from "../../stores/graphInitStore";
+    export let type = 'startState';
 
     let isOpen = false;
     let selectedOption = '';
@@ -15,10 +16,14 @@
 
     function selectOption(option) {
         selectedOption = option;
-        graph_store.update((n) => {
-            n.startState = option;
-            return n;
-        });
+
+        if (type === "startState") {
+            graph_store.update((n) => {
+                n.startState = option;
+                return n;
+            });
+        }
+
         isOpen = false;
     }
 </script>
@@ -47,6 +52,7 @@
         position: relative;
         background: #eee;
         height: fit-content;
+        border-radius: 0.5rem;
     }
 
     .selected-option {

@@ -12,9 +12,12 @@
     }
 </script>
 
-<Button>Stack</Button>
+<Button style="border-radius: 0.3rem; border: 0.1rem solid #c5c5c5;">Stack</Button>
 <Dropdown on:show={getStack}>
     {#each stackElements as element}
-        <DropdownItem>{element}</DropdownItem>
+        <DropdownItem style="border: 0.1rem solid #c5c5c5;
+                             min-width: 2rem;
+                            ">{element}</DropdownItem>
     {/each}
 </Dropdown>
+

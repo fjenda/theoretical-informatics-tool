@@ -6,4 +6,5 @@ export interface AutomatonConfiguration {
     initial_state : string,
     initial_stack_symbol : string,
     final_states : string[],
+    type : string,
 }

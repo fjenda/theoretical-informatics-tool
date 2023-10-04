@@ -39,8 +39,6 @@
                     <ToolbarButton type="generate-graph" text="Generate graph" func={toolbarFunctions?.generateGraphFromTransitions} />
                     <ToolbarButton type="new-node" text="New node" func={toolbarFunctions?.addNode} />
                     <ToolbarButton type="new-edge" text="New edge" func={toolbarFunctions?.addEdgeFromButton} />
-                    <ToolbarButton type="zoom-in" text="Zoom in" func={toolbarFunctions?.zoomIn} />
-                    <ToolbarButton type="zoom-out" text="Zoom out" func={toolbarFunctions?.zoomOut} />
                     <ToolbarButton type="delete-element" text="Delete element" func={toolbarFunctions?.toggleDelete} />
                     <ToolbarButton type="save-graph" text="Save graph" func={toolbarFunctions?.saveGraph} />
                     <ToolbarButton type="load-graph" text="Load graph" func={toolbarFunctions?.loadGraph} />

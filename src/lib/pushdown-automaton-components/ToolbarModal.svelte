@@ -13,6 +13,7 @@
     let dialog;
     let label : string, source : string, target : string;
     let isFinishState : boolean = false;
+    let isStartState : boolean = false;
     let config : string = "";
     let processTransitionsFunction : Function = () => {};
 
@@ -67,13 +68,14 @@
         config += `Z0: ${$configuration_store.stack_default}\n`;
 
         // final states
-        if ($graph_store.type !== "empty")
+        if ($configuration_store.type !== "empty")
             config += `F: {${$configuration_store.final_states.join(", ")}}\n`;
     }
 
     function resetInput() {
         label = "", source = "", target = "";
         isFinishState = false;
+        isStartState = false;
         return true;
     }
 
@@ -100,7 +102,16 @@
         switch (type) {
             case "new-node": {
                 console.log("new-node - " + modifiedLabel);
-                func({ id: label, label: label, class: isFinishState ? "finish" : "" });
+                if (isStartState && isFinishState) {
+                    func({id: label, label: label, class: "finish start"});
+                } else if (isStartState)
+                    func({id: label, label: label, class: "start"});
+                else if (isFinishState) {
+                    func({id: label, label: label, class: "finish"});
+                } else {
+                    func({id: label, label: label});
+                }
+
                 return true;
             }
 
@@ -153,7 +164,6 @@
                 }}>Cancel</button>
                     <button on:click={() => {
                     func();
-                    resetInputVar.set(true);
                     dialog.close();
                 }}>Apply</button>
                 </div>
@@ -165,6 +175,14 @@
                 {/if}
 
                 {#if type === "new-node"}
+                    {#if !$configuration_store.start_state || $configuration_store.start_state.length === 0}
+                        <div class="checkbox-box">
+                            <label>
+                                <input id="start-state-checkbox" type="checkbox" bind:checked={isStartState} />
+                                Start state
+                            </label>
+                        </div>
+                    {/if}
                     <div class="checkbox-box">
                         <label>
                             <input id="finish-state-checkbox" type="checkbox" bind:checked={isFinishState} />

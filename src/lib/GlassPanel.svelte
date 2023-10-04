@@ -27,9 +27,13 @@
         font-size: 1.1rem;
         font-weight: 600;
         text-align: right;
-        color: #dadada;
+        color: #480d25;
         margin-top: 0;
         margin-bottom: 2.5rem;
+    }
+
+    :global(body.dark-mode) h3 {
+        color:  #dadada;
     }
 
     .glass-panel {

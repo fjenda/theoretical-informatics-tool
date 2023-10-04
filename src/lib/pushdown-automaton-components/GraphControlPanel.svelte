@@ -18,6 +18,7 @@
         border-radius: 0.5rem;
 
         background: #ffffff;
+        color: black;
         text-align: center;
     }
 

@@ -19,3 +19,5 @@ export interface GraphObject {
     startState : string; //   start state of the automaton
     finishState? : string; //   finish state of the automaton
 }
+
+export type GraphObjectWithoutGraph = Omit<GraphObject, 'graph' | 'div'>;

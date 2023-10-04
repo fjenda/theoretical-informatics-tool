@@ -1,5 +1,6 @@
 <script lang="ts">
     import { fly } from "svelte/transition";
+    import {graph_store} from "../../stores/graphInitStore";
     export let testInputFunction : Function = () => {};
     export const processFunction : Function = processTestInput;
     export let nextFunc : Function = () => {};
@@ -37,7 +38,7 @@
 <div class="input-box">
     <input id="test-input"
            bind:value={input}
-           class="test-input"
+           class="test-input {$graph_store.isAccepted}"
            placeholder="ex. aa">
 </div>
 
@@ -50,6 +51,16 @@
 {/if}
 
 <style>
+    .true {
+        transition: background-color 0.25s;
+        background-color: #00ff00;
+    }
+
+    .false {
+        transition: background-color 0.25s;
+        background-color: #ff0000;
+    }
+
     .input-box {
         text-align: center;
         margin: 1rem 0;

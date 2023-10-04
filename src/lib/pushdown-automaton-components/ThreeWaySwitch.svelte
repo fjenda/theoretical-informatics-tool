@@ -4,11 +4,13 @@
     let toggleState = "empty";
 
     $: if ($resetInputVar) {
-        //toggle($graph_store?.type);
+        console.log("toggle");
+        // toggle($graph_store.type);
     }
 
     const toggle = (newState) => {
         toggleState = newState;
+
         graph_store.update((n) => {
             n.type = newState
             return n;
@@ -20,19 +22,19 @@
     <div class="toggle-label">Type</div>
     <div class="toggle-switch">
         <div
-                class={toggleState === "empty" ? 'selected' : ''}
+                class={$graph_store.type === "empty" ? 'selected' : ''}
                 on:click={() => toggle("empty")}
         >
             Empty
         </div>
         <div
-                class={toggleState === "both" ? 'selected' : ''}
+                class={$graph_store.type === "both" ? 'selected' : ''}
                 on:click={() => toggle("both")}
         >
             Both
         </div>
         <div
-                class={toggleState === "final" ? 'selected' : ''}
+                class={$graph_store.type === "final" ? 'selected' : ''}
                 on:click={() => toggle("final")}
         >
             Final
@@ -53,7 +55,7 @@
     .toggle-switch {
         display: flex;
         justify-content: space-between;
-        width: 12.5rem;
+        width: 10rem;
         background-color: #eee;
         outline: 0.15rem solid #ccc;
 

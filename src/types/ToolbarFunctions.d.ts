@@ -4,8 +4,6 @@ export interface ToolbarFunctions {
  addNode : (GraphNodeMeta) => void,
  addEdge : (GraphEdgeMeta) => void,
  addEdgeFromButton : (GraphEdgeMeta) => void,
- zoomIn : () => void,
- zoomOut : () => void,
  toggleDelete : () => void,
  saveGraph : () => void,
  loadGraph : () => void,

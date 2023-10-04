@@ -2,8 +2,6 @@ export enum ToolbarButtonType {
     GENERATEGRAPH = "generate-graph",
     NEWNODE = "new-node",
     NEWEDGE = "new-edge",
-    ZOOMIN = "zoom-in",
-    ZOOMOUT = "zoom-out",
     DELETEELEMENT = "delete-element",
     SAVEGRAPH = "save-graph",
     LOADGRAPH = "load-graph",

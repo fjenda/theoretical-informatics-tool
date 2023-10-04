@@ -1,5 +1,5 @@
 <script lang="ts">
-import {resetInputVar} from "../../stores/graphInitStore";
+import {resetInputVar, graph_store} from "../../stores/graphInitStore";
 import ToolbarModal from "./ToolbarModal.svelte";
 import {onMount} from "svelte";
 export let type : ToolbarButtonType;
@@ -26,9 +26,15 @@ onMount(() => {
 
 </script>
 {#if ["new-node", "new-edge", "generate-graph", "show-configuration"].includes(type)}
-    <button on:click={() => { showModal = true; resetInputVar.set(false);}}>
-        {text}
-    </button>
+    {#if type === "generate-graph"}
+        <button on:click={() => { showModal = true; resetInputVar.set(true); graph_store.reset(); }}>
+            {text}
+        </button>
+    {:else}
+        <button on:click={() => { showModal = true; resetInputVar.set(true); }}>
+            {text}
+        </button>
+    {/if}
 
     <ToolbarModal bind:showModal type={type} func={func}>
         <h2 slot="header">
