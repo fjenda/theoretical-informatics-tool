@@ -9,6 +9,7 @@ export enum ToolbarButtonType {
     DELETEGRAPH = "delete-graph",
     RESETLAYOUT = "reset-layout",
     SHOWTRANSITIONS = "show-transitions",
+    SHOWCONFIGURATION = "show-configuration",
     STACK = "stack",
     GENERATEAUTOMATA = "generate-automata",
 }

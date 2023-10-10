@@ -4,6 +4,10 @@
 
 <slot name="type-switch"/>
 <div class="layout">
+    <div class="alphabet-box">
+        Alphabet
+        <slot name="alphabet"/>
+    </div>
     <div class="start-state-box">
         <slot name="start-state"/>
     </div>
@@ -24,9 +28,18 @@
         display: grid;
         gap: 1em 1em;
         grid-auto-flow: row;
-        grid-template-areas: "combo transitions transitions"
+        grid-template-areas: "alphabet alphabet alphabet"
+                             "combo transitions transitions"
                              "multi transitions transitions"
                              "multi transitions transitions";
+    }
+
+    .alphabet-box{
+        grid-area: alphabet;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
     }
 
     .transitions-box {

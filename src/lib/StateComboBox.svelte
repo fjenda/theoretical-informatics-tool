@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { graph_store, resetInputVar } from "../../stores/graphInitStore";
+    import {graph_store, resetInputVar} from "./stores/graphInitStore";
 
     let isOpen = false;
     let selectedOption = '';

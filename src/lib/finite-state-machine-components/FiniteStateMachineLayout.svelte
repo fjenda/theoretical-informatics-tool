@@ -4,7 +4,7 @@
     export let title : string;
 
     const tabs = [
-        ["Finite-state machine", "finite-state-machien"],
+        ["Finite-state automata", "finite-state-automata"],
         ["NFA -> DFA", "nfa-to-dfa"],
     ];
 </script>

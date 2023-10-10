@@ -1,7 +1,8 @@
 <!-- Toggle.svelte -->
 <script lang="ts">
-    import { graph_store, resetInputVar } from "../../stores/graphInitStore";
-    let toggleState = "empty";
+    import {graph_store, resetInputVar} from "../stores/graphInitStore";
+
+    let toggleState = "dfa";
 
     $: if ($resetInputVar) {
         //toggle($graph_store?.type);
@@ -20,14 +21,14 @@
     <div class="toggle-label">Type</div>
     <div class="toggle-switch">
         <div
-                class={toggleState === "DFA" ? 'selected' : ''}
-                on:click={() => toggle("DFA")}
+                class={toggleState === "dfa" ? 'selected' : ''}
+                on:click={() => toggle("dfa")}
         >
             DFA
         </div>
         <div
-                class={toggleState === "NFA" ? 'selected' : ''}
-                on:click={() => toggle("NFA")}
+                class={toggleState === "nfa" ? 'selected' : ''}
+                on:click={() => toggle("nfa")}
         >
             NFA
         </div>

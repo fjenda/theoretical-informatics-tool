@@ -5,7 +5,10 @@
     import StateComboBox from "../StateComboBox.svelte";
     import StateMultiSelect from "../StateMultiSelect.svelte";
 
-    import Switch from "./Switch.svelte";
+    import FinTransitionFuncInput from "./FinTransitionFuncInput.svelte";
+    import FinTestInput from "./FinTestInput.svelte";
+    import FinAlphabetInput from "./FinAlphabetInput.svelte";
+    import {configuration_store, resetInputVar} from "../stores/graphInitStore";
 
     let currentState = false;
     let startNode  : string;
@@ -16,9 +19,50 @@
     export let type : ToolbarButtonType;
     export let func : Function;
     let dialog;
+    let config : string = "";
     let label : string, source : string, target : string, rules : string;
 
     $: if (dialog && showModal) dialog.showModal();
+
+    $: if (showModal && type === "show-configuration") {
+        func();
+
+        if ($configuration_store.nodes?.length === 0 || !$configuration_store.nodes) {
+            config = "No configuration to show";
+        } else {
+            generateConfiguration();
+        }
+    }
+
+    function generateConfiguration() {
+        config = "";
+        // states from nodes
+        config += `Q: {${$configuration_store.nodes.join(", ")}}\n`;
+
+        // input alphabet and stack alphabet from transitions
+        const alphabet = new Set();
+        const stackAlphabet = new Set();
+        $configuration_store.transitions.forEach((transition) => {
+            if (transition.input !== "E") {
+                alphabet.add(transition.input);
+            }
+
+        });
+        config += `Σ: {${Array.from(alphabet).join(", ")}}\n`;
+
+        // transitions
+        config += "δ: {\n";
+        $configuration_store.transitions.forEach((transition) => {
+            config += `    (${transition.state}, ${transition.input}) → (${transition.stateAfter})\n`;
+        });
+        config += "}\n";
+
+        // start state
+        config += `q0: ${$configuration_store.start_state}\n`;
+
+        // final states
+        config += `F: {${$configuration_store.final_states.join(", ")}}\n`;
+    }
 
     function resetInput() {
         label = "", source = "", target = "", rules = "";
@@ -82,29 +126,61 @@
         <hr />
         <slot />
 
-        <div class="input-box">
             {#if ["new-node", "new-edge"].includes(type)}
-                <input bind:value={label} maxlength="8" placeholder="Label">
+                <div class="input-box">
+                    <input bind:value={label} maxlength="8" placeholder="Label">
+                </div>
             {/if}
 
+
             {#if type === "new-edge"}
-                <input bind:value={source} maxlength="8" placeholder="Source">
-                <input bind:value={target} maxlength="8" placeholder="Target">
+                <div class="input-box">
+                    <input bind:value={source} maxlength="8" placeholder="Source">
+                    <input bind:value={target} maxlength="8" placeholder="Target">
+                </div>
+            {/if}
+
+            {#if type === "show-configuration"}
+                 <textarea id="transitions"
+                           class="transitions-input"
+                           cols="30" rows="20"
+                           readonly = {true}
+                           value={config}
+                           placeholder="Transitions"></textarea>
+
+                <hr />
+                <button on:click={() => dialog.close()}>Cancel</button>
             {/if}
 
             {#if type === "generate-automata"}
                 <FinAutomatonGeneratorLayout >
                     <ToggleSwitch slot="type-switch" />
+                    <FinAlphabetInput phText="Alphabet" slot="alphabet"/>
+                    <StateComboBox slot="start-state" />
+                    <StateMultiSelect />
+                    <FinTransitionFuncInput slot="transitions" />
+
+                    <div class="button-wrapper" slot="buttons">
+                        <button on:click={() => {
+                    resetInputVar.set(true);
+                    dialog.close();
+                }}>Cancel</button>
+                        <button on:click={() => {
+                    func();
+                    resetInputVar.set(true);
+                    dialog.close();
+                }}>Apply</button>
+                    </div>
                 </FinAutomatonGeneratorLayout>
             {/if}
 
-        </div>
+
 
         <hr />
 
         {#if type === "generate-automata"}
-            <button on:click={() => dialog.close()}>Cancel</button>
-            <button on:click={() => checkRules() && resetInput() && dialog.close()}>Apply</button>
+<!--            <button on:click={() => dialog.close()}>Cancel</button>-->
+<!--            <button on:click={() => checkRules() && resetInput() && dialog.close()}>Apply</button>-->
         {:else}
             <button on:click={() => dialog.close()}>Cancel</button>
             <button on:click={() => checkInput(type) && resetInput() && dialog.close()}>Apply</button>
@@ -174,5 +250,21 @@
     input {
         text-align: center;
         width: 5rem;
+    }
+
+    .checkbox-box {
+        display: flex;
+        gap: 0;
+    }
+
+    .transitions-input {
+        resize: none;
+    }
+
+    .button-wrapper {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 5rem;
     }
 </style>

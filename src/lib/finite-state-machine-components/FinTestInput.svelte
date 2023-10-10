@@ -1,6 +1,7 @@
 <script lang="ts">
 
     import {fly} from 'svelte/transition';
+    import {graph_store} from "../stores/graphInitStore";
 
     export let phText : string = "";
 
@@ -44,7 +45,10 @@
 </script>
 
 <div class="input-box">
-    <input bind:value={input} class="test-input" placeholder={phText}>
+    <input id="test-input"
+           bind:value={input}
+           class="test-input {$graph_store.isAccepted}"
+           placeholder={phText}/>
 </div>
 
 {#if showArrows}
@@ -56,6 +60,16 @@
 {/if}
 
 <style>
+    .true {
+        transition: background-color 0.25s;
+        background-color: #00ff00;
+    }
+
+    .false {
+        transition: background-color 0.25s;
+        background-color: #ff0000;
+    }
+
     .input-box {
         text-align: center;
         margin: 1rem 0;
