@@ -10,7 +10,10 @@
     .toolbar {
         width: calc(100% - 1rem);
         height: 5vh;
-        border-radius: 2vw 2vw 0 0;
+
+        /*border-radius: 2vw 2vw 0 0;*/
+        border-radius: 0.5rem 0.5rem 0 0;
+
         background: #dedede;
         display: flex;
         align-items: center;

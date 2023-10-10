@@ -12,7 +12,8 @@
 <style>
     button {
         position: absolute;
-        top: 4rem;
+        top: 1rem;
+        right: 1rem;
 
         background-color: #f76027;
         color: white;

@@ -1,17 +1,82 @@
 <script lang="ts">
+    import TransitionFunctionInput from "./TransitionFunctionInput.svelte";
+    import ThreeWaySwitch from "./ThreeWaySwitch.svelte";
+    import StateComboBox from "./StateComboBox.svelte";
+    import StateMultiSelect from "./StateMultiSelect.svelte";
+
+    import { graph_store, resetInputVar, configuration_store } from "../../stores/graphInitStore";
+    import AutomatonGeneratorLayout from "./AutomatonGeneratorLayout.svelte";
+    import {input_error_store} from "../../stores/inputErrorStore";
+
     export let showModal : boolean;
     export let type : ToolbarButtonType;
     export let func : Function;
-    let transitions : string;
     let dialog;
     let label : string, source : string, target : string;
     let isFinishState : boolean = false;
+    let isStartState : boolean = false;
+    let config : string = "";
+    let processTransitionsFunction : Function = () => {};
 
     $: if (dialog && showModal) dialog.showModal();
+
+    $: if (showModal && type === "show-configuration") {
+        func();
+
+        if ($configuration_store.nodes?.length === 0 || !$configuration_store.nodes) {
+            config = "No configuration to show";
+        } else {
+            generateConfiguration();
+        }
+    }
+
+    function generateConfiguration() {
+        config = "";
+        // states from nodes
+        config += `Q: {${$configuration_store.nodes.join(", ")}}\n`;
+
+        // input alphabet and stack alphabet from transitions
+        const alphabet = new Set();
+        const stackAlphabet = new Set();
+        $configuration_store.transitions.forEach((transition) => {
+            if (transition.input !== "E") {
+                alphabet.add(transition.input);
+            }
+
+            if (transition.stack !== "E") {
+                stackAlphabet.add(transition.stack);
+            }
+
+            if (transition.stackAfter !== "E") {
+                stackAlphabet.add(transition.stackAfter[0]);
+            }
+
+        });
+        config += `Σ: {${Array.from(alphabet).join(", ")}}\n`;
+        config += `Γ: {${Array.from(stackAlphabet).join(", ")}}\n`;
+
+        // transitions
+        config += "δ: {\n";
+        $configuration_store.transitions.forEach((transition) => {
+            config += `    (${transition.state}, ${transition.input}, ${transition.stack}) → (${transition.stateAfter}, ${transition.stackAfter})\n`;
+        });
+        config += "}\n";
+
+        // start state
+        config += `q0: ${$configuration_store.start_state}\n`;
+
+        // stack default
+        config += `Z0: ${$configuration_store.stack_default}\n`;
+
+        // final states
+        if ($configuration_store.type !== "empty")
+            config += `F: {${$configuration_store.final_states.join(", ")}}\n`;
+    }
 
     function resetInput() {
         label = "", source = "", target = "";
         isFinishState = false;
+        isStartState = false;
         return true;
     }
 
@@ -38,7 +103,16 @@
         switch (type) {
             case "new-node": {
                 console.log("new-node - " + modifiedLabel);
-                func({ id: label, label: label, class: isFinishState ? "finish" : "" });
+                if (isStartState && isFinishState) {
+                    func({id: label, label: label, class: "finish start"});
+                } else if (isStartState)
+                    func({id: label, label: label, class: "start"});
+                else if (isFinishState) {
+                    func({id: label, label: label, class: "finish"});
+                } else {
+                    func({id: label, label: label});
+                }
+
                 return true;
             }
 
@@ -50,15 +124,6 @@
                 return true;
             }
         }
-    }
-
-    function handleTransitions() {
-        if (type === "show-transitions") {
-            transitions = func();
-            return true;
-        }
-
-        return false;
     }
 </script>
 
@@ -72,40 +137,70 @@
         <hr />
         <slot />
 
-        {#if type === "show-transitions"}
+        {#if type === "show-configuration"}
             <textarea id="transitions"
                       class="transitions-input"
                       cols="30" rows="20"
                       readonly = {true}
-                      value={transitions}
+                      value={config}
                       placeholder="Transitions"></textarea>
 
             <hr />
-            <button on:click={() => handleTransitions() && dialog.close()}>Cancel</button>
+            <button on:click={() => dialog.close()}>Cancel</button>
 
-        {:else}
+        {:else if type === "generate-graph"}
+            <AutomatonGeneratorLayout>
+                <ThreeWaySwitch slot="type-switch" />
+                <StateComboBox slot="start-state"/>
 
-        <div class="input-box">
-            {#if ["new-node", "new-edge"].includes(type)}
-                <input bind:value={label} maxlength="8" placeholder="Label">
-            {/if}
+                {#if $graph_store.type !== "empty"}
+                    <StateMultiSelect />
+                {/if}
+                <TransitionFunctionInput slot="transitions" />
 
-            {#if type === "new-node"}
-                <div class="checkbox-box">
-                    <label>
-                        <input id="finish-state-checkbox" type="checkbox" bind:checked={isFinishState} />
-                        Finish state
-                    </label>
+                <div class="button-wrapper" slot="buttons">
+                    <button on:click={() => {
+                    resetInputVar.set(true);
+                    input_error_store.reset();
+                    dialog.close();
+                }}>Cancel</button>
+                    <button on:click={() => {
+                    func() &&
+                    dialog.close()
+                }}>Apply</button>
                 </div>
-            {:else if type === "new-edge"}
-                <input id="source-input" bind:value={source} maxlength="8" placeholder="Source">
-                <input id="target-input" bind:value={target} maxlength="8" placeholder="Target">
-            {/if}
-        </div>
+            </AutomatonGeneratorLayout>
+        {:else}
+            <div class="input-box">
+                {#if ["new-node", "new-edge"].includes(type)}
+                    <input bind:value={label} maxlength="8" placeholder="Label">
+                {/if}
 
+                {#if type === "new-node"}
+                    {#if !$configuration_store.start_state || $configuration_store.start_state.length === 0}
+                        <div class="checkbox-box">
+                            <label>
+                                <input id="start-state-checkbox" type="checkbox" bind:checked={isStartState} />
+                                Start state
+                            </label>
+                        </div>
+                    {/if}
+                    <div class="checkbox-box">
+                        <label>
+                            <input id="finish-state-checkbox" type="checkbox" bind:checked={isFinishState} />
+                            Final state
+                        </label>
+                    </div>
+                {:else if type === "new-edge"}
+                    <input id="source-input" bind:value={source} maxlength="8" placeholder="Source">
+                    <input id="target-input" bind:value={target} maxlength="8" placeholder="Target">
+                {/if}
+            </div>
             <hr />
-            <button on:click={() => resetInput() && dialog.close()}>Cancel</button>
-            <button on:click={() => checkInput(type) && resetInput() && dialog.close()}>Apply</button>
+            <div class="button-wrapper">
+                <button on:click={() => resetInput() && dialog.close()}>Cancel</button>
+                <button on:click={() => checkInput(type) && resetInput() && dialog.close()}>Apply</button>
+            </div>
         {/if}
 
 
@@ -181,5 +276,12 @@
 
     .transitions-input {
         resize: none;
+    }
+
+    .button-wrapper {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 5rem;
     }
 </style>

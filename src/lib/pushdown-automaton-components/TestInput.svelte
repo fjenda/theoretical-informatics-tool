@@ -1,21 +1,22 @@
 <script lang="ts">
     import { fly } from "svelte/transition";
+    import {graph_store} from "../../stores/graphInitStore";
     export let testInputFunction : Function = () => {};
     export const processFunction : Function = processTestInput;
     export let nextFunc : Function = () => {};
     export let previousFunc : Function = () => {};
     export let stopFunc : Function = () => {};
 
-    let input : HTMLInputElement;
+    let input : string = '';
     let showArrows : boolean = false;
 
-    $: if (!/^[a-zA-Z0-9]+$/.test(input) && input.value !== '') {
+    $: if (!/^[a-zA-Z0-9]+$/.test(input) && input !== '') {
         alert("Test input can be made of alphanumeric characters only!")
-        input.value = input.value.substring(0, input.length - 1);
+        input = input.substring(0, input.length - 1);
     }
     function processTestInput() {
         showArrows = true;
-        testInputFunction(input.value.trim().split(""));
+        testInputFunction(input.trim().split(""));
     }
 
     function next() {
@@ -36,8 +37,8 @@
 
 <div class="input-box">
     <input id="test-input"
-           bind:this={input}
-           class="test-input"
+           bind:value={input}
+           class="test-input {$graph_store.isAccepted}"
            placeholder="ex. aa">
 </div>
 
@@ -50,6 +51,16 @@
 {/if}
 
 <style>
+    .true {
+        transition: background-color 0.25s;
+        background-color: #00ff00;
+    }
+
+    .false {
+        transition: background-color 0.25s;
+        background-color: #ff0000;
+    }
+
     .input-box {
         text-align: center;
         margin: 1rem 0;
@@ -60,7 +71,9 @@
         font-size: 1.8rem;
         height: 5vh;
         width: 10.5vw;
+
         border-radius: 2.5rem;
+        /*border-radius: 0.75rem;*/
     }
 
     .arrows-box {

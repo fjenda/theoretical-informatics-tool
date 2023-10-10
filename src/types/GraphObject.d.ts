@@ -1,15 +1,23 @@
+import type {GraphNodeMeta} from "./GraphNodeMeta";
+
 type GraphEdgeDictionary = {
     [key: string] : GraphEdgeMeta[]
 }
 export interface GraphObject {
     graph; //   cytoscape.js graph object
-    graphDiv : HTMLDivElement; //   div element containing the graph
-    graphState : string; //   state of the graph
-    graphNodes : GraphNodeMeta[]; //   array of graph nodes
-    graphEdges : GraphEdgeDictionary; //   dictionary of graph edges
-    graphTransitions : TransitionMeta[]; //   array of graph transitions
+    div : HTMLDivElement; //   div element containing the graph
+    status : string; //   state of the graph
+    nodes : GraphNodeMeta[]; //   array of graph nodes
+    edges : GraphEdgeDictionary; //   dictionary of graph edges
+    transitions : TransitionMeta[]; //   array of graph transitions
     stack : string[]; //   stack of the automaton
     currentStatus : AutomatonState; //   current status of the automaton
     word : string[]; //   word to be processed by the automaton
-    graphTraversal : (GraphNodeMeta | GraphEdgeMeta)[]; //   array of graph elements traversed by the automaton
+    isAccepted : boolean; //    if a word is accepted
+    traversal : (GraphNodeMeta | GraphEdgeMeta)[]; //   array of graph elements traversed by the automaton
+    type : string; //   type of PA (empty/finish) - empty for accepting empty stack, finish for accepting on finish state or both
+    startState : string; //   start state of the automaton
+    finishState? : string; //   finish state of the automaton
 }
+
+export type GraphObjectWithoutGraph = Omit<GraphObject, 'graph' | 'div'>;
