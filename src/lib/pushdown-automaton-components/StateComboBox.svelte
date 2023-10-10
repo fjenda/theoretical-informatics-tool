@@ -1,5 +1,6 @@
 <script lang="ts">
     import { graph_store, resetInputVar } from "../../stores/graphInitStore";
+    import {input_error_store} from "../../stores/inputErrorStore.js";
     export let type = 'startState';
 
     let isOpen = false;
@@ -29,13 +30,18 @@
 </script>
 
 <div class="combo-box">
-    <div class="selected-option" on:click={toggleDropdown}>
+    <div class="selected-option {$input_error_store.startState}" on:click={toggleDropdown}>
         {selectedOption || 'Start state'}
     </div>
     {#if isOpen}
         <ul class="dropdown active">
             {#each options as option}
-                <li class="option" on:click={() => selectOption(option)}>{option}</li>
+                <li class="option" on:click={() => {
+                                             selectOption(option);
+                                             input_error_store.update((n) => {
+                                                 n.startState = true;
+                                                 return n;
+                                             });}}>{option}</li>
             {/each}
         </ul>
     {/if}
@@ -43,6 +49,11 @@
 
 
 <style>
+    .false {
+        transition: background-color 0.25s;
+        background-color: #ff0000;
+    }
+
     .combo-box, .dropdown {
         box-sizing: content-box; /* or box-sizing: border-box; */
         width: 7.5rem;

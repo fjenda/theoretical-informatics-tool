@@ -1,6 +1,7 @@
 <!-- MultiSelect.svelte -->
 <script>
     import { graph_store, resetInputVar } from "../../stores/graphInitStore";
+    import {input_error_store} from "../../stores/inputErrorStore";
 
     let selectedOptions = [];
 
@@ -11,6 +12,11 @@
     }
 
     function handleSelect(event) {
+        input_error_store.update((n) => {
+            n.finishState = true;
+            return n;
+        });
+
         selectedOptions = Array.from(event.target.selectedOptions, option => option.value);
         graph_store.update(n => {
             n.finishState = selectedOptions;
@@ -21,7 +27,7 @@
 
 <div class="select-wrapper">
     Final States
-    <select multiple bind:value={selectedOptions} on:change={handleSelect}>
+    <select class={$input_error_store.finishState} multiple bind:value={selectedOptions} on:change={handleSelect}>
         {#each options as option (option)}
             <option value={option}>{option}</option>
         {/each}
@@ -29,6 +35,11 @@
 </div>
 
 <style>
+    .false {
+        transition: background-color 0.25s;
+        background-color: #ff0000;
+    }
+
     .select-wrapper {
         display: flex;
         flex-direction: column;
@@ -47,5 +58,7 @@
 
         font-size: 1rem;
         text-align: center;
+
+        background-color: #eee;
     }
 </style>

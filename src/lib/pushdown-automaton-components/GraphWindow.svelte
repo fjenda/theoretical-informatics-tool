@@ -2,6 +2,7 @@
     import cytoscape from "cytoscape";
     import {onMount} from "svelte";
     import {configuration_store, graph_store, resetInputVar} from "../../stores/graphInitStore";
+    import {input_error_store} from "../../stores/inputErrorStore";
 
     let graphObject : GraphObject = {
         graph: null,
@@ -433,7 +434,40 @@
         Object.assign($configuration_store, configuration);
     }
 
+    function checkGenerationInput() {
+        input_error_store.reset();
+
+        if ($graph_store.transitions === undefined || $graph_store.transitions.length === 0) {
+            input_error_store.update((n) => {
+                n.transitions = false;
+                return n;
+            });
+        }
+
+        if ($graph_store.startState === undefined) {
+            input_error_store.update((n) => {
+                n.startState = false;
+                return n;
+            });
+        }
+
+        if ($graph_store.finishState === undefined && $graph_store.type !== "empty") {
+            input_error_store.update((n) => {
+                n.finishState = false;
+                return n;
+            });
+        }
+
+        return !($input_error_store.transitions === false ||
+                $input_error_store.startState === false ||
+                $input_error_store.finishState === false);
+    }
+
     function generateGraphFromTransitions() {
+        if (!checkGenerationInput()) {
+            return false;
+        }
+
         deleteGraph();
         console.log($graph_store);
         Object.assign(graphObject, $graph_store);
@@ -469,6 +503,9 @@
         createGraph(false);
         // graph_store.reset();
         resetInputVar.set(false);
+        input_error_store.reset();
+
+        return true;
     }
 
     function addNode(node : GraphNodeMeta) {

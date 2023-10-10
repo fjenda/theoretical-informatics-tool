@@ -6,6 +6,7 @@
 
     import { graph_store, resetInputVar, configuration_store } from "../../stores/graphInitStore";
     import AutomatonGeneratorLayout from "./AutomatonGeneratorLayout.svelte";
+    import {input_error_store} from "../../stores/inputErrorStore";
 
     export let showModal : boolean;
     export let type : ToolbarButtonType;
@@ -160,11 +161,12 @@
                 <div class="button-wrapper" slot="buttons">
                     <button on:click={() => {
                     resetInputVar.set(true);
+                    input_error_store.reset();
                     dialog.close();
                 }}>Cancel</button>
                     <button on:click={() => {
-                    func();
-                    dialog.close();
+                    func() &&
+                    dialog.close()
                 }}>Apply</button>
                 </div>
             </AutomatonGeneratorLayout>

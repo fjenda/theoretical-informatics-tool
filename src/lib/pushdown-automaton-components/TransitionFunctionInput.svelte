@@ -1,5 +1,6 @@
 <script lang="ts">
     import { graph_store, resetInputVar } from "../../stores/graphInitStore";
+    import {input_error_store} from "../../stores/inputErrorStore";
 
     let transitions : TransitionMeta[] = [];
     let textInput : string = "";
@@ -133,14 +134,22 @@
 
     function processTransitions() {
         transitions = [];
-        let rows = textInput.split(";");
+        let rows = textInput.split(";").filter(Boolean);
 
+        let allTrue : boolean = true;
         for (let row of rows) {
             console.log(row);
             if (validateTransition(row)) {
                 parseRow(row);
+            } else {
+                allTrue = false;
             }
         }
+
+        input_error_store.update((n) => {
+            n.transitions = allTrue;
+            return n;
+        });
 
         graph_store.update((n) => {
             n.transitions = transitions;
@@ -158,11 +167,16 @@
 <textarea id="function-input"
           bind:value={textInput}
           on:input={processTransitions}
-          class="function-input"
+          class="function-input {$input_error_store.transitions}"
           rows="20"
           placeholder={`d(q0,a,Z)=(q1,AZ);`} />
 
 <style>
+    .false {
+        transition: background-color 0.25s;
+        background-color: #ff0000;
+    }
+
     .function-input {
         /*border-radius: 1rem;*/
         border-radius: 0.3rem;
