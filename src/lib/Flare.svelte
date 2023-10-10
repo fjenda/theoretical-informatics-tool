@@ -6,6 +6,10 @@
 
 <style>
     .flare {
+
+    }
+
+    :global(body.dark-mode) .flare {
         position: absolute;
 
         /*top: 100px;*/

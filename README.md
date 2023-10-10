@@ -1,4 +1,4 @@
-# BC-Interactive-tool-for-theoretical-informatics
+# Theoretical Informatics Tool
 
 Framework: Svelte
 

@@ -62,6 +62,10 @@ onMount(() => {
     .active {
         outline: 0.1rem solid red;
     }
+
+    button:hover {
+        outline: 0.1rem solid #007bff;
+    }
 </style>
 
 
