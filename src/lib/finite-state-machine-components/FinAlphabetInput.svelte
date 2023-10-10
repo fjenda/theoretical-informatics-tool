@@ -1,7 +1,6 @@
 <script lang="ts">
 
     import {fly} from 'svelte/transition';
-    import {graph_store} from "../stores/graphInitStore";
 
     export let phText : string = "";
 
@@ -18,10 +17,10 @@
     let input : string = '';
     let showArrows : boolean = false;
 
-    $: if (!/^[a-zA-Z0-9]+$/.test(input) && input !== '') {
-        alert("Test input can be made of alphanumeric characters only!")
-        input = input.substring(0, input.length - 1);
-    }
+    // $: if (!/^[a-zA-Z0-9]+$/.test(input) && input !== '') {
+    //     alert("Test input can be made of alphanumeric characters only!")
+    //     input = input.substring(0, input.length - 1);
+    // }
 
     function processTestInput() {
         console.log("Getted here");
@@ -45,31 +44,11 @@
 </script>
 
 <div class="input-box">
-    <input id="test-input"
-           bind:value={input}
-           class="test-input {$graph_store.isAccepted}"
-           placeholder={phText}/>
+    <input bind:value={input} class="test-input" placeholder={phText}>
 </div>
 
-{#if showArrows}
-    <div class="arrows-box" transition:fly={{ y: 50, duration: 500 }}>
-        <div class="arrow left" on:click={() => previous()}></div>
-        <div class="stop" on:click={() => stopTesting()}></div>
-        <div class="arrow right" on:click={() => next()}></div>
-    </div>
-{/if}
 
 <style>
-    .true {
-        transition: background-color 0.25s;
-        background-color: #00ff00;
-    }
-
-    .false {
-        transition: background-color 0.25s;
-        background-color: #ff0000;
-    }
-
     .input-box {
         text-align: center;
         margin: 1rem 0;
@@ -77,7 +56,7 @@
 
     .test-input {
         text-align: center;
-        font-size: 1.8rem;
+        font-size: 1.3rem;
         height: 5vh;
         width: 10.5vw;
         border-radius: 2.5rem;

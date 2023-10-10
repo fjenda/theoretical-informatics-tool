@@ -18,7 +18,7 @@ import FinGraphToolbar from "../lib/finite-state-machine-components/FinGraphTool
 
 <DebugView>
     <main>
-        <FiniteStateMachineLayout title="Finite state machine">
+        <FiniteStateMachineLayout title="Finite state automata">
             <FinGraphControlPanel>
                 <div style='text-align: center;'>
                     <Button type="dfa" text="NFA" />
@@ -37,16 +37,15 @@ import FinGraphToolbar from "../lib/finite-state-machine-components/FinGraphTool
             </FinGraphControlPanel>
             <FinGraphWindow bind:toolbarFunctions={toolbarFunctions}>
                 <FinGraphToolbar>
+                    <FinToolbarButton type="generate-automata" text="Generate Automata" func={toolbarFunctions?.generateGraphFromTransitions} />
                     <FinToolbarButton type="new-node" text="New node" func={toolbarFunctions?.addNode} />
                     <FinToolbarButton type="new-edge" text="New edge" func={toolbarFunctions?.addEdge} />
-                    <FinToolbarButton type="zoom-in" text="Zoom in" func={toolbarFunctions?.zoomIn} />
-                    <FinToolbarButton type="zoom-out" text="Zoom out" func={toolbarFunctions?.zoomOut} />
                     <FinToolbarButton type="delete-element" text="Delete element" func={toolbarFunctions?.toggleDelete}/>
                     <FinToolbarButton type="save-graph" text="Save graph" func={toolbarFunctions?.saveGraph} />
                     <FinToolbarButton type="load-graph" text="Load graph" func={toolbarFunctions?.loadGraph} />
                     <FinToolbarButton type="delete-graph" text="Delete graph" func={toolbarFunctions?.deleteGraph}/>
                     <FinToolbarButton type="reset-layout" text="Reset layout" func={toolbarFunctions?.resetLayout} />
-                    <FinToolbarButton type="generate-automata" text="Generate Automata" func={toolbarFunctions?.generateAutomata} />
+                    <FinToolbarButton type="show-configuration" text="Show configuration" func={toolbarFunctions?.generateConfiguration} />
                 </FinGraphToolbar>
             </FinGraphWindow>
         </FiniteStateMachineLayout>

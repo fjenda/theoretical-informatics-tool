@@ -1,6 +1,7 @@
 <script lang="ts">
 import FinToolbarModal from "./FinToolbarModal.svelte";
 import {onMount} from "svelte";
+import {graph_store, resetInputVar} from "../stores/graphInitStore";
 
 
 
@@ -28,38 +29,23 @@ onMount(() => {
 
 </script>
 
-{#if ["new-node", "new-edge"].includes(type)}
-    <button on:click={() => (showModal = true)}>
-        {text}
-    </button>
+{#if ["new-node", "new-edge", "generate-automata", "show-configuration"].includes(type)}
+    {#if type === "generate-graph"}
+        <button on:click={() => { showModal = true; resetInputVar.set(true); graph_store.reset(); }}>
+            {text}
+        </button>
+    {:else}
+        <button on:click={() => { showModal = true; resetInputVar.set(true); }}>
+            {text}
+        </button>
+    {/if}
 
     <FinToolbarModal bind:showModal type={type} func={func}>
         <h2 slot="header">
             {type}
         </h2>
-
-        <ol class="definition-list">
-            <li>Input the name of the new node that doesn't exist already.</li>
-            <li>Click add to finish.</li>
-        </ol>
     </FinToolbarModal>
-{:else if type === "generate-automata"}
-    <button on:click={() => (showModal = true)}>
-        {text}
-    </button>
 
-    <FinToolbarModal bind:showModal type={type} func={func}>
-        <h2 slot="header">
-            {type}
-        </h2>
-
-        <ol class="definition-list">
-            <li>Input transition functions by to given pattern.</li>
-            <li>'>' is for starting node</li>
-            <li>'&lt;' is for accepting node</li>
-            <li>Click apply to generate automata.</li>
-        </ol>
-    </FinToolbarModal>
 {:else if type === "delete-element"}
     <button class={btnState} bind:this={btn} on:click={() => func()}>
         {text}
@@ -72,11 +58,18 @@ onMount(() => {
 
 <style>
     button {
-        border-radius: 2rem;
+        /*border-radius: 1rem;*/
+        border-radius: 0.3rem;
+        border: 0.1rem solid #c5c5c5;
     }
 
+    button:hover {
+        outline: 0.1rem solid blue; /* Change the outline when the mouse is over the button */
+    }
+
+
     .active {
-        border: 2px solid red;
+        outline: 0.1rem solid red;
     }
 </style>
 

@@ -1,0 +1,38 @@
+import {type Writable, writable} from "svelte/store";
+
+export const resetInputVar = writable(false);
+export const configuration_store = function() {
+    const {set, update, subscribe} : Writable<Partial<AutomatonConfiguration>> = writable({});
+
+    const reset = () => {
+        set({});
+    }
+
+    return {
+        set,
+        update,
+        subscribe,
+        reset,
+    }
+}();
+
+export const graph_store = function() {
+    const {set, update, subscribe} : Writable<Partial<GraphObject>> = writable({
+        nodes: [],
+        type: "empty",
+    });
+
+    const reset = () => {
+        set({
+            nodes: [],
+            type: "empty",
+        });
+    }
+
+    return {
+        set,
+        update,
+        subscribe,
+        reset,
+    }
+}();
