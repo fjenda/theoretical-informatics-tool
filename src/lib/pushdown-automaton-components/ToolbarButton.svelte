@@ -25,7 +25,7 @@ onMount(() => {
 
 
 </script>
-{#if ["new-node", "new-edge", "generate-graph", "show-configuration"].includes(type)}
+{#if ["new-node", "new-edge", "generate-graph", "show-definition"].includes(type)}
     {#if type === "generate-graph"}
         <button on:click={() => { showModal = true; resetInputVar.set(true); graph_store.reset(); }}>
             {text}

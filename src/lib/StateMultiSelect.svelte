@@ -1,7 +1,8 @@
 <!-- MultiSelect.svelte -->
 <script>
-    import { graph_store, resetInputVar } from "../../stores/graphInitStore";
-    import {input_error_store} from "../../stores/inputErrorStore";
+
+    import {graph_store, resetInputVar} from "../stores/graphInitStore";
+    import {input_error_store} from "../stores/inputErrorStore";
 
     let selectedOptions = [];
 

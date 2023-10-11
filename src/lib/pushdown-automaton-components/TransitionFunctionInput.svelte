@@ -52,6 +52,7 @@
 // d(q2,c,Z)=(q2,Z);
 // d(q1,E,Z)=(q3,Z);
 // d(q2,E,Z)=(q3,Z);
+// d(q3,E,Z)=(q3,E);
 // ab, ac - patri
 // aa - nepatri
 // ----------------
@@ -62,6 +63,7 @@
 // d(q1,E,Z)=(q3,Z);
 // d(q2,E,Z)=(q4,Z);
 // d(q3,a,Z)=(q4,Z);
+// d(q4,E,Z)=(q4,E);
 // aa, aba, abba - patri
 // aab - nepatri
 // ----------------
@@ -159,7 +161,7 @@
     }
 
     function validateTransition(transition) {
-        return /d\([A-Za-z]+[0-9]+,[A-Za-z],[A-Za-z]\)=\([A-Za-z]+[0-9]+,[A-Za-z]+\)/.test(transition);
+        return /d\([A-Za-z]+[0-9]+,[A-Za-z],[A-Za-z]\)=\([A-Za-z]+[A-Za-z0-9]+,[A-Za-z]+\)/.test(transition);
     }
 
 </script>

@@ -1,6 +1,7 @@
 <script lang="ts">
-    import { graph_store, resetInputVar } from "../../stores/graphInitStore";
-    import {input_error_store} from "../../stores/inputErrorStore.js";
+    import {input_error_store} from "../stores/inputErrorStore";
+    import {graph_store, resetInputVar} from "../stores/graphInitStore";
+
     export let type = 'startState';
 
     let isOpen = false;
