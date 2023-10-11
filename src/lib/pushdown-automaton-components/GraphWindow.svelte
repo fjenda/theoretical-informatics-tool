@@ -3,6 +3,7 @@
     import {onMount} from "svelte";
     import {configuration_store, graph_store, resetInputVar} from "../../stores/graphInitStore";
     import {input_error_store} from "../../stores/inputErrorStore";
+    import type {TransitionMeta} from "../../types/TransitionMeta";
 
     let graphObject : GraphObject = {
         graph: null,
@@ -55,7 +56,7 @@
         graphObject.stack.push("Z");
     }
 
-    function preprocessGraphInput() {
+    function preprocessGraphInput() : TransitionMeta[] | null {
         const queue: { state: string; stack: string[]; index: number; path: TransitionMeta[] }[] = [
             { state: graphObject.startState, stack: ["Z"], index: 0 , path: []}
         ];
@@ -65,7 +66,7 @@
             const { state, stack, index, path } = queue.shift()!;
             switch (graphObject.type) {
                 case "both": {  // if PA accepts by empty stack, empty word and finish state
-                    if ((index === graphObject.word.length || graphObject.word.length === 0) && stack.length === 1 && (graphObject.finishState).includes(state)) {
+                    if ((index === graphObject.word.length || graphObject.word.length === 0) && stack.length === 0 && (graphObject.finishState).includes(state)) {
                         console.log("accepted");
                         graphObject.isAccepted = true;
                         return path; // String is accepted
@@ -74,7 +75,7 @@
                 }
 
                 case "empty": { // if PA accepts by empty stack and empty word
-                    if ((index === graphObject.word.length || graphObject.word.length === 0) && stack.length === 1) {
+                    if ((index === graphObject.word.length || graphObject.word.length === 0) && stack.length === 0) {
                         console.log("accepted");
                         graphObject.isAccepted = true;
                         return path; // String is accepted
@@ -99,7 +100,7 @@
                     if (stackTop === transition.stack) {
                         const newPath = path.concat(transition);
                         let newStack = stack.slice();
-                        if (transition.stackAfter === "E" && stackTop !== "Z") {
+                        if (transition.stackAfter === "E") {
                             newStack.pop();
                         } else {
                             newStack.push(...transition.stackAfter.slice(0, -1));
@@ -190,8 +191,7 @@
             else {
                 graphObject.stack.push(nextStack);
             }
-        } else if (graphObject.traversal[graphObject.currentStatus.step].stackAfter === "E" &&
-                   graphObject.traversal[graphObject.currentStatus.step].stack !== "Z") {
+        } else if (graphObject.traversal[graphObject.currentStatus.step].stackAfter === "E") {
             graphObject.stack.pop();
         }
 

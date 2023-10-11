@@ -1,12 +1,12 @@
 <script lang="ts">
     import TransitionFunctionInput from "./TransitionFunctionInput.svelte";
     import ThreeWaySwitch from "./ThreeWaySwitch.svelte";
-    import StateComboBox from "./StateComboBox.svelte";
-    import StateMultiSelect from "./StateMultiSelect.svelte";
 
     import { graph_store, resetInputVar, configuration_store } from "../../stores/graphInitStore";
     import AutomatonGeneratorLayout from "./AutomatonGeneratorLayout.svelte";
     import {input_error_store} from "../../stores/inputErrorStore";
+    import StateComboBox from "../StateComboBox.svelte";
+    import StateMultiSelect from "../StateMultiSelect.svelte";
 
     export let showModal : boolean;
     export let type : ToolbarButtonType;
@@ -20,11 +20,11 @@
 
     $: if (dialog && showModal) dialog.showModal();
 
-    $: if (showModal && type === "show-configuration") {
+    $: if (showModal && type === "show-definition") {
         func();
 
         if ($configuration_store.nodes?.length === 0 || !$configuration_store.nodes) {
-            config = "No configuration to show";
+            config = "No definition to show";
         } else {
             generateConfiguration();
         }
@@ -137,7 +137,7 @@
         <hr />
         <slot />
 
-        {#if type === "show-configuration"}
+        {#if type === "show-definition"}
             <textarea id="transitions"
                       class="transitions-input"
                       cols="30" rows="20"

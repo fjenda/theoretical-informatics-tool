@@ -12,6 +12,7 @@
     import TransitionFunctionInput from "../lib/pushdown-automaton-components/TransitionFunctionInput.svelte";
     import StackVisualiser from "../lib/pushdown-automaton-components/StackVisualiser.svelte";
     import ThreeWaySwitch from "../lib/pushdown-automaton-components/ThreeWaySwitch.svelte";
+    import TypeView from "../lib/pushdown-automaton-components/TypeView.svelte";
 
     const landingPageUrl = "/"
     let toolbarFunctions : ToolbarFunctions;
@@ -31,7 +32,7 @@
                            stopFunc={toolbarFunctions?.resetTestInput}
                 />
                 <Button type="test" text="Test" func={processTestInputFunction} />
-                <ThreeWaySwitch />
+                <TypeView />
                 <Button type="back" text="Back" url={landingPageUrl} />
             </GraphControlPanel>
             <GraphWindow bind:toolbarFunctions={toolbarFunctions}>
@@ -44,7 +45,7 @@
                     <ToolbarButton type="load-graph" text="Load graph" func={toolbarFunctions?.loadGraph} />
                     <ToolbarButton type="delete-graph" text="Delete graph" func={toolbarFunctions?.deleteGraph} />
                     <ToolbarButton type="reset-layout" text="Reset layout" func={toolbarFunctions?.resetLayout} />
-                    <ToolbarButton type="show-configuration" text="Show configuration" func={toolbarFunctions?.generateConfiguration} />
+                    <ToolbarButton type="show-definition" text="Show definition" func={toolbarFunctions?.generateConfiguration} />
                     <StackVisualiser stackFunction={toolbarFunctions?.getStack} />
                 </GraphToolbar>
             </GraphWindow>
