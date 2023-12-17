@@ -16,7 +16,7 @@
 
 <script lang="ts">
 
-    import {graph_store, resetInputVar} from "../stores/graphInitStore";
+    import {graph_store, resetInputVar} from "../../stores/graphInitStore";
 
     let transitions : TransitionMeta[] = [];
     let alphabet : string[] = [];

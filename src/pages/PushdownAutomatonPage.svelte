@@ -13,6 +13,7 @@
     import StackVisualiser from "../lib/pushdown-automaton-components/StackVisualiser.svelte";
     import ThreeWaySwitch from "../lib/pushdown-automaton-components/ThreeWaySwitch.svelte";
     import TypeView from "../lib/pushdown-automaton-components/TypeView.svelte";
+    import ConfigurationTable from "../lib/pushdown-automaton-components/ConfigurationTable.svelte";
 
     const landingPageUrl = "/"
     let toolbarFunctions : ToolbarFunctions;
@@ -49,6 +50,7 @@
                     <StackVisualiser stackFunction={toolbarFunctions?.getStack} />
                 </GraphToolbar>
             </GraphWindow>
+            <ConfigurationTable />
         </PushdownAutomatonLayout>
     </main>
 </DebugView>

@@ -8,7 +8,7 @@
     import FinTransitionFuncInput from "./FinTransitionFuncInput.svelte";
     import FinTestInput from "./FinTestInput.svelte";
     import FinAlphabetInput from "./FinAlphabetInput.svelte";
-    import {configuration_store, resetInputVar} from "../stores/graphInitStore";
+    import {configuration_store, resetInputVar} from "../../stores/graphInitStore";
 
     let currentState = false;
     let startNode  : string;

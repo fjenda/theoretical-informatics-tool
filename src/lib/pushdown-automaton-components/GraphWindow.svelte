@@ -131,6 +131,7 @@
 
         graph_store.update((n) => {
             n.isAccepted = null;
+            n.word = wordCharacters;
             return n;
         });
 
@@ -148,12 +149,19 @@
         if (!tmpNode) {
             return;
         }
-        console.log(graphObject);
+        // console.log(graphObject);
 
+        console.log($graph_store.traversal);
 
         graphObject.startState = tmpNode.id;
         graphObject.traversal = preprocessGraphInput();
-        console.log(graphObject.traversal);
+        graph_store.update((n) => {
+            n.traversal = graphObject.traversal;
+            console.log("updating store", n.traversal);
+            return n;
+        });
+
+        console.log($graph_store.traversal);
 
         highlightElement(tmpNode.id);
         graphObject.currentStatus = {state: tmpNode.id, input: graphObject.word, stack: graphObject.stack[graphObject.stack.length - 1], step: 0};
@@ -912,7 +920,6 @@
 
     onMount(() => {
         graphInit();
-        // generateGraphFromTransitions();
         createGraph(false);
     });
 </script>

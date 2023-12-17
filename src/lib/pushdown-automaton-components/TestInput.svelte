@@ -63,7 +63,7 @@
 
     .input-box {
         text-align: center;
-        margin: 1rem 0;
+        margin: 1rem;
     }
 
     .test-input {
