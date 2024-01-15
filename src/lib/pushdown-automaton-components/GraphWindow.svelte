@@ -924,6 +924,9 @@
     });
 </script>
 
+<!-- TODO: fix resizing to reset layout -->
+<svelte:window on:resize={resetLayout} />
+
 <div class="window">
     <slot />
     <div bind:this={graphObject.div} class="graph" />
@@ -932,25 +935,22 @@
 <style>
     .window {
         margin: 0 3rem;
-
-        /*border-radius: 2vw;*/
         border-radius: 0.5rem;
-
         width: 95rem;
         max-width: 90%;
-        height: 80rem;
+        min-width: 50%;
+        /*height: 80rem;*/
         max-height: 85%;
         background: #ffffff;
     }
 
     :global(body.dark-mode) .window {
-        background: #c5c5c5;
+        background: #f4f9ff;
     }
 
     .graph {
         overflow: hidden;
 
-        /*border-radius: 2vw;*/
         border-radius: 0.5rem;
 
         height: calc(100% - 5vh);

@@ -39,12 +39,13 @@
     }
 
     .test-button {
-        background-image: linear-gradient(to right, #0fde3c, #18f1e4);
+        background: #DE897D;
+        color: #f4f9ff;
     }
 
     :global(body.dark-mode) .test-button {
-        background-image: linear-gradient(to right, #0ccb34, #15d2c5);
-        /*background-image: linear-gradient(to right, rgba(28,24,241,100%), rgba(45,142,233,50%), rgba(21,240,135,50%), rgba(15,222,73,100%));*/
+        background: #4A3F64;
+        color: #f4f9ff;
     }
 
     .read-more-box {
@@ -109,22 +110,24 @@
 
     button {
         width: 100%;
-        border-radius: 2rem;
+        border-radius: 1.5rem;
         border: 0.01rem solid transparent;
         font-size: 1em;
         font-weight: 600;
         font-family: inherit;
-        background-image: linear-gradient(to right, #A024E4, #E5367E);
+        /*background-image: linear-gradient(to right, #A024E4, #E5367E);*/
+        background: #DE897D;
 
         cursor: pointer;
         transition: border-color 0.25s;
         filter: drop-shadow(4px 4px 4px #000000);
-        color: #ffffff;
+        color: #f4f9ff;
         /*text-shadow: 2px 2px 6px #000000;*/
     }
 
     :global(body.dark-mode) button {
-        background-image: linear-gradient(to right, #6a1e94, #902250);
+        /*background-image: linear-gradient(to right, #6a1e94, #902250);*/
+        background: #4A3F64;
     }
 
     button:hover {

@@ -11,7 +11,7 @@
         position: relative;
         margin-left: 3rem;
         width: 15rem;
-        height: 80rem;
+        /*height: 80rem;*/
         max-height: 85%;
 
         /*border-radius: 2vw;*/
@@ -23,6 +23,6 @@
     }
 
     :global(body.dark-mode) .control-panel {
-        background: #c5c5c5;
+        background: #f4f9ff;
     }
 </style>

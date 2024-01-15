@@ -83,21 +83,21 @@
     }
 
     .stop {
-        width: 20px;
-        height: 20px;
+        width: 1.25rem;
+        height: 1.25rem;
         background-color: #000;
         margin: 0 1rem;
     }
 
     .arrow {
-        width: 20px;
-        height: 20px;
+        width: 1.25rem;
+        height: 1.25rem;
         position: relative;
     }
 
     .left::before {
         content: '';
-        border-width: 10px 10px 10px 0;
+        border-width: 0.625rem 0.625rem 0.625rem 0;
         border-color: transparent #000 transparent transparent;
         border-style: solid;
         position: absolute;
@@ -108,7 +108,7 @@
 
     .right::before {
         content: '';
-        border-width: 10px 0 10px 10px;
+        border-width: 0.625rem 0 0.625rem 0.625rem;
         border-color: transparent transparent transparent #000;
         border-style: solid;
         position: absolute;

@@ -22,6 +22,6 @@
     }
 
     :global(body.dark-mode) .toolbar {
-        background: #868686;
+        background: #a9b1b9;
     }
 </style>
