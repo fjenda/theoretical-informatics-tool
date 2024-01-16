@@ -1,5 +1,5 @@
 # Simple workflow for deploying static content to GitHub Pages
-name: Deploy static content to Pages
+name: Theoretical Informatics Tool
 
 on:
   # Runs on pushes targeting the default branch
@@ -31,16 +31,19 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      - name: Setup Pages
-        uses: actions/configure-pages@v4
-      - name: Upload artifact
-        uses: actions/upload-pages-artifact@v2
+
+      - uses: actions/setup-node@v4
         with:
-          # Upload entire repository
-          path: '.'
+          node-version: 18
+
+      - run: npm run build
+
+      - name: Save build
+        uses: actions/upload-pages-artifact@v1
+        with:
+          name: github-pages
+          path: dist
+
       - name: Deploy to GitHub Pages
         id: deployment
-        uses: actions/deploy-pages@v3
-      - name: Setup Node.js environment
-        uses: actions/setup-node@v4.0.0
-
+        uses: actions/deploy-pages@v2
