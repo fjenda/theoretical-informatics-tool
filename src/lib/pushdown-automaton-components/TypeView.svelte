@@ -7,10 +7,10 @@ import {graph_store} from "../../stores/graphInitStore";
 
 <style>
     h2 {
-        color: #5e5e5e;
+        color: #4A3F64;
     }
 
     :global(body.dark-mode) h2 {
-        color: white;
+        color: #f4f9ff;
     }
 </style>

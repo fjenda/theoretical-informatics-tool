@@ -1,7 +1,7 @@
 <script lang="ts">
 import FinToolbarModal from "./FinToolbarModal.svelte";
 import {onMount} from "svelte";
-import {graph_store, resetInputVar} from "../stores/graphInitStore";
+import {graph_store, resetInputVar} from "../../stores/graphInitStore";
 
 
 

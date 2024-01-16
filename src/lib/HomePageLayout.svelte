@@ -56,13 +56,13 @@
     }
 
     :global(body) {
-      color: #480d25;
-      background-color: #c5c5c5;
+      color: #4A3F64;
+      background-color: #cde2fd;
       transition: background-color 0.3s;
     }
 
     :global(body.dark-mode) {
-      color: #ffffff;
-      background-color: #181818;
+      color: #f4f9ff;
+      background-color: #101820;
     }
 </style>

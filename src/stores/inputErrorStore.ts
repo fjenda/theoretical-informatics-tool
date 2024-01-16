@@ -5,6 +5,7 @@ export const input_error_store = function() {
         startState: true,
         finishState: true,
         transitions: true,
+        table: true,
     });
 
     const reset = () => {
@@ -12,6 +13,7 @@ export const input_error_store = function() {
             startState: true,
             finishState: true,
             transitions: true,
+            table: true,
         });
     }
 

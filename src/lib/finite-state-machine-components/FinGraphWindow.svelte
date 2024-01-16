@@ -1,7 +1,7 @@
 <script lang="ts">
     import cytoscape from "cytoscape";
     import {onMount} from "svelte";
-    import {configuration_store,graph_store, resetInputVar} from "../stores/graphInitStore";
+    import {configuration_store,graph_store, resetInputVar} from "../../stores/graphInitStore";
     import FinTable from "./FinTable.svelte";
 
     let graphObject : GraphObject = {

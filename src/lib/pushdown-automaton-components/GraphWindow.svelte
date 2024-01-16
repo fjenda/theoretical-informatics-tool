@@ -3,24 +3,26 @@
     import {onMount} from "svelte";
     import {configuration_store, graph_store, resetInputVar} from "../../stores/graphInitStore";
     import {input_error_store} from "../../stores/inputErrorStore";
-    import type {TransitionMeta} from "../../types/TransitionMeta";
+    import {PushdownAutomaton} from "./PushdownAutomaton";
 
-    let graphObject : GraphObject = {
-        graph: null,
-        div: null,
-        status: "idle",
-        nodes: [],
-        edges: {},
-        transitions: [],
-        stack: [],
-        currentStatus: {},
-        word: [],
-        isAccepted: false,
-        traversal: [],
-        type: "empty",
-        startState: "q0",
-        finishState: ["qF"],
-    };
+    // let graphObject : PushdownAutomaton = {
+    //     graph: null,
+    //     div: null,
+    //     status: "idle",
+    //     nodes: [],
+    //     edges: {},
+    //     transitions: [],
+    //     stack: [],
+    //     currentStatus: {},
+    //     word: [],
+    //     isAccepted: false,
+    //     traversal: [],
+    //     type: "empty",
+    //     startState: "q0",
+    //     finishState: ["qF"],
+    // };
+
+    let graphObject = new PushdownAutomaton();
 
     let highlightedElementsId : string[] = [];
     let deleteButtonActive : boolean = false;
@@ -51,155 +53,53 @@
         return graphObject.stack;
     }
 
-    function initStack() {
-        graphObject.stack = [];
-        graphObject.stack.push("Z");
-    }
-
-    function preprocessGraphInput() : TransitionMeta[] | null {
-        const queue: { state: string; stack: string[]; index: number; path: TransitionMeta[] }[] = [
-            { state: graphObject.startState, stack: ["Z"], index: 0 , path: []}
-        ];
-
-        let closestDeclinedPath: TransitionMeta[] | null = null;
-        while (queue.length > 0) {
-            const { state, stack, index, path } = queue.shift()!;
-            switch (graphObject.type) {
-                case "both": {  // if PA accepts by empty stack, empty word and finish state
-                    if ((index === graphObject.word.length || graphObject.word.length === 0) && stack.length === 0 && (graphObject.finishState).includes(state)) {
-                        console.log("accepted");
-                        graphObject.isAccepted = true;
-                        return path; // String is accepted
-                    }
-                    break;
-                }
-
-                case "empty": { // if PA accepts by empty stack and empty word
-                    if ((index === graphObject.word.length || graphObject.word.length === 0) && stack.length === 0) {
-                        console.log("accepted");
-                        graphObject.isAccepted = true;
-                        return path; // String is accepted
-                    }
-                    break;
-                }
-
-                case "final": { //if PA accepts by empty word and finish state
-                    if ((graphObject.finishState).includes(state) && (index === graphObject.word.length || graphObject.word.length === 0)) {
-                        console.log("accepted");
-                        graphObject.isAccepted = true;
-                        return path; // String is accepted
-                    }
-                }
-            }
-
-            closestDeclinedPath = path;
-            for (const transition of graphObject.transitions) {
-                if (transition.state === state && (transition.input === graphObject.word[index] || transition.input === "E")) {
-                    const stackTop = stack[stack.length - 1];
-                    // if (stackTop === transition.stack || (transition.stack === "Z" && stack.length === 1)) {
-                    if (stackTop === transition.stack) {
-                        const newPath = path.concat(transition);
-                        let newStack = stack.slice();
-                        if (transition.stackAfter === "E") {
-                            newStack.pop();
-                        } else {
-                            newStack.push(...transition.stackAfter.slice(0, -1));
-                        }
-
-                        queue.push({
-                            state: transition.stateAfter,
-                            stack: newStack,
-                            index: index + (transition.input === "E" ? 0 : 1),
-                            path: newPath,
-                        });
-                    }
-                }
-            }
-        }
-
-        console.log("declined");
-        graphObject.isAccepted = false;
-        if (closestDeclinedPath) {
-            return closestDeclinedPath;
-        }
-        return null; // String is not accepted
-    }
-
     function testInput(wordCharacters : string[]) {
         resetTestInput();
         removeHighlighted();
 
         graph_store.update((n) => {
             n.isAccepted = null;
+            n.word = wordCharacters;
             return n;
         });
 
-        initStack();
+        graphObject.stack = ["Z"];
         graphObject.word = wordCharacters;
         graphObject.status = "testing";
 
-        let tmpNode : GraphNodeMeta;
-        graphObject.nodes.forEach((node : GraphNodeMeta) => {
-            if (node.id === graphObject.startState) {
-                tmpNode = node;
-            }
+        console.log($graph_store.traversal);
+
+        graphObject.traversal = graphObject.process();
+        graph_store.update((n) => {
+            n.traversal = graphObject.traversal;
+            console.log("updating store", n.traversal);
+            return n;
         });
 
-        if (!tmpNode) {
-            return;
-        }
-        console.log(graphObject);
+        console.log($graph_store.traversal);
 
-
-        graphObject.startState = tmpNode.id;
-        graphObject.traversal = preprocessGraphInput();
-        console.log(graphObject.traversal);
-
-        highlightElement(tmpNode.id);
-        graphObject.currentStatus = {state: tmpNode.id, input: graphObject.word, stack: graphObject.stack[graphObject.stack.length - 1], step: 0};
+        highlightElement(graphObject.startState);
+        graphObject.currentStatus = {state: graphObject.startState, input: graphObject.word, stack: graphObject.stack[graphObject.stack.length - 1], step: 0};
         console.log(graphObject.currentStatus);
     }
 
     function nextTransition() {
         removeHighlighted();
 
-        if (graphObject.status !== "testing") {
+        let ret = graphObject.nextTransition();
+
+        if (!ret) {
             return;
         }
 
-        if (!graphObject.traversal[graphObject.currentStatus.step]) {
-            console.log(graphObject.isAccepted);
-            graph_store.update((n) => {
-                n.isAccepted = graphObject.isAccepted;
-                return n;
-            });
-            graphObject.status = "idle";
-            return;
-        }
-
-        let nextEdge = graphObject.traversal[graphObject.currentStatus.step].state + "-" +
-                       graphObject.traversal[graphObject.currentStatus.step].stateAfter;
-
-        if (graphObject.traversal[graphObject.currentStatus.step].stackAfter.length > 1) {
-            const nextStack = graphObject.traversal[graphObject.currentStatus.step].stackAfter?.slice(0, -1);
-
-            if (nextStack.length > 1) {
-                for (let i = 0; i < nextStack.length; i++) {
-                    graphObject.stack.push(nextStack[i]);
-                }
-            }
-            else {
-                graphObject.stack.push(nextStack);
-            }
-        } else if (graphObject.traversal[graphObject.currentStatus.step].stackAfter === "E") {
-            graphObject.stack.pop();
-        }
+        let nextNode = ret.nextNode;
+        let nextEdge = ret.nextEdge;
 
         setTimeout(() => {
-            highlightElement(graphObject.traversal[graphObject.currentStatus.step].stateAfter);
+            highlightElement(nextNode);
             highlightElement(nextEdge);
 
-            graphObject.currentStatus.state = graphObject.traversal[graphObject.currentStatus.step].stateAfter;
+            graphObject.currentStatus.state = nextNode;
             graphObject.currentStatus.stack = graphObject.stack[graphObject.stack.length - 1];
             graphObject.currentStatus.step++;
             console.log(graphObject.currentStatus);
@@ -210,31 +110,20 @@
     function previousTransition() {
         removeHighlighted();
 
-        if (graphObject.currentStatus.step <= 0) {
-            graphObject.currentStatus.step = 0;
-            return;
-        }
-        graphObject.status = "testing";
-        graphObject.currentStatus.step--;
+        let ret = graphObject.previousTransition();
 
-        if (!graphObject.traversal[graphObject.currentStatus.step]) {
+        if (!ret) {
             return;
         }
 
-        let previousEdge = graphObject.traversal[graphObject.currentStatus.step].state + "-" +
-                           graphObject.traversal[graphObject.currentStatus.step].stateAfter;
-
-        if (graphObject.traversal[graphObject.currentStatus.step].stackAfter === "E") {
-            graphObject.stack.push(graphObject.traversal[graphObject.currentStatus.step].stack);
-        } else if (graphObject.traversal[graphObject.currentStatus.step].stackAfter !== graphObject.traversal[graphObject.currentStatus.step].stack) {
-            graphObject.stack.pop();
-        }
+        let previousNode = ret.previousNode;
+        let previousEdge = ret.previousEdge;
 
         setTimeout(() => {
-            highlightElement(graphObject.traversal[graphObject.currentStatus.step].stateAfter);
+            highlightElement(previousNode);
             highlightElement(previousEdge);
 
-            graphObject.currentStatus.state = graphObject.traversal[graphObject.currentStatus.step].state;
+            graphObject.currentStatus.state = previousNode;
             graphObject.currentStatus.stack = graphObject.stack[graphObject.stack.length - 1];
             console.log(graphObject.currentStatus);
         }, 250);
@@ -248,10 +137,7 @@
             return n;
         });
 
-        graphObject.stack = [];
-        graphObject.traversal = [];
-        graphObject.currentStatus = {};
-        graphObject.word = [];
+        graphObject.resetTestInput();
     }
 
     function highlightElement(id : string | number) {
@@ -472,32 +358,8 @@
         console.log($graph_store);
         Object.assign(graphObject, $graph_store);
 
-        graphObject.transitions.forEach(transition => {
-            let key = transition.state + "-" + transition.stateAfter;
-            graphObject.edges[key] = graphObject.edges[key] ?? [];
-            graphObject.edges[key].push(
-            {
-                id: (transition.state + "-" + transition.stateAfter),
-                label: (transition.input + ";" + transition.stack + ";" + transition.stackAfter),
-                source: transition.state,
-                target: transition.stateAfter
-            });
-        });
+        graphObject.generateGraphFromTransitions();
 
-        // add start and finish state to nodes
-        let nodesArray = graphObject.nodes.slice();
-        graphObject.nodes = [];
-        nodesArray.forEach(node => {
-            if (graphObject.finishState.includes(node.id) && node.id == graphObject.startState && graphObject.type !== "empty") {
-                graphObject.nodes.push({id: node.id, label: node.label, class: "finish start"});
-            } else if (graphObject.finishState.includes(node.id) && graphObject.type !== "empty") {
-                graphObject.nodes.push({id: node.id, label: node.label, class: "finish"});
-            } else if (node.id === graphObject.startState) {
-                graphObject.nodes.push({id: node.id, label: node.label, class: "start"});
-            } else {
-                graphObject.nodes.push({id: node.id, label: node.label});
-            }
-        });
         console.log(graphObject);
 
         createGraph(false);
@@ -510,29 +372,7 @@
 
     function addNode(node : GraphNodeMeta) {
         try {
-            if (graphObject.graph.$id(node.id).length !== 0) {
-                return;
-            }
-
-            if (graphObject.nodes.filter((graphNode : GraphNodeMeta) => graphNode.id === node.id).length === 0) {
-                graphObject.nodes.push(node);
-            }
-
-            graphObject.graph.add({
-                group: "nodes",
-                data: {id: node.id, label: node.label},
-                classes: node.class,
-            });
-
-            //if node class is finish, and it is not in graphObject.finishState
-            if (node.class?.includes("finish") && graphObject.finishState.filter((finishNode : string) => finishNode === node.id).length === 0) {
-                graphObject.finishState.push(node.id);
-            }
-
-            //if node class is start
-            if (node.class?.includes("start")) {
-                graphObject.startState = node.id;
-            }
+            graphObject.addNode(node);
         } catch (e) {
             console.log(e);
         } finally {
@@ -558,31 +398,7 @@
     }
     function addEdge(edge : GraphEdgeMeta) {
         try {
-            //if edges already has this edge
-            if (graphObject.edges[edge.id]) {
-                //if edges has this edge but with different label
-                if (graphObject.edges[edge.id].filter((graphEdge : GraphEdgeMeta) => graphEdge.label == edge.label).length == 0) {
-                    graphObject.edges[edge.id].push(edge);
-                }
-            } else {
-                graphObject.edges[edge.id] = [edge];
-            }
-
-            if (graphObject.graph.$id(edge.id).length !== 0) {
-                let tmpEdge = graphObject.graph.$id(edge.id);
-
-                if (tmpEdge.data("label").split("\n").includes(edge.label)) {
-                    return;
-                }
-
-                let combinedLabel = tmpEdge.data("label") + "\n" + edge.label;
-                graphObject.graph.$id(edge.id).data("label", combinedLabel);
-            } else {
-                graphObject.graph.add({
-                    group: "edges",
-                    data: { id: edge.id, label: edge.label, source: edge.source, target: edge.target }
-                });
-            }
+            graphObject.addEdge(edge);
         } catch (e) {
             console.log(e);
         } finally {
@@ -626,7 +442,8 @@
                 // if node has class final
                 if (this.hasClass("finish")) {
                     // get the number of finish nodes
-                    let finishNodes = graphObject.nodes.slice().filter((node : GraphNodeMeta) => node.class.includes("finish")).length;
+                    let finishNodes = graphObject.finishState.length;
+                    //let finishNodes = graphObject.nodes.slice().filter((node : GraphNodeMeta) => node.class.includes("finish")).length;
                     if (finishNodes === 1) {
                         console.log("cannot remove a finish class");
                         return;
@@ -876,6 +693,12 @@
             label: "b;a;E",
             source: "q1",
             target: "q0"
+        }],
+        "qF-qF": [{
+            id: "qF-qF",
+            label: "E;Z;E",
+            source: "qF",
+            target: "qF"
         }]
     };
 
@@ -908,14 +731,23 @@
             stateAfter: "q0",
             stackAfter: "E",
         },
+        {
+            state: "qF",
+            input: "E",
+            stack: "Z",
+            stateAfter: "qF",
+            stackAfter: "E",
+        }
     ];
 
     onMount(() => {
         graphInit();
-        // generateGraphFromTransitions();
         createGraph(false);
     });
 </script>
+
+<!-- TODO: fix resizing to reset layout -->
+<svelte:window on:resize={resetLayout} />
 
 <div class="window">
     <slot />
@@ -924,26 +756,25 @@
 
 <style>
     .window {
-        margin: 0 3rem;
+        width: 95%;
+        min-width: 35rem;
+        height: 95%;
+        min-height: 32rem;
 
-        /*border-radius: 2vw;*/
         border-radius: 0.5rem;
+        background: #f7f7f8;
 
-        width: 95rem;
-        max-width: 90%;
-        height: 80rem;
-        max-height: 85%;
-        background: #ffffff;
+        box-shadow: rgba(0, 0, 0, .2) 0 3px 5px -1px,rgba(0, 0, 0, .14) 0 6px 10px 0,rgba(0, 0, 0, .12) 0 1px 18px 0;
+        box-sizing: border-box;
     }
 
     :global(body.dark-mode) .window {
-        background: #c5c5c5;
+        background: #25252d;
     }
 
     .graph {
         overflow: hidden;
 
-        /*border-radius: 2vw;*/
         border-radius: 0.5rem;
 
         height: calc(100% - 5vh);
