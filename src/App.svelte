@@ -8,7 +8,7 @@
 
 <Router>
     <Route path="/tool/pushdown-automaton" component={PushdownAutomatonPage}/>
-    <Route path="/tool/finite-state-machine" component={FiniteStateMachinePage}/>
+    <Route path="/tool/finite-state-automaton" component={FiniteStateMachinePage}/>
     <Route path="/tool/context-free-grammar" component={ContextFreeGrammarPage}/>
     <Route path="/" component={LandingPage} />
     <Route>404</Route>

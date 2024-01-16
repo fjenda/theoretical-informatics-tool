@@ -57,13 +57,14 @@ onMount(() => {
         /*border-radius: 1rem;*/
         border-radius: 0.3rem;
         background: #f4f9ff;
-        border: 0.1rem solid #4A3F64;
+        border: 0.05rem solid #4A3F64;
     }
 
-    /*:global(body.dark-mode) button {*/
-    /*    background: #f4f9ff;*/
-    /*    border: 0.1rem solid #4A3F64;*/
-    /*}*/
+    :global(body.dark-mode) button {
+        background: #2f3941;
+        border: 0.05rem solid #4A3F64;
+        color: #f4f9ff;
+    }
 
     .active {
         outline: 0.1rem solid red;

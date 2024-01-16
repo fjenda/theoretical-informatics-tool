@@ -3,20 +3,32 @@
     import {input_error_store} from "../../stores/inputErrorStore";
     import { fly } from "svelte/transition";
 
-    let show_configuration : boolean = false;
-
     let traversal = [];
+    let word: string[] = [];
     $: if ($graph_store.traversal && $graph_store.traversal.length) {
         // do something when this store value changes
-        console.log("AWADA KEDAWRA");
 
         // get traversal
         traversal = $graph_store.traversal;
+
+        // get word
+        word = [$graph_store.word];
+        word[0] = word[0].join("");
+
+        for (let i = 0; i < traversal.length; i++) {
+            if (word[i][0] === traversal[i].input) {
+                if (traversal[i].stackAfter === "E")
+                    word.push(word[i].slice(1));
+                else
+                    word.push(word[i]);
+            }
+        }
+
+        // connect traversal and word
     }
 
     $: if ($input_error_store.table) {
         // do something when this store value changes
-        console.log("O KURWA RAKETA");
 
         // empty traversal
         traversal = [];
@@ -24,91 +36,75 @@
         // set to false
         $input_error_store.table = false;
     }
-
-    function showConfiguration() {
-        // if (traversal.length === 0) {
-        //     return;
-        // }
-
-        show_configuration = !show_configuration;
-        console.log("show_configuration: " + show_configuration);
-    }
 </script>
 
-<div id="configuration-div" class:expanded={show_configuration} class:small={!show_configuration}>
-    <div id="arrow" on:click={() => showConfiguration()}>
-        <p>Configuration</p>
-    </div>
-
-    {#if show_configuration}
-        <table transition:fly={{ x: 200, duration: 500 }}>
-            <thead>
+<table class="styled-table">
+    <thead>
+        <tr>
+            <th>State</th>
+            <th>Input</th>
+            <th>Stack</th>
+            <th>State after</th>
+            <th>Stack after</th>
+            <th>Left to read</th>
+        </tr>
+    </thead>
+    <tbody>
+        {#each traversal as row}
             <tr>
-                <th colspan="5">Configuration</th>
+                <td>{row.state}</td>
+                <td>{row.input}</td>
+                <td>{row.stack}</td>
+                <td>{row.stateAfter}</td>
+                <td>{row.stackAfter}</td>
+                <td>left to read</td>
             </tr>
-            </thead>
-            <tbody>
-            {#each traversal as row}
-                <tr>
-                    <td>{row.state}</td>
-                    <td>{row.input}</td>
-                    <td>{row.stack}</td>
-                    <td>{row.stateAfter}</td>
-                    <td>{row.stackAfter}</td>
-                </tr>
-            {/each}
-            </tbody>
-        </table>
-    {/if}
-</div>
-
+        {/each}
+    </tbody>
+</table>
 
 <style>
-    #configuration-div {
-        display: flex;
-        height: fit-content;
+    .styled-table {
+        margin: 0 3rem;
+        height: 90%;
+        width: 80%;
+        min-width: 9.5rem;
+        min-height: 15.5rem;
+
+        border-spacing: 0;
+        border-radius: 0.5rem;
+
+        overflow: hidden;
+        font-size: 0.9em;
+        font-family: sans-serif;
+
+
+        box-shadow: rgba(0, 0, 0, .2) 0 3px 5px -1px,rgba(0, 0, 0, .14) 0 6px 10px 0,rgba(0, 0, 0, .12) 0 1px 18px 0;
+        box-sizing: border-box;
     }
 
-    .expanded {
-        translate: -9rem;
-        width: 10rem;
-        transition: translate 0.5s;
+    .styled-table thead tr {
+        background-color: #DE897D;
+        color: #ffffff;
     }
 
-    .small {
-        width: fit-content;
-        margin-left: 0;
+    :global(body.dark-mode) .styled-table thead tr {
+        background-color: #4A3F64;
+        color: #ffffff;
     }
 
-    p {
-        writing-mode: vertical-lr;
-        text-orientation: upright;
-    }
-
-    #arrow {
-        height: fit-content;
-        margin-top: 1rem;
-        margin-bottom: 1rem;
-    }
-
-    #arrow:hover {
-        cursor: pointer;
-    }
-
-    table {
-        border-collapse: collapse;
-        width: 50%;
-        height: fit-content;
-        margin-right: 1rem;
-    }
-
-    th, td {
-        border: 0.05rem solid #dddddd;
-        text-align: left;
+    .styled-table th,
+    .styled-table td {
         padding: 0.5rem;
     }
 
-    th {
-        background-color: #a9b1b9;
+    .styled-table tbody tr {
+        background-color: #f7f7f8;
+        color: #101820;
+    }
+
+    :global(body.dark-mode) .styled-table tbody tr {
+        background-color: #25252d;
+        color: #ffffff;
     }
 </style>

@@ -63,17 +63,21 @@
 
     .input-box {
         text-align: center;
-        margin: 1rem;
+        /*margin: 1rem;*/
+        padding-top: 1rem;
     }
 
     .test-input {
         text-align: center;
         font-size: 1.8rem;
         height: 5vh;
-        width: 10.5vw;
+        width: 60%;
+
+        min-width: 7.5rem;
+        min-height: 2.5rem;
 
         border-radius: 2.5rem;
-        /*border-radius: 0.75rem;*/
+        border: 0.125rem solid #101820;
     }
 
     .arrows-box {
@@ -89,10 +93,22 @@
         margin: 0 1rem;
     }
 
+    :global(body.dark-mode) .stop {
+        background-color: #f4f9ff;
+    }
+
     .arrow {
         width: 1.25rem;
         height: 1.25rem;
         position: relative;
+    }
+
+    :global(body.dark-mode) .left::before {
+        border-color: transparent #f4f9ff transparent transparent;
+    }
+
+    :global(body.dark-mode) .right::before {
+        border-color: transparent transparent transparent #f4f9ff;
     }
 
     .left::before {

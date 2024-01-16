@@ -25,7 +25,7 @@
     <main>
         <ThemeToggle />
         <PushdownAutomatonLayout title="Pushdown Automaton">
-            <GraphControlPanel>
+            <GraphControlPanel slot="control-panel">
                 <TestInput bind:processFunction={processTestInputFunction}
                            testInputFunction={toolbarFunctions?.testInput}
                            nextFunc={toolbarFunctions?.nextTransition}
@@ -36,7 +36,7 @@
                 <TypeView />
                 <Button type="back" text="Back" url={landingPageUrl} />
             </GraphControlPanel>
-            <GraphWindow bind:toolbarFunctions={toolbarFunctions}>
+            <GraphWindow bind:toolbarFunctions={toolbarFunctions} slot="window">
                 <GraphToolbar>
                     <ToolbarButton type="generate-graph" text="Generate graph" func={toolbarFunctions?.generateGraphFromTransitions} />
                     <ToolbarButton type="new-node" text="New node" func={toolbarFunctions?.addNode} />
@@ -50,7 +50,7 @@
                     <StackVisualiser stackFunction={toolbarFunctions?.getStack} />
                 </GraphToolbar>
             </GraphWindow>
-            <ConfigurationTable />
+            <ConfigurationTable slot="table"/>
         </PushdownAutomatonLayout>
     </main>
 </DebugView>

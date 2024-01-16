@@ -11,6 +11,6 @@ import {graph_store} from "../../stores/graphInitStore";
     }
 
     :global(body.dark-mode) h2 {
-        color: #101820;
+        color: #f4f9ff;
     }
 </style>

@@ -21,3 +21,13 @@
     {/each}
 </Dropdown>
 
+
+
+<!--<style>-->
+<!--    /*style="border-radius: 0.3rem; border: 0.1rem solid #4A3F64; background: #f4f9ff;*/-->
+<!--    /*.but-1 {*/-->
+<!--    /*    background: #2f3941;*/-->
+<!--    /*    border: 0.05rem solid #4A3F64;*/-->
+<!--    /*    color: #f4f9ff;*/-->
+<!--    /*}*/-->
+<!--</style>-->
