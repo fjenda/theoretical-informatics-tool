@@ -9,9 +9,9 @@
 <style>
     .control-panel {
         position: relative;
-        margin: 0 3rem;
+        margin: 0 2rem;
         height: 90%;
-        width: 80%;
+        width: 90%;
         min-width: 9.5rem;
         min-height: 15.5rem;
 
