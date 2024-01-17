@@ -9,8 +9,7 @@ import FinToolbarButton from "../lib/finite-state-machine-components/FinToolbarB
 import FinGraphToolbar from "../lib/finite-state-machine-components/FinGraphToolbar.svelte";
 
 
-
-    const landingPageUrl = "/"
+    const landingPageUrl = "/Theoretical-informatics-tool/"
     let toolbarFunctions : ToolbarFunctions;
 
     let processTestInputFunction : Function = () => {};
