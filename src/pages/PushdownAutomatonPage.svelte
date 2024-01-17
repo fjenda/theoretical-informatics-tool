@@ -15,7 +15,7 @@
     import TypeView from "../lib/pushdown-automaton-components/TypeView.svelte";
     import ConfigurationTable from "../lib/pushdown-automaton-components/ConfigurationTable.svelte";
 
-    const landingPageUrl = "/"
+    const landingPageUrl = "/Theoretical-informatics-tool"
     let toolbarFunctions : ToolbarFunctions;
     let processTransitionsFunction : Function = () => {};
     let processTestInputFunction : Function = () => {};

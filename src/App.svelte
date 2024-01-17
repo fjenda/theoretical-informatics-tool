@@ -6,7 +6,7 @@
   import ContextFreeGrammarPage from "./pages/ContextFreeGrammarPage.svelte";
 </script>
 
-<Router>
+<Router basepath="/Theoretical-informatics-tool">
     <Route path="/tool/pushdown-automaton" component={PushdownAutomatonPage}/>
     <Route path="/tool/finite-state-automaton" component={FiniteStateMachinePage}/>
     <Route path="/tool/context-free-grammar" component={ContextFreeGrammarPage}/>

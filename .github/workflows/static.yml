@@ -41,12 +41,4 @@ jobs:
 
       - run: npm run build
 
-      - name: Save build
-        uses: actions/upload-pages-artifact@v1
-        with:
-          name: github-pages
-          path: dist
-
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v2
+      - run: npm run deploy

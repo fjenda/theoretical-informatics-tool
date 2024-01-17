@@ -12,14 +12,14 @@
             author: "Marek Krúpa",
             description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer nec odio. Praesent libero. Sed cursus ante dapibus diam. Sed nisi. Nulla quis sem at nibh elementum imperdiet. Duis sagittis ipsum. Praesent mauris. Fusce nec tellus sed augue semper porta. Mauris massa. Vestibulum lacinia arcu eget nulla. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Curabitur sodales ligula in libero.",
             scriptsUrl: "finite-state-machine-scripts",
-            toolUrl: "tool/finite-state-automaton",
+            toolUrl: "/Theoretical-informatics-tool/tool/finite-state-automaton",
         },
         {
             title: "Pushdown automaton",
             author: "Jan Fojtík",
             description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer nec odio. Praesent libero. Sed cursus ante dapibus diam. Sed nisi. Nulla quis sem at nibh elementum imperdiet. Duis sagittis ipsum. Praesent mauris. Fusce nec tellus sed augue semper porta. Mauris massa. Vestibulum lacinia arcu eget nulla. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Curabitur sodales ligula in libero.",
             scriptsUrl: "pushdown-automaton-scripts",
-            toolUrl: "tool/pushdown-automaton",
+            toolUrl: "/Theoretical-informatics-tool/tool/pushdown-automaton",
         }
     ]
 </script>
