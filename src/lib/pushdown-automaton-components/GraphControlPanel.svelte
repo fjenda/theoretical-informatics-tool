@@ -27,6 +27,5 @@
 
     :global(body.dark-mode) .control-panel {
         background: #25252d;
-        /*background: #201610;*/
     }
 </style>

@@ -54,6 +54,8 @@
 
   .window {
     grid-area: 1 / 2 / 5 / 5;
+    display: flex;
+    justify-content: center;
   }
 
   .header {

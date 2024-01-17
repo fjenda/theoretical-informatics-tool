@@ -76,7 +76,7 @@
         min-width: 7.5rem;
         min-height: 2.5rem;
 
-        border-radius: 2.5rem;
+        border-radius: 0.5rem;
         border: 0.125rem solid #101820;
     }
 
