@@ -661,14 +661,20 @@
     });
 
 </script>
+<svelte:window on:resize={resetLayout} />
 
 <div class="window">
     <slot />
-    <div bind:this={graphObject.div} class="graph" />
+    <div class="graph-wrapper">
+        <div bind:this={graphObject.div} class="graph" />
+        <div class="type-wrapper">
+            <slot name="type" />
+        </div>
+    </div>
 </div>
-<div class="svTable">
-    <FinTable />
-</div>
+<!--<div class="svTable">-->
+<!--    <FinTable />-->
+<!--</div>-->
 
 <style>
     .svTable {
@@ -685,20 +691,20 @@
     }
 
     .window {
-        margin: 0 3rem;
+        width: 95%;
+        min-width: 35rem;
+        height: 95%;
+        min-height: 32rem;
 
-        /*border-radius: 2vw;*/
         border-radius: 0.5rem;
+        background: #f7f7f8;
 
-        width: 90rem;
-        max-width: 90%;
-        height: 80rem;
-        max-height: 85%;
-        background: #ffffff;
+        box-shadow: rgba(0, 0, 0, .2) 0 3px 5px -1px,rgba(0, 0, 0, .14) 0 6px 10px 0,rgba(0, 0, 0, .12) 0 1px 18px 0;
+        box-sizing: border-box;
     }
 
     :global(body.dark-mode) .window {
-        background: #c5c5c5;
+        background: #25252d;
     }
 
     .graph {
@@ -708,6 +714,18 @@
         border-radius: 0.5rem;
 
         height: calc(100% - 5vh);
+    }
+
+    .graph-wrapper {
+        position: relative;
+        height: 100%;
+    }
+
+    .type-wrapper {
+        position: absolute;
+        top: 0;
+        left: 1rem;
+        pointer-events: none;
     }
 
 </style>
