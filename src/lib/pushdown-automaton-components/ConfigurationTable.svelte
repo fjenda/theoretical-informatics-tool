@@ -15,16 +15,16 @@
         word = [$graph_store.word];
         word[0] = word[0].join("");
 
-        for (let i = 0; i < traversal.length; i++) {
-            if (word[i][0] === traversal[i].input) {
-                if (traversal[i].stackAfter === "E")
-                    word.push(word[i].slice(1));
-                else
-                    word.push(word[i]);
-            }
-        }
-
-        // connect traversal and word
+        // for (let i = 0; i < traversal.length; i++) {
+        //     if (word[i] && word[i][0] === traversal[i].input) {
+        //         if (traversal[i].input === "E")
+        //             word.push(word[i]);
+        //
+        //         else
+        //             word.push(word[i].slice(1));
+        //         console.log(word);
+        //     }
+        // }
     }
 
     $: if ($input_error_store.table) {
@@ -63,19 +63,19 @@
     </tbody>
 </table>
 
-<style>
+<style lang="scss">
     .styled-table {
-        margin: 0 2rem;
+        margin: 0 auto;
 
         height: 90%;
-        /*width: 90%;*/
+        width: 90%;
         min-width: 9.5rem;
         min-height: 15.5rem;
 
         border-spacing: 0;
         border-radius: 0.5rem;
 
-        overflow: hidden;
+        overflow: hidden auto;
         font-size: 0.9em;
         font-family: sans-serif;
 

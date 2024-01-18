@@ -9,7 +9,7 @@
 </script>
 
 {#if type !== ""}
-    <div class="{type}-box">
+    <div class="{type}-box" {...$$restProps}>
         <button class="button-17" on:click={() => navigate(url)} on:click={() => func()}>
             {text}
         </button>
@@ -38,16 +38,6 @@
         width: 60%;
     }
 
-    /*.test-button {*/
-    /*    background: #DE897D;*/
-    /*    color: #f4f9ff;*/
-    /*}*/
-
-    /*:global(body.dark-mode) .test-button {*/
-    /*    background: #4A3F64;*/
-    /*    color: #f4f9ff;*/
-    /*}*/
-
     .read-more-box {
         display: flex;
         justify-content: center;
@@ -69,19 +59,9 @@
     }
 
     .back-box {
-        position: absolute;
-        bottom: 0.01rem;
-        left: 50%;
-
-        -ms-transform: translateX(-50%);
-        -webkit-transform: translateX(-50%);
-        -moz-transform: translateX(-50%);
-        -o-transform: translateX(-50%);
-        transform: translateX(-50%);
-
         display: flex;
         justify-content: center;
-        margin: 2rem auto;
+        margin: auto 2rem 1rem 2rem;
 
         /*font-size: 1.8rem;*/
         height: 6vh;
@@ -89,18 +69,9 @@
     }
 
     .tool-box {
-        position: absolute;
-        left: 50%;
-        bottom: 2.5rem;
-
-        -ms-transform: translateX(-50%);
-        -webkit-transform: translateX(-50%);
-        -moz-transform: translateX(-50%);
-        -o-transform: translateX(-50%);
-        transform: translateX(-50%);
-
         display: flex;
         justify-content: center;
+        margin: auto 2rem 1rem 2rem;
 
         /*font-size: 1.8rem;*/
         height: 3rem;

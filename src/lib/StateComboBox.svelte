@@ -90,6 +90,7 @@
         outline: 0.15rem solid #ccc;
         background-color: #eee;
         display: none;
+        border: 0.1rem solid #ccc;
 
         /*border-radius: 2rem;*/
         border-radius: 0.5rem;

@@ -43,7 +43,7 @@
 </div>
 
 {#if showArrows}
-    <div class="arrows-box" transition:fly={{ y: 50, duration: 500 }}>
+    <div class="arrows-box" transition:fly={{ y: -50, duration: 500 }}>
         <div class="arrow left" on:click={() => previous()}></div>
         <div class="stop" on:click={() => stopTesting()}></div>
         <div class="arrow right" on:click={() => next()}></div>
@@ -83,7 +83,7 @@
     .arrows-box {
         display: flex;
         justify-content: center;
-        margin-top: 1rem;
+        margin: 1rem 0;
     }
 
     .stop {

@@ -4,7 +4,6 @@
     export let title : string;
 
     const tabs = [
-        ["Pushdown automaton", "pushdown-automaton"],
         ["Context-free Grammar", "context-free-grammar"]
     ];
 </script>
@@ -25,6 +24,7 @@
     </div>
 </div>
 
+
 <style lang="scss">
   h1 {
     margin: 2rem;
@@ -38,8 +38,8 @@
     display: grid;
     grid-template-columns: repeat(4, 1fr);
     grid-template-rows: repeat(4, 1fr);
-    grid-column-gap: 0px;
-    grid-row-gap: 0px;
+    grid-column-gap: 0;
+    grid-row-gap: 0;
   }
 
   .control-panel {
@@ -56,6 +56,31 @@
     grid-area: 1 / 2 / 5 / 5;
     display: flex;
     justify-content: center;
+  }
+
+  @media screen and (max-width: 1150px) {
+    .layout {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      grid-template-rows: 0.5fr 1fr;
+      grid-column-gap: 0;
+      grid-row-gap: 0;
+
+      height: auto;
+      overflow: hidden auto;
+    }
+
+    .control-panel {
+      grid-area: 1 / 1 / 2 / 2;
+    }
+
+    .table {
+      grid-area: 1 / 2 / 2 / 3;
+    }
+
+    .window {
+      grid-area: 2 / 1 / 3 / 3;
+    }
   }
 
   .header {

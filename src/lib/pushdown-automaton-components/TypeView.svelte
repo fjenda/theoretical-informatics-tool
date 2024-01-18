@@ -7,7 +7,7 @@ import {graph_store} from "../../stores/graphInitStore";
 
 <style>
     h2 {
-        color: #4A3F64;
+        color: #363636;
     }
 
     :global(body.dark-mode) h2 {

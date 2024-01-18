@@ -5,7 +5,6 @@
 
     const tabs = [
         ["Pushdown automaton", "pushdown-automaton"],
-        ["Context-free Grammar", "context-free-grammar"]
     ];
 </script>
 

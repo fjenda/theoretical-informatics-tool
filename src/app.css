@@ -3,3 +3,37 @@ html, body {
   margin: 0;
   overflow: hidden;
 }
+
+@media screen and (max-width: 1150px) {
+  html, body {
+    overflow: auto;
+  }
+}
+
+.btn-animation-slide-up {
+  animation: btn-slide-up 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.btn-animation-slide-down {
+  animation: btn-slide-down 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+@keyframes btn-slide-up {
+  0% {
+    transform: translateY(-3.75rem);
+  }
+
+  100% {
+    transform: translateY(0);
+  }
+}
+
+@keyframes btn-slide-down {
+  0% {
+    transform: translateY(0);
+  }
+
+  100% {
+    transform: translateY(-3.75rem);
+  }
+}

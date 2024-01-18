@@ -58,7 +58,7 @@
         width: 10rem;
         background-color: #eee;
         outline: 0.15rem solid #ccc;
-        color: #f4f9ff;
+        color: #393939;
 
         border-radius: 2rem;
         /*border-radius: 0.5rem;*/
@@ -70,6 +70,7 @@
     :global(body.dark-mode) .toggle-switch {
         background-color: #2f3941;
         outline: 0.15rem solid #555;
+        color: #f4f9ff;
     }
 
     .toggle-switch div {

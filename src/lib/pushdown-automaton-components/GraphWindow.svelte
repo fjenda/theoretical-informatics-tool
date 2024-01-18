@@ -57,15 +57,17 @@
         resetTestInput();
         removeHighlighted();
 
+
         graph_store.update((n) => {
             n.isAccepted = null;
             n.word = wordCharacters;
+            n.status = "testing";
             return n;
         });
 
+        graphObject.status = "testing";
         graphObject.stack = ["Z"];
         graphObject.word = wordCharacters;
-        graphObject.status = "testing";
 
         console.log($graph_store.traversal);
 
@@ -134,6 +136,7 @@
 
         graph_store.update((n) => {
             n.isAccepted = null;
+            n.status = "idle";
             return n;
         });
 
@@ -593,6 +596,8 @@
                 {
                     selector: "node",
                     style: {
+                        // "background-color": window.document.body.classList.contains("dark-mode") ? "#808080" : "#080808",
+                        // "background-color": "var(--node-background-color)", // doesnt work
                         "background-color": "#808080",
                         "border-color": "#000000",
                         "border-width": 1,
@@ -751,7 +756,12 @@
 
 <div class="window">
     <slot />
-    <div bind:this={graphObject.div} class="graph" />
+    <div class="graph-wrapper">
+        <div bind:this={graphObject.div} class="graph" />
+        <div class="type-wrapper">
+            <slot name="type" />
+        </div>
+    </div>
 </div>
 
 <style>
@@ -778,5 +788,17 @@
         border-radius: 0.5rem;
 
         height: calc(100% - 5vh);
+    }
+
+    .graph-wrapper {
+        position: relative;
+        height: 100%;
+    }
+
+    .type-wrapper {
+        position: absolute;
+        top: 0;
+        left: 1rem;
+        pointer-events: none;
     }
 </style>
