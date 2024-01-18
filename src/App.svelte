@@ -4,9 +4,10 @@
   import PushdownAutomatonPage from "./pages/PushdownAutomatonPage.svelte";
   import FiniteStateMachinePage from "./pages/FiniteStateMachinePage.svelte";
   import ContextFreeGrammarPage from "./pages/ContextFreeGrammarPage.svelte";
+  // import 'bootstrap/dist/css/bootstrap.min.css';
 </script>
 
-<Router>
+<Router basepath="/Theoretical-informatics-tool">
     <Route path="/tool/pushdown-automaton" component={PushdownAutomatonPage}/>
     <Route path="/tool/finite-state-automaton" component={FiniteStateMachinePage}/>
     <Route path="/tool/context-free-grammar" component={ContextFreeGrammarPage}/>

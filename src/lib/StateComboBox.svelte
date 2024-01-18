@@ -67,9 +67,14 @@
         border-radius: 0.5rem;
     }
 
+    :global(body.dark-mode) .combo-box {
+        background: #2f3941;
+        color: #f4f9ff;
+        outline: 0.1rem solid #9c81da;
+    }
+
     .selected-option {
         padding: 0.6rem;
-        outline: 0.15rem solid #ccc;
         cursor: pointer;
 
         /*border-radius: 2rem;*/
@@ -85,12 +90,18 @@
         outline: 0.15rem solid #ccc;
         background-color: #eee;
         display: none;
+        border: 0.1rem solid #ccc;
 
         /*border-radius: 2rem;*/
         border-radius: 0.5rem;
 
         margin: 0; /* Reset margin */
         padding: 0; /* Reset padding */
+    }
+
+    :global(body.dark-mode) .dropdown {
+        outline: 0.15rem solid #9c81da;
+        background-color: #2f3941;
     }
 
     .dropdown.active {

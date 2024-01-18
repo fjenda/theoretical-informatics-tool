@@ -9,7 +9,7 @@
 </script>
 
 {#if type !== ""}
-    <div class="{type}-box">
+    <div class="{type}-box" {...$$restProps}>
         <button class="button-17" on:click={() => navigate(url)} on:click={() => func()}>
             {text}
         </button>
@@ -38,16 +38,6 @@
         width: 60%;
     }
 
-    /*.test-button {*/
-    /*    background: #DE897D;*/
-    /*    color: #f4f9ff;*/
-    /*}*/
-
-    /*:global(body.dark-mode) .test-button {*/
-    /*    background: #4A3F64;*/
-    /*    color: #f4f9ff;*/
-    /*}*/
-
     .read-more-box {
         display: flex;
         justify-content: center;
@@ -69,19 +59,9 @@
     }
 
     .back-box {
-        position: absolute;
-        bottom: 0.01rem;
-        left: 50%;
-
-        -ms-transform: translateX(-50%);
-        -webkit-transform: translateX(-50%);
-        -moz-transform: translateX(-50%);
-        -o-transform: translateX(-50%);
-        transform: translateX(-50%);
-
         display: flex;
         justify-content: center;
-        margin: 2rem auto;
+        margin: auto 2rem 1rem 2rem;
 
         /*font-size: 1.8rem;*/
         height: 6vh;
@@ -89,18 +69,9 @@
     }
 
     .tool-box {
-        position: absolute;
-        left: 50%;
-        bottom: 2.5rem;
-
-        -ms-transform: translateX(-50%);
-        -webkit-transform: translateX(-50%);
-        -moz-transform: translateX(-50%);
-        -o-transform: translateX(-50%);
-        transform: translateX(-50%);
-
         display: flex;
         justify-content: center;
+        margin: auto 2rem 1rem 2rem;
 
         /*font-size: 1.8rem;*/
         height: 3rem;
@@ -153,12 +124,12 @@
    .button-17 {
        /*appearance: none;*/
        align-items: center;
-       background-color: #DE897D;
-       border-radius: 1.5rem;
+       background-color: #9CC6FB;
+       border-radius: 0.5rem;
        border-style: none;
        box-shadow: rgba(0, 0, 0, .2) 0 3px 5px -1px,rgba(0, 0, 0, .14) 0 6px 10px 0,rgba(0, 0, 0, .12) 0 1px 18px 0;
        box-sizing: border-box;
-       color: #f4f9ff;
+       color: #363636;
        cursor: pointer;
        display: inline-flex;
        /*fill: currentcolor;*/
@@ -183,6 +154,14 @@
        width: 100%;
        will-change: transform,opacity;
        z-index: 0;
+   }
+
+   :global(body.dark-mode) .button-17 {
+       color: #f4f9ff;
+   }
+
+   :global(body.dark-mode) .button-17:hover {
+       color: #4A3F64;
    }
 
     .button-17:hover {

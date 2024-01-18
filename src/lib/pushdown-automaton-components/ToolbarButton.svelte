@@ -56,8 +56,8 @@ onMount(() => {
     button {
         /*border-radius: 1rem;*/
         border-radius: 0.3rem;
-        background: #f4f9ff;
-        border: 0.05rem solid #4A3F64;
+        background: #f7f7f8;
+        border: 0.05rem solid #393939;
     }
 
     :global(body.dark-mode) button {

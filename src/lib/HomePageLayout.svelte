@@ -30,6 +30,16 @@
         gap: 4rem;
     }
 
+    @media screen and (max-width: 1050px) {
+        .layout {
+            flex-direction: column;
+            height: auto;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+    }
+
     .wrap {
         @extend .layout;
         width: 100%;
@@ -56,7 +66,7 @@
     }
 
     :global(body) {
-      color: #4A3F64;
+      color: #363636;
       background-color: #cde2fd;
       transition: background-color 0.3s;
     }

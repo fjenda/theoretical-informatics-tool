@@ -1,4 +1,3 @@
-<!-- MultiSelect.svelte -->
 <script>
 
     import {graph_store, resetInputVar} from "../stores/graphInitStore";
@@ -48,7 +47,6 @@
         justify-content: center;
     }
 
-    /* Style the select box */
     select {
         width: 7.5rem;
         height: 10.6rem;
@@ -61,5 +59,11 @@
         text-align: center;
 
         background-color: #eee;
+    }
+
+    :global(body.dark-mode) select {
+        background-color: #2f3941;
+        color: #f4f9ff;
+        border: 0.1rem solid #9c81da;
     }
 </style>

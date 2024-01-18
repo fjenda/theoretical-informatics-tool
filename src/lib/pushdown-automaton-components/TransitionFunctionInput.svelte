@@ -86,7 +86,7 @@
     }
 
     function parseRow(row : string) {
-        let rowSplit = row.split(/[=,\n)(]/);
+        let rowSplit = row.split(/[=,\n)(;]/);
         for (let i = rowSplit.length - 1; i > 0; i--) {
             if (!rowSplit[i]?.trim()) {
                 rowSplit.splice(i, 1);
@@ -136,7 +136,7 @@
 
     function processTransitions() {
         transitions = [];
-        let rows = textInput.split(";").filter(Boolean);
+        let rows = textInput.split("\n").filter(Boolean);
 
         let allTrue : boolean = true;
         for (let row of rows) {
@@ -161,7 +161,7 @@
     }
 
     function validateTransition(transition) {
-        return /d\([A-Za-z]+[0-9]+,[A-Za-z],[A-Za-z]\)=\([A-Za-z]+[A-Za-z0-9]+,[A-Za-z]+\)/.test(transition);
+        return /d\([A-Za-z]+[0-9]+,[A-Za-z],[A-Za-z]\)=\([A-Za-z]+[A-Za-z0-9]+,[A-Za-z]+\);/.test(transition);
     }
 
 </script>

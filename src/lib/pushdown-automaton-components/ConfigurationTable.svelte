@@ -15,16 +15,16 @@
         word = [$graph_store.word];
         word[0] = word[0].join("");
 
-        for (let i = 0; i < traversal.length; i++) {
-            if (word[i][0] === traversal[i].input) {
-                if (traversal[i].stackAfter === "E")
-                    word.push(word[i].slice(1));
-                else
-                    word.push(word[i]);
-            }
-        }
-
-        // connect traversal and word
+        // for (let i = 0; i < traversal.length; i++) {
+        //     if (word[i] && word[i][0] === traversal[i].input) {
+        //         if (traversal[i].input === "E")
+        //             word.push(word[i]);
+        //
+        //         else
+        //             word.push(word[i].slice(1));
+        //         console.log(word);
+        //     }
+        // }
     }
 
     $: if ($input_error_store.table) {
@@ -63,29 +63,36 @@
     </tbody>
 </table>
 
-<style>
+<style lang="scss">
     .styled-table {
-        margin: 0 3rem;
+        margin: 0 auto;
+
         height: 90%;
-        width: 80%;
+        width: 90%;
         min-width: 9.5rem;
         min-height: 15.5rem;
 
         border-spacing: 0;
         border-radius: 0.5rem;
 
-        overflow: hidden;
+        overflow: hidden auto;
         font-size: 0.9em;
         font-family: sans-serif;
 
-
         box-shadow: rgba(0, 0, 0, .2) 0 3px 5px -1px,rgba(0, 0, 0, .14) 0 6px 10px 0,rgba(0, 0, 0, .12) 0 1px 18px 0;
         box-sizing: border-box;
+
+        background-color: #f7f7f8;
+    }
+
+    :global(body.dark-mode) .styled-table {
+        background-color: #25252d;
+        color: #ffffff;
     }
 
     .styled-table thead tr {
-        background-color: #DE897D;
-        color: #ffffff;
+        background-color: #9CC6FB;
+        color: #393939;
     }
 
     :global(body.dark-mode) .styled-table thead tr {

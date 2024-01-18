@@ -20,6 +20,6 @@
         background-image: radial-gradient(circle at center, rgba(103,36,243,100%), rgba(255,77,194,0%));
         border-radius: 50%;
         display: inline-block;
-        filter: blur(50px);
+        filter: blur(60px);
     }
 </style>

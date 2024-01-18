@@ -58,12 +58,19 @@
         width: 10rem;
         background-color: #eee;
         outline: 0.15rem solid #ccc;
+        color: #393939;
 
         border-radius: 2rem;
         /*border-radius: 0.5rem;*/
 
         overflow: hidden;
         padding: 0.25rem;
+    }
+
+    :global(body.dark-mode) .toggle-switch {
+        background-color: #2f3941;
+        outline: 0.15rem solid #555;
+        color: #f4f9ff;
     }
 
     .toggle-switch div {
@@ -80,5 +87,10 @@
 
         outline: 0.15rem solid #007bff;
         color: #007bff;
+    }
+
+    :global(body.dark-mode) .selected {
+        outline: 0.15rem solid #9c81da;
+        color: #9c81da;
     }
 </style>

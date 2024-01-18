@@ -9,16 +9,17 @@
     import ThemeToggle from "../lib/ThemeToggle.svelte";
     import GraphToolbar from "../lib/pushdown-automaton-components/GraphToolbar.svelte";
     import ToolbarButton from "../lib/pushdown-automaton-components/ToolbarButton.svelte";
-    import TransitionFunctionInput from "../lib/pushdown-automaton-components/TransitionFunctionInput.svelte";
     import StackVisualiser from "../lib/pushdown-automaton-components/StackVisualiser.svelte";
-    import ThreeWaySwitch from "../lib/pushdown-automaton-components/ThreeWaySwitch.svelte";
     import TypeView from "../lib/pushdown-automaton-components/TypeView.svelte";
     import ConfigurationTable from "../lib/pushdown-automaton-components/ConfigurationTable.svelte";
+    import {graph_store} from "../stores/graphInitStore";
 
-    const landingPageUrl = "/"
+    const landingPageUrl = "/Theoretical-informatics-tool"
     let toolbarFunctions : ToolbarFunctions;
     let processTransitionsFunction : Function = () => {};
     let processTestInputFunction : Function = () => {};
+
+
 </script>
 
 <DebugView>
@@ -32,8 +33,7 @@
                            previousFunc={toolbarFunctions?.previousTransition}
                            stopFunc={toolbarFunctions?.resetTestInput}
                 />
-                <Button type="test" text="Test" func={processTestInputFunction} />
-                <TypeView />
+                <Button type="test" text="Test" class={$graph_store.status === undefined ? "" : $graph_store.status === "idle" ? "btn-animation-slide-down" : "btn-animation-slide-up"} func={processTestInputFunction} />
                 <Button type="back" text="Back" url={landingPageUrl} />
             </GraphControlPanel>
             <GraphWindow bind:toolbarFunctions={toolbarFunctions} slot="window">
@@ -49,6 +49,7 @@
                     <ToolbarButton type="show-definition" text="Show definition" func={toolbarFunctions?.generateConfiguration} />
                     <StackVisualiser stackFunction={toolbarFunctions?.getStack} />
                 </GraphToolbar>
+                <TypeView slot="type"/>
             </GraphWindow>
             <ConfigurationTable slot="table"/>
         </PushdownAutomatonLayout>
