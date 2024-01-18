@@ -42,7 +42,7 @@
     } as ToolbarFunctions;
 
     function preprocessGraphInput() {
-        const visited: { [key: string]: boolean } = {};
+
         const queue: { state: string; index: number; path: TransitionMeta[] }[] = [
             { state: graphObject.startState, index: 0, path: [] },
         ];
@@ -50,7 +50,7 @@
         let closestDeclinedPath: TransitionMeta[] | null = null;
         while (queue.length > 0) {
             const { state, index, path } = queue.shift()!;
-            visited[state] = true;
+
             const isAccepted =
                 index === graphObject.word.length &&
                 graphObject.finishState.includes(state);
