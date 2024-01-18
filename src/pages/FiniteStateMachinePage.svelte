@@ -18,7 +18,7 @@ import FinGraphToolbar from "../lib/finite-state-machine-components/FinGraphTool
 
 <DebugView>
     <main>
-        <FiniteStateMachineLayout title="Finite state automata">
+        <FiniteStateMachineLayout title="Finite state automaton">
             <FinGraphControlPanel>
                 <div style='text-align: center;'>
                     <Button type="dfa" text="NFA" />

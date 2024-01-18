@@ -1,5 +1,5 @@
 <script  lang="ts">
-    import {configuration_store,graph_store, resetInputVar} from "../stores/graphInitStore";
+    import {configuration_store, graph_store, resetInputVar} from "../../stores/graphInitStore";
 
 
 

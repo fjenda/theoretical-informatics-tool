@@ -1,4 +1,4 @@
-class ContextFreeGrammar {
+export class ContextFreeGrammar {
     startSymbol: string;
     nonTerminals: string[];
     terminals: string[];
@@ -12,7 +12,7 @@ class ContextFreeGrammar {
     }
 }
 
-class CFGRule {
+export class CFGRule {
     leftSide: string;
     rightSide: string[];
 
@@ -22,7 +22,7 @@ class CFGRule {
     }
 }
 
-class PushdownAutomaton {
+export class PushdownAutomaton {
     states: string[];
     inputAlphabet: string[];
     stackAlphabet: string[];
@@ -42,9 +42,25 @@ class PushdownAutomaton {
     addTransition(transition: PDATransition) {
         this.transitions.push(transition);
     }
+
+    //to string
+    toString() {
+        let str = '';
+        str += `Q = { ${this.states.join(', ')} }\n`;
+        str += `Σ = { ${this.inputAlphabet.join(', ')} }\n`;
+        str += `Γ = { ${this.stackAlphabet.join(', ')} }\n`;
+        str += `q0 = ${this.initialState}\n`;
+        str += `F = { ${this.finalStates.join(', ')} }\n`;
+        str += `δ = {\n`;
+        for (const transition of this.transitions) {
+            str += `\t(${transition.sourceState}, ${transition.inputSymbol}, ${transition.stackTop}) -> (${transition.destinationState}, ${transition.pushSymbols.join('')})\n`;
+        }
+        str += `}\n`;
+        return str;
+    }
 }
 
-class PDATransition {
+export class PDATransition {
     sourceState: string;
     inputSymbol: string;
     stackTop: string;
@@ -66,7 +82,7 @@ class PDATransition {
     }
 }
 
-class CFGtoPDAConverter {
+export class CFGtoPDAConverter {
     convertToPDA(grammar: ContextFreeGrammar): PushdownAutomaton {
         const pda = new PushdownAutomaton();
 

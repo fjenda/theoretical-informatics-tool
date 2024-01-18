@@ -1,7 +1,7 @@
 <script lang="ts">
 
     import {fly} from 'svelte/transition';
-    import {graph_store} from "../stores/graphInitStore";
+    import {graph_store} from "../../stores/graphInitStore";
 
     export let phText : string = "";
 

@@ -1,6 +1,6 @@
 <!-- Toggle.svelte -->
 <script lang="ts">
-    import {graph_store, resetInputVar} from "../stores/graphInitStore";
+    import {graph_store, resetInputVar} from "../../stores/graphInitStore";
 
     let toggleState = "dfa";
 

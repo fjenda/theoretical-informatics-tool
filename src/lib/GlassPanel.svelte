@@ -27,7 +27,7 @@
         font-size: 1.1rem;
         font-weight: 600;
         text-align: right;
-        color: #480d25;
+        color: #101820;
         margin-top: 0;
         margin-bottom: 2.5rem;
     }
@@ -38,7 +38,13 @@
 
     .glass-panel {
         flex: 1 1 50%;
-        height: 70vh;
+
+        min-height: 35rem;
+        height: 60%;
+
+        width: 60%;
+        min-width: 20rem;
+
         padding-bottom: 1.25vw;
         border-radius: 2vw;
 
