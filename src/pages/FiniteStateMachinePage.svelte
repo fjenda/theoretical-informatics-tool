@@ -23,10 +23,11 @@ import GraphControlPanel from "../lib/pushdown-automaton-components/GraphControl
     <main>
         <FiniteStateMachineLayout title="Finite state automaton">
             <FinGraphControlPanel  slot="control-panel">
-<!--                <div style='text-align: center;'>-->
-<!--                    <Button type="dfa" text="NFA" />-->
-<!--                    <Button type="dfa" text="DFA" />-->
-<!--                </div>-->
+                <div style='text-align: center; display: flex;'>
+                    <Button type="dfa" text="NFA"  />
+                    <div style="width: 45px;"></div>
+                    <Button type="dfa" text="DFA" />
+                </div>
                 <FinTestInput phText="ex. ABA" bind:processFunction={processTestInputFunction}
                                                 testInputFunction={toolbarFunctions?.testInput}
                                                 nextFunc={toolbarFunctions?.nextTransition}
@@ -52,7 +53,7 @@ import GraphControlPanel from "../lib/pushdown-automaton-components/GraphControl
                 </FinGraphToolbar>
                 <TypeView slot="type"/>
             </FinGraphWindow>
-            <ConfigurationTable slot="table"/>
+            <FinTable slot="table"/>
         </FiniteStateMachineLayout>
     </main>
 </DebugView>

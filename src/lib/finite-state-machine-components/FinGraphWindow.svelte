@@ -2,24 +2,10 @@
     import cytoscape from "cytoscape";
     import {onMount} from "svelte";
     import {configuration_store,graph_store, resetInputVar} from "../../stores/graphInitStore";
-    import FinTable from "./FinTable.svelte";
+    import {input_error_store} from "../../stores/inputErrorStore";
+    import {FiniteStateAutomaton} from "./FiniteStateAutomaton";
 
-    let graphObject : GraphObject = {
-        graph: null,
-        div: null,
-        status: "idle",
-        nodes: [],
-        edges: {},
-        transitions: [],
-        stack: [],
-        currentStatus: {},
-        word: [],
-        isAccepted: false,
-        traversal: [],
-        type: "empty",
-        startState: "q0",
-        finishState: ["qF"],
-    };
+    let graphObject = new FiniteStateAutomaton();
 
     let highlightedNodesIS : String[] = [];
     let deleteButtonActive : boolean = false;
@@ -38,62 +24,12 @@
         resetTestInput,
         generateConfiguration,
         generateGraphFromTransitions,
-        preprocessGraphInput,
+        // preprocessGraphInput,
     } as ToolbarFunctions;
 
-    function preprocessGraphInput() {
-
-        const queue: { state: string; index: number; path: TransitionMeta[] }[] = [
-            { state: graphObject.startState, index: 0, path: [] },
-        ];
-
-        let closestDeclinedPath: TransitionMeta[] | null = null;
-        while (queue.length > 0) {
-            const { state, index, path } = queue.shift()!;
-
-            const isAccepted =
-                index === graphObject.word.length &&
-                graphObject.finishState.includes(state);
-
-            if (isAccepted) {
-                console.log("Accepted");
-                graphObject.isAccepted = true;
-                return path; // String is accepted
-            }
-            closestDeclinedPath = path;
-            for (const transition of graphObject.transitions) {
-                if (transition.state === state && transition.input === graphObject.word[index]) {
-                    const newPath = path.concat(transition);
-                    queue.push({
-                        state: transition.stateAfter,
-                        index: index + 1,
-                        path: newPath,
-                    });
-                }
-            }
-
-            //epsilon eges
-            for (const transition of graphObject.transitions) {
-                if (transition.state === state && transition.input === "E") {
-                    const newPath = path.concat(transition);
-                    queue.push({
-                        state: transition.stateAfter,
-                        index: index,
-                        path: newPath,
-                    });
-                }
-            }
-        }
-
-
-        console.log("declined");
-        graphObject.isAccepted = false;
-        if (closestDeclinedPath) {
-            return closestDeclinedPath;
-        }
-        return [];
+    $: if ($graph_store.type) {
+        updateConfiguration("type");
     }
-
 
     function testInput(wordCh : string[]){
         if (graphObject.type == 'empty'){
@@ -102,6 +38,14 @@
 
         resetTestInput();
         removeHighlighted();
+
+        graph_store.update((n) => {
+            n.isAccepted = null;
+            n.word = wordCh;
+            n.status = "testing";
+            return n;
+        });
+
         graphObject.word = wordCh;
         graphObject.status = "testing";
 
@@ -119,8 +63,13 @@
 
 
         graphObject.startState = tmpNode.id;
-        graphObject.traversal = preprocessGraphInput();
-        console.log(graphObject.traversal);
+        graphObject.traversal = graphObject.preprocessGraphInput();
+        graph_store.update((n) => {
+            n.traversal = graphObject.traversal;
+            console.log("updating store", n.traversal);
+            return n;
+        });
+        // console.log(graphObject.traversal);
 
         highlightElement(tmpNode.id);
         graphObject.currentStatus = {state: tmpNode.id, input: graphObject.word, step: 0};
@@ -130,25 +79,17 @@
     function nextTransition(){
         removeHighlighted();
 
-        if (graphObject.status !== "testing") {
+        let result = graphObject.nextTransition();
+
+        if(!result){
             return;
         }
 
-        if (!graphObject.traversal[graphObject.currentStatus.step]) {
-            console.log(graphObject.isAccepted);
-            graph_store.update((n) => {
-                n.isAccepted = graphObject.isAccepted;
-                return n;
-            });
-            graphObject.status = "idle";
-            return;
-        }
-
-        let nextEdge = graphObject.traversal[graphObject.currentStatus.step].state + "-" +
-            graphObject.traversal[graphObject.currentStatus.step].stateAfter;
+        let nextNode = result.nextNode;
+        let nextEdge = result.nextEdge;
 
         setTimeout(() => {
-            highlightElement(graphObject.traversal[graphObject.currentStatus.step].stateAfter);
+            highlightElement(nextNode);
             highlightElement(nextEdge);
 
             graphObject.currentStatus.state = graphObject.traversal[graphObject.currentStatus.step].stateAfter;
@@ -158,64 +99,37 @@
         }, 250);
     }
 
-
-    function stopTest(){
-        graphObject.status = 'idle';
-
-        let isFinish = false;
-        graphObject.nodes.forEach(node => {
-            if (node.class === "finish" && node.id === graphObject.currentStatus.state){
-                isFinish = true;
-            }
-        });
-
-        if (graphObject.word.length === 0 && isFinish){
-            console.log("Accepted");
-        } else {
-            console.log("Rejected");
-        }
-
-    }
-
     function previousTransition(){
         removeHighlighted();
 
-        if (graphObject.currentStatus.step <= 0) {
-            graphObject.currentStatus.step = 0;
-            return;
-        }
-        graphObject.status = "testing";
-        graphObject.currentStatus.step--;
+        let result = graphObject.previousTransition();
 
-        if (!graphObject.traversal[graphObject.currentStatus.step]) {
+        if (!result) {
             return;
         }
 
-        let previousEdge = graphObject.traversal[graphObject.currentStatus.step].state + "-" +
-            graphObject.traversal[graphObject.currentStatus.step].stateAfter;
-
-        if (graphObject.traversal[graphObject.currentStatus.step].stackAfter === "E") {
-            graphObject.stack.push(graphObject.traversal[graphObject.currentStatus.step].stack);
-        } else if (graphObject.traversal[graphObject.currentStatus.step].stackAfter !== graphObject.traversal[graphObject.currentStatus.step].stack) {
-            graphObject.stack.pop();
-        }
+        let previousNode = result.previousNode;
+        let previousEdge = result.previousEdge;
 
         setTimeout(() => {
             highlightElement(graphObject.traversal[graphObject.currentStatus.step].stateAfter);
             highlightElement(previousEdge);
 
             graphObject.currentStatus.state = graphObject.traversal[graphObject.currentStatus.step].state;
-            graphObject.currentStatus.stack = graphObject.stack[graphObject.stack.length - 1];
             console.log(graphObject.currentStatus);
         }, 250);
     }
 
     function resetTestInput(){
         removeHighlighted();
-        graphObject.stack = [];
-        graphObject.traversal = [];
-        graphObject.currentStatus = {};
-        graphObject.word = [];
+
+        graph_store.update((n) => {
+            n.isAccepted = null;
+            n.status = "idle";
+            return n;
+        });
+
+        graphObject.resetTestInput();
     }
 
 
@@ -264,18 +178,6 @@
         });
         configuration.input_alphabet = Array.from(alphabet);
 
-        // // stack alphabet
-        // const stackAlphabet = new Set();
-        // graphObject.transitions.forEach((transition) => {
-        //     if (transition.stack !== "E") {
-        //         stackAlphabet.add(transition.stack);
-        //     }
-        //     if (transition.stackAfter !== "E") {
-        //         stackAlphabet.add(transition.stackAfter[0]);
-        //     }
-        // });
-        // configuration.stack_alphabet = Array.from(stackAlphabet);
-
         // transitions
         graphObject.transitions.forEach((transition) => {
             configuration.transitions = configuration.transitions ?? [];
@@ -299,68 +201,110 @@
         // console.log($configuration_store);
     }
 
-    function addNode(node : GraphNodeMeta) {
+    function updateConfiguration(mode : string) {
+        let configuration : AutomatonConfiguration = {};
 
-        try {
-            if (graphObject.nodes.filter((graphNode : GraphNodeMeta) => graphNode.id === node.id).length === 0) {
-                graphObject.nodes.push(node);
+        switch (mode){
+            case "node": {
+                // states
+                let states = new Set();
+                graphObject.nodes.forEach((node : GraphNodeMeta) => {
+                    states.add(node.id);
+                });
+                configuration.nodes = Array.from(states);
+
+                // start state
+                configuration.start_state = graphObject.startState;
+
+                // final states
+                configuration.final_states = graphObject.finishState;
+
+                break;
             }
 
-            graphObject.graph.add({
-                group: "nodes",
-                data: {id: node.id, label: node.label},
-                classes: node.class,
+            case "edge": {
+                // input alphabet
+                const alphabet = new Set();
+                graphObject.transitions.forEach((transition) => {
+                    if (transition.input !== "E") {
+                        alphabet.add(transition.input);
+                    }
+                });
+                configuration.input_alphabet = Array.from(alphabet);
+
+                // transitions
+                graphObject.transitions.forEach((transition) => {
+                    configuration.transitions = configuration.transitions ?? [];
+                    configuration.transitions.push({
+                        state: transition.state,
+                        input: transition.input,
+                        stateAfter: transition.stateAfter,
+                    });
+                });
+
+                break;
+            }
+
+            case "type": {
+                break;
+            }
+        }
+        Object.assign($configuration_store, configuration);
+    }
+
+    function checkGenerationInput(){
+        input_error_store.reset();
+
+        if ($graph_store.transitions === undefined || $graph_store.transitions.length === 0) {
+            input_error_store.update((n) => {
+                n.transitions = false;
+                return n;
             });
+        }
+
+        if ($graph_store.startState === undefined) {
+            input_error_store.update((n) => {
+                n.startState = false;
+                return n;
+            });
+        }
+
+        if ($graph_store.finishState === undefined && $graph_store.type !== "empty") {
+            input_error_store.update((n) => {
+                n.finishState = false;
+                return n;
+            });
+        }
+
+        return !($input_error_store.transitions === false ||
+            $input_error_store.startState === false ||
+            $input_error_store.finishState === false);
+    }
+
+    function addNode(node : GraphNodeMeta) {
+        try {
+            graphObject.addNode(node);
         } catch (e) {
             console.log(e);
         } finally {
+            updateConfiguration("node");
             resetLayout();
         }
     }
 
     function addEdge(edge : GraphEdgeMeta) {
         try {
-            //if graphEdges already has this edge
-            if (graphObject.edges[edge.id]) {
-                //if graphEdges has this edge but with different label
-                if (graphObject.edges[edge.id].filter((graphEdge : GraphEdgeMeta) => graphEdge.label == edge.label).length == 0) {
-                    graphObject.edges[edge.id].push(edge);
-                }
-            } else {
-                graphObject.edges[edge.id] = [edge];
-            }
-
-            if (graphObject.graph.$id(edge.id).length != 0) {
-                let tmpEdge = graphObject.graph.$id(edge.id);
-
-                if (tmpEdge.data("label") === edge.label) {
-                    return;
-                }
-
-                let combinedLabel = tmpEdge.data("label") + ", " + edge.label;
-                graphObject.graph.$id(edge.id).data("label", combinedLabel);
-            } else {
-                graphObject.graph.add({
-                    group: "edges",
-                    data: { id: edge.id, label: edge.label, source: edge.source, target: edge.target }
-                });
-            }
-
-            graphObject.transitions.push({
-                state: edge.source,
-                input: edge.label,
-                stateAfter: edge.target,
-            });
+            graphObject.addEdge(edge);
         } catch (e) {
             console.log(e);
         } finally {
+            updateConfiguration("edge");
             // resetLayout();
         }
     }
 
     function deleteGraphElement() {
         graphObject.graph.on("click", "*", function() {
-            graphObject.graph.remove("#" + this.id());
 
             //if clicked object is edge
             if (this.isEdge()) {
@@ -379,7 +323,27 @@
                 graphObject.transitions = graphObject.transitions.filter((transition : TransitionMeta) => {
                     return !(transition.state === tmpEdgeSource && transition.stateAfter === tmpEdgeTarget);
                 });
+                updateConfiguration("edge");
             } else {
+
+                // if node has class final
+                if (this.hasClass("finish")) {
+                    // get the number of finish nodes
+                    let finishNodes = graphObject.finishState.length;
+                    //let finishNodes = graphObject.nodes.slice().filter((node : GraphNodeMeta) => node.class.includes("finish")).length;
+                    if (finishNodes === 1) {
+                        console.log("cannot remove a finish class");
+                        return;
+                    } else {
+                        // remove node from finishState
+                        graphObject.finishState = graphObject.finishState.filter((node : string) => node !== this.id());
+                    }
+                }
+
+                //if node has class start
+                if (this.hasClass("start")) {
+                    graphObject.startState = "";
+                }
                 // remove node from graphNodes
                 graphObject.nodes = graphObject.nodes.filter((node : GraphNodeMeta) => node.id !== this.id());
 
@@ -392,7 +356,10 @@
                 graphObject.transitions = graphObject.transitions.filter((transition : TransitionMeta) => {
                     return !(transition.state === this.id() || transition.stateAfter === this.id());
                 });
+
+                updateConfiguration("node");
             }
+            graphObject.graph.remove("#" + this.id());
         });
     }
 
@@ -482,6 +449,9 @@
         graphObject.nodes = [];
         graphObject.edges = {};
         graphObject.transitions = [];
+        graphObject.startState = "";
+        graphObject.finishState = [];
+        configuration_store.reset();
     }
 
     function resetLayout() {
@@ -618,40 +588,23 @@
 
 
     function generateGraphFromTransitions() {
+        if (!checkGenerationInput()) {
+            return false;
+        }
+
         deleteGraph();
         // console.log($graph_store);
         Object.assign(graphObject, $graph_store);
 
-        graphObject.transitions.forEach(transition => {
-            let key = transition.state + "-" + transition.stateAfter;
-            graphObject.edges[key] = graphObject.edges[key] ?? [];
-            graphObject.edges[key].push(
-                {
-                    id: (transition.state + "-" + transition.stateAfter),
-                    label: (transition.input),
-                    source: transition.state,
-                    target: transition.stateAfter
-                });
-        });
-        //console.log(graphObject.edges);
-
-        // add start and finish state to nodes
-        let nodesArray = graphObject.nodes.slice();
-        graphObject.nodes = [];
-        nodesArray.forEach(node => {
-            if (graphObject.finishState.includes(node.id)) {
-                graphObject.nodes.push({id: node.id, label: node.label, class: "finish"});
-            } else if (node.id === graphObject.startState) {
-                graphObject.nodes.push({id: node.id, label: node.label, class: "start"});
-            } else {
-                graphObject.nodes.push({id: node.id, label: node.label});
-            }
-        });
+        graphObject.generateGraphFromTransitions();
         //console.log(graphObject);
 
         createGraph(false);
         // graph_store.reset();
         resetInputVar.set(false);
+        input_error_store.reset();
+
+        return true;
     }
 
 
@@ -677,23 +630,11 @@
 <!--</div>-->
 
 <style>
-    .svTable {
-        margin: 0 1rem;
-
-        /*border-radius: 2vw;*/
-        border-radius: 0.5rem;
-
-        width: 25rem;
-        max-width: 90%;
-        height: 40rem;
-        max-height: 85%;
-        background: #ffffff;
-    }
 
     .window {
         width: 95%;
         min-width: 35rem;
-        height: 95%;
+        height: 90%;
         min-height: 32rem;
 
         border-radius: 0.5rem;

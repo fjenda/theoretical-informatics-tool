@@ -48,8 +48,8 @@
     }
 
     .dfa-box{
-        display: inline-block;
-        /*display: flex;*/
+        /*display: inline-block;*/
+        display: flex;
         justify-content: center;
         margin: 1rem auto;
 
@@ -78,26 +78,6 @@
         width: 60%;
         min-width: 10rem;
     }
-
-    /*button {*/
-    /*    width: 12.5rem;*/
-    /*    min-width: 7.5rem;*/
-
-    /*    min-height: 2.5rem;*/
-
-    /*    border-radius: 1.5rem;*/
-    /*    border: 0.01rem solid transparent;*/
-
-    /*    font-size: 1em;*/
-    /*    font-weight: 600;*/
-    /*    font-family: inherit;*/
-
-    /*    color: #f4f9ff;*/
-    /*    background: #DE897D;*/
-
-    /*    cursor: pointer;*/
-    /*    transition: border-color 0.25s;*/
-    /*}*/
 
     .tab-box {
         display: flex;
