@@ -49,17 +49,39 @@
 
 
 <style>
+    .true {
+        transition: background-color 0.25s;
+        background-color: #00ff00;
+    }
+
+    .false {
+        transition: background-color 0.25s;
+        background-color: #ff0000;
+    }
+
     .input-box {
         text-align: center;
-        margin: 1rem 0;
+        /*margin: 1rem;*/
+        padding-top: 1rem;
     }
 
     .test-input {
         text-align: center;
-        font-size: 1.3rem;
-        height: 5vh;
-        width: 10.5vw;
-        border-radius: 2.5rem;
+        font-size: 1.2rem;
+        height: 2vh;
+        width: 60%;
+
+        min-width: 7.5rem;
+        min-height: 2.5rem;
+
+        border-radius: 0.5rem;
+        border: 0.125rem solid #101820;
+    }
+
+    :global(body.dark-mode) .test-input {
+        background: #2f3941;
+        color: #f4f9ff;
+        outline: 0.1rem solid #9c81da;
     }
 
     .arrows-box {
@@ -69,21 +91,33 @@
     }
 
     .stop {
-        width: 20px;
-        height: 20px;
+        width: 1.25rem;
+        height: 1.25rem;
         background-color: #000;
         margin: 0 1rem;
     }
 
+    :global(body.dark-mode) .stop {
+        background-color: #f4f9ff;
+    }
+
     .arrow {
-        width: 20px;
-        height: 20px;
+        width: 1.25rem;
+        height: 1.25rem;
         position: relative;
+    }
+
+    :global(body.dark-mode) .left::before {
+        border-color: transparent #f4f9ff transparent transparent;
+    }
+
+    :global(body.dark-mode) .right::before {
+        border-color: transparent transparent transparent #f4f9ff;
     }
 
     .left::before {
         content: '';
-        border-width: 10px 10px 10px 0;
+        border-width: 0.625rem 0.625rem 0.625rem 0;
         border-color: transparent #000 transparent transparent;
         border-style: solid;
         position: absolute;
@@ -94,7 +128,7 @@
 
     .right::before {
         content: '';
-        border-width: 10px 0 10px 10px;
+        border-width: 0.625rem 0 0.625rem 0.625rem;
         border-color: transparent transparent transparent #000;
         border-style: solid;
         position: absolute;

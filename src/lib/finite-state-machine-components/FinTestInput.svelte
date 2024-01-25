@@ -24,7 +24,6 @@
     }
 
     function processTestInput() {
-        console.log("Getted here");
         showArrows = true;
         testInputFunction(input.trim().split(""));
     }
