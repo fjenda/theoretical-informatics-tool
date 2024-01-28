@@ -12,7 +12,7 @@
     }
 </script>
 
-<Button style="border-radius: 0.3rem; border: 0.1rem solid #4A3F64; background: #f4f9ff;" on:click={getStack}>Stack</Button>
+<Button style="border-radius: 0.3rem; border: 0.05rem solid #4A3F64; background: #f4f9ff;" on:click={getStack}>Stack</Button>
 <Dropdown on:show={getStack}>
     {#each stackElements as element}
         <DropdownItem style="border: 0.1rem solid #c5c5c5;

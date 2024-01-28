@@ -38,18 +38,19 @@
     }
 </script>
 
-<table class="styled-table">
-    <thead>
-        <tr>
-            <th>State</th>
-            <th>Input</th>
-            <th>Stack</th>
-            <th>State after</th>
-            <th>Stack after</th>
-            <th>Left to read</th>
-        </tr>
-    </thead>
-    <tbody>
+<div class="wrapper">
+    <table class="styled-table">
+        <thead>
+            <tr>
+                <th>State</th>
+                <th>Input</th>
+                <th>Stack</th>
+                <th>State after</th>
+                <th>Stack after</th>
+                <th>Left to read</th>
+            </tr>
+        </thead>
+        <tbody>
         {#each traversal as row}
             <tr>
                 <td>{row.state}</td>
@@ -57,30 +58,42 @@
                 <td>{row.stack}</td>
                 <td>{row.stateAfter}</td>
                 <td>{row.stackAfter}</td>
-                <td>left to read</td>
+                <td>[word]</td>
             </tr>
         {/each}
-    </tbody>
-</table>
+        </tbody>
+    </table>
+</div>
 
 <style lang="scss">
-    .styled-table {
+    .wrapper {
+        width: 90%;
+        height: 90%;
+
         margin: 0 auto;
 
-        height: 90%;
-        width: 90%;
-        min-width: 9.5rem;
-        min-height: 15.5rem;
+        overflow-y: auto;
 
-        border-spacing: 0;
         border-radius: 0.5rem;
-
-        overflow: hidden auto;
-        font-size: 0.9em;
-        font-family: sans-serif;
 
         box-shadow: rgba(0, 0, 0, .2) 0 3px 5px -1px,rgba(0, 0, 0, .14) 0 6px 10px 0,rgba(0, 0, 0, .12) 0 1px 18px 0;
         box-sizing: border-box;
+
+        //min-width: 9.5rem;
+        //min-height: 15.5rem;
+    }
+
+    .styled-table {
+        height: 100%;
+        width: 100%;
+
+        //min-width: 9.5rem;
+        //min-height: 15.5rem;
+
+        border-spacing: 0;
+
+        font-size: 0.9em;
+        font-family: sans-serif;
 
         background-color: #f7f7f8;
     }
@@ -93,6 +106,9 @@
     .styled-table thead tr {
         background-color: #9CC6FB;
         color: #393939;
+
+        position: sticky;
+        top: 0;
     }
 
     :global(body.dark-mode) .styled-table thead tr {
@@ -103,15 +119,31 @@
     .styled-table th,
     .styled-table td {
         padding: 0.5rem;
+        border-bottom: 0.1rem solid #2f3941;
     }
 
     .styled-table tbody tr {
         background-color: #f7f7f8;
         color: #101820;
+        text-align: center;
     }
 
     :global(body.dark-mode) .styled-table tbody tr {
         background-color: #25252d;
         color: #ffffff;
+    }
+
+    @media screen and (max-width: 1150px) and (min-width: 768px) {
+        .wrapper {
+            margin: 0.5rem auto;
+        }
+    }
+
+    @media screen and (max-width: 767px) {
+        .wrapper {
+            width: 95%;
+            height: 95%;
+            margin: 0.5rem auto;
+        }
     }
 </style>

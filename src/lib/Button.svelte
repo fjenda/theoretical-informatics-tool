@@ -1,6 +1,7 @@
 <script lang="ts">
 
     import  { navigate } from "svelte-routing";
+    import {graph_store} from "../stores/graphInitStore";
 
     export let type : ButtonType;
     export let url : string = "";
@@ -10,7 +11,7 @@
 
 {#if type !== ""}
     <div class="{type}-box" {...$$restProps}>
-        <button class="button-17" on:click={() => navigate(url)} on:click={() => func()}>
+        <button class="button-17" on:click={() => {navigate(url); $graph_store.status = undefined; $graph_store.isAccepted = undefined; }} on:click={() => func()}>
             {text}
         </button>
     </div>
@@ -22,10 +23,10 @@
     .process-box {
         display: flex;
         justify-content: center;
-        margin: auto;
+        margin: auto 2rem 1rem 2rem;
 
-        width: 9.5vw;
-        height: 4vh;
+        height: 6vh;
+        width: 100%;
     }
 
     .test-box {
@@ -63,7 +64,6 @@
         justify-content: center;
         margin: auto 2rem 1rem 2rem;
 
-        /*font-size: 1.8rem;*/
         height: 6vh;
         width: 60%;
     }
@@ -79,26 +79,6 @@
         min-width: 10rem;
     }
 
-    /*button {*/
-    /*    width: 12.5rem;*/
-    /*    min-width: 7.5rem;*/
-
-    /*    min-height: 2.5rem;*/
-
-    /*    border-radius: 1.5rem;*/
-    /*    border: 0.01rem solid transparent;*/
-
-    /*    font-size: 1em;*/
-    /*    font-weight: 600;*/
-    /*    font-family: inherit;*/
-
-    /*    color: #f4f9ff;*/
-    /*    background: #DE897D;*/
-
-    /*    cursor: pointer;*/
-    /*    transition: border-color 0.25s;*/
-    /*}*/
-
     .tab-box {
         display: flex;
         justify-content: center;
@@ -106,19 +86,6 @@
         width: fit-content;
         min-width: 15rem;
         /*height: 4vh;*/
-    }
-
-    :global(body.dark-mode) button {
-        background: #4A3F64;
-    }
-
-    button:hover {
-        border-color: #646cff;
-    }
-
-    button:focus,
-    button:focus-visible {
-        outline: 4px auto -webkit-focus-ring-color;
     }
 
    .button-17 {
@@ -140,7 +107,7 @@
        justify-content: center;
        letter-spacing: .016rem;
        /*line-height: normal;*/
-       /*max-width: 100%;*/
+       max-width: 100%;
        min-width: 7.5rem;
        overflow: visible;
        padding: 0.125rem 1.5rem;
@@ -158,15 +125,17 @@
 
    :global(body.dark-mode) .button-17 {
        color: #f4f9ff;
+       background: #4A3F64;
    }
 
    :global(body.dark-mode) .button-17:hover {
        color: #4A3F64;
+       background: #f4f9ff;
    }
 
     .button-17:hover {
-        background: #f4f9ff;
         color: #174ea6;
+        background: #f4f9ff;
     }
 
     .button-17:active {
@@ -175,8 +144,8 @@
     }
 
     .button-17:focus {
-        outline: none;
-        border: 2px solid #4285f4;
+        /*outline: none;*/
+        outline: 2px solid #4285f4;
     }
 
     .button-17:not(:disabled) {
