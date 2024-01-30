@@ -53,16 +53,19 @@
 
         padding-bottom: 1.25vw;
         border-radius: 1rem;
+        margin: 1rem auto;
 
         background-image: linear-gradient(to bottom right, rgba(255,255,255,80%), rgba(255,255,255,35%), rgba(255,255,255,35%), rgba(255,255,255,10%));
-        backdrop-filter: blur(15px);
-        -webkit-backdrop-filter: blur(15px);
+
+        /* why the f does this change the bg color by 1 r value*/
+        /*backdrop-filter: blur(15px);*/
+        /*-webkit-backdrop-filter: blur(15px);*/
     }
 
-    @media screen and (max-width: 1150px) {
+    @media screen and (max-width: 1050px) {
         .glass-panel {
             width: 30rem;
-            margin-bottom: 2rem;
+            margin: 0 auto 1rem;
         }
     }
 

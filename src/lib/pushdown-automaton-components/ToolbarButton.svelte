@@ -61,7 +61,7 @@ onMount(() => {
     }
 
     :global(body.dark-mode) button {
-        background: #2f3941;
+        background: #393939;
         border: 0.05rem solid #4A3F64;
         color: #f4f9ff;
     }

@@ -77,7 +77,7 @@
         min-height: 2.5rem;
 
         border-radius: 0.5rem;
-        border: 0.125rem solid #101820;
+        border: 0.05rem solid #101820;
     }
 
     .arrows-box {

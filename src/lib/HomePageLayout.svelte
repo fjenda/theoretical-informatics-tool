@@ -24,7 +24,7 @@
         width: 60rem;
         max-width: 90%;
         height: calc(100vh - 6.5rem);
-        margin-top: 3rem;
+        margin: 0 auto;
         display: flex;
         justify-content: center;
         gap: 4rem;
@@ -34,8 +34,6 @@
         .layout {
             flex-direction: column;
             height: auto;
-            display: flex;
-            justify-content: center;
             align-items: center;
         }
     }
@@ -53,10 +51,6 @@
     :root {
       font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
       font-weight: 400;
-
-      //color-scheme: light dark;
-      //color: #ffffff;
-      //background-color: #181818;
 
       font-synthesis: none;
       text-rendering: optimizeLegibility;

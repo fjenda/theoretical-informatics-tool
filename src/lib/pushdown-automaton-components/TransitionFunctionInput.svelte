@@ -171,7 +171,7 @@
           on:input={processTransitions}
           class="function-input {$input_error_store.transitions}"
           rows="20"
-          placeholder={`d(q0,a,Z)=(q1,AZ);`} />
+          placeholder={'d(q0,a,Z)=(q1,AZ);'} />
 
 <style>
     .false {
@@ -180,13 +180,20 @@
     }
 
     .function-input {
-        /*border-radius: 1rem;*/
         border-radius: 0.3rem;
-        border: 0.1rem solid #c5c5c5;
 
         resize: none;
         height: 15rem;
         width: 10.5rem;
+        background-color: #eee;
+        border: 0.1rem solid #ccc;
+        color: #393939;
+    }
+
+    :global(body.dark-mode) .function-input {
+        border: 0.1rem solid #9c81da;
+        background-color: #2f3941;
+        color: #f4f9ff;
     }
 
     .highlight {

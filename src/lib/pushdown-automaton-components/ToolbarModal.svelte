@@ -286,4 +286,15 @@
         align-items: center;
         gap: 5rem;
     }
+
+    #transitions {
+        pointer-events: none;
+        background: #f7f7f8;
+        color: #363636;
+    }
+
+    :global(body.dark-mode) #transitions {
+        background: #25252d;
+        color: #f4f9ff;
+    }
 </style>

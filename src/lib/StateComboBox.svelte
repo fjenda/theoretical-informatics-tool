@@ -63,6 +63,7 @@
     .combo-box {
         position: relative;
         background: #eee;
+        outline: 0.1rem solid #ccc;
         height: fit-content;
         border-radius: 0.5rem;
     }
@@ -87,10 +88,9 @@
         position: absolute;
         top: 100%;
         left: 0;
-        outline: 0.15rem solid #ccc;
         background-color: #eee;
         display: none;
-        border: 0.1rem solid #ccc;
+        outline: 0.1rem solid #ccc;
 
         /*border-radius: 2rem;*/
         border-radius: 0.5rem;
@@ -100,7 +100,7 @@
     }
 
     :global(body.dark-mode) .dropdown {
-        outline: 0.15rem solid #9c81da;
+        outline: 0.1rem solid #9c81da;
         background-color: #2f3941;
     }
 

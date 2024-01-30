@@ -1,9 +1,9 @@
 <script>
-  import LandingPage from "./pages/LandingPage.svelte";
-  import {Router, Route} from "svelte-routing";
-  import PushdownAutomatonPage from "./pages/PushdownAutomatonPage.svelte";
-  import FiniteStateMachinePage from "./pages/FiniteStateMachinePage.svelte";
-  import ContextFreeGrammarPage from "./pages/ContextFreeGrammarPage.svelte";
+    import {Router, Route} from "svelte-routing"
+    import LandingPage from "./pages/LandingPage.svelte";
+    import PushdownAutomatonPage from "./pages/PushdownAutomatonPage.svelte";
+    import FiniteStateMachinePage from "./pages/FiniteStateMachinePage.svelte";
+    import ContextFreeGrammarPage from "./pages/ContextFreeGrammarPage.svelte";
   // import 'bootstrap/dist/css/bootstrap.min.css';
 </script>
 

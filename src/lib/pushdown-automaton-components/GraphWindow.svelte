@@ -767,15 +767,22 @@
 <style>
     .window {
         width: 95%;
-        min-width: 35rem;
         height: 95%;
-        min-height: 32rem;
+
+        min-height: 25.5rem;
 
         border-radius: 0.5rem;
+
         background: #f7f7f8;
 
         box-shadow: rgba(0, 0, 0, .2) 0 3px 5px -1px,rgba(0, 0, 0, .14) 0 6px 10px 0,rgba(0, 0, 0, .12) 0 1px 18px 0;
         box-sizing: border-box;
+    }
+
+    @media screen and (max-width: 1150px) {
+        .window {
+            margin: 0.5rem auto;
+        }
     }
 
     :global(body.dark-mode) .window {
@@ -787,7 +794,7 @@
 
         border-radius: 0.5rem;
 
-        height: calc(100% - 5vh);
+        height: calc(100% - 3rem);
     }
 
     .graph-wrapper {

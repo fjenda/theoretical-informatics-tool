@@ -57,7 +57,7 @@
         justify-content: space-between;
         width: 10rem;
         background-color: #eee;
-        outline: 0.15rem solid #ccc;
+        outline: 0.1rem solid #ccc;
         color: #393939;
 
         border-radius: 2rem;
@@ -69,7 +69,7 @@
 
     :global(body.dark-mode) .toggle-switch {
         background-color: #2f3941;
-        outline: 0.15rem solid #555;
+        outline: 0.1rem solid #9c81da;
         color: #f4f9ff;
     }
 
