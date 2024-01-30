@@ -16,4 +16,5 @@ export interface ToolbarFunctions {
  previousTransition : () => void,
  resetTestInput : () => void,
  getStack : () => string[],
+ regexInput: (string) => void,
 }

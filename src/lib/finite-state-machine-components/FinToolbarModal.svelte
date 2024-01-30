@@ -196,11 +196,13 @@
         border-radius: 0.2em;
         border: none;
         padding: 0;
-        background: #ffffff;
+        background: #f7f7f8;
+        color: #363636;
     }
 
     :global(body.dark-mode) dialog {
-        background: #d0d0d0;
+        background: #25252d;
+        color: #f4f9ff;
     }
 
     dialog::backdrop {

@@ -7,20 +7,27 @@ import FinGraphControlPanel from "../lib/finite-state-machine-components/FinGrap
 import FinGraphWindow from "../lib/finite-state-machine-components/FinGraphWindow.svelte";
 import FinToolbarButton from "../lib/finite-state-machine-components/FinToolbarButton.svelte";
 import FinGraphToolbar from "../lib/finite-state-machine-components/FinGraphToolbar.svelte";
+import ConfigurationTable from "../lib/pushdown-automaton-components/ConfigurationTable.svelte";
+import FinTable from "../lib/finite-state-machine-components/FinTable.svelte";
+import TypeView from "../lib/pushdown-automaton-components/TypeView.svelte";
+import GraphControlPanel from "../lib/pushdown-automaton-components/GraphControlPanel.svelte";
+import RegexInput from "../lib/finite-state-machine-components/regex/RegexInput.svelte";
 
 
     const landingPageUrl = "/Theoretical-informatics-tool/"
     let toolbarFunctions : ToolbarFunctions;
 
     let processTestInputFunction : Function = () => {};
+    let processRegexInputFunction : Function = () => {};
 </script>
 
 <DebugView>
     <main>
         <FiniteStateMachineLayout title="Finite state automaton">
-            <FinGraphControlPanel>
-                <div style='text-align: center;'>
-                    <Button type="dfa" text="NFA" />
+            <FinGraphControlPanel  slot="control-panel">
+                <div style='text-align: center; display: flex;'>
+                    <Button type="dfa" text="NFA"  />
+                    <div style="width: 45px;"></div>
                     <Button type="dfa" text="DFA" />
                 </div>
                 <FinTestInput phText="ex. ABA" bind:processFunction={processTestInputFunction}
@@ -30,13 +37,15 @@ import FinGraphToolbar from "../lib/finite-state-machine-components/FinGraphTool
                                                 stopFunc={toolbarFunctions?.resetTestInput}
                 />
                 <Button type="test" text="Test" func={processTestInputFunction} />
-                <FinTestInput phText="ex. (A+B)*" />
-                <Button type="test" text="Generate" />
+                <RegexInput phText="ex. (A+B)*" bind:processFunction={processRegexInputFunction}
+                                                regexInputFunction={toolbarFunctions?.regexInput}
+                />
+                <Button type="test" text="Generate" func={processRegexInputFunction} />
                 <Button type="back" text="Back" url={landingPageUrl} />
             </FinGraphControlPanel>
-            <FinGraphWindow bind:toolbarFunctions={toolbarFunctions}>
+            <FinGraphWindow bind:toolbarFunctions={toolbarFunctions} slot="window">
                 <FinGraphToolbar>
-                    <FinToolbarButton type="generate-automata" text="Generate Automata" func={toolbarFunctions?.generateGraphFromTransitions} />
+                    <FinToolbarButton type="generate-automata" text="Generate graph" func={toolbarFunctions?.generateGraphFromTransitions} />
                     <FinToolbarButton type="new-node" text="New node" func={toolbarFunctions?.addNode} />
                     <FinToolbarButton type="new-edge" text="New edge" func={toolbarFunctions?.addEdge} />
                     <FinToolbarButton type="delete-element" text="Delete element" func={toolbarFunctions?.toggleDelete}/>
@@ -46,7 +55,9 @@ import FinGraphToolbar from "../lib/finite-state-machine-components/FinGraphTool
                     <FinToolbarButton type="reset-layout" text="Reset layout" func={toolbarFunctions?.resetLayout} />
                     <FinToolbarButton type="show-configuration" text="Show configuration" func={toolbarFunctions?.generateConfiguration} />
                 </FinGraphToolbar>
+                <TypeView slot="type"/>
             </FinGraphWindow>
+            <FinTable slot="table"/>
         </FiniteStateMachineLayout>
     </main>
 </DebugView>

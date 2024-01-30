@@ -17,11 +17,11 @@
 <script lang="ts">
 
     import {graph_store, resetInputVar} from "../../stores/graphInitStore";
+    import {input_error_store} from "../../stores/inputErrorStore";
 
     let transitions : TransitionMeta[] = [];
     let alphabet : string[] = [];
     let textInput : string = "";
-    let highlightedRow = null;
 
 
     $: if ($resetInputVar) {
@@ -29,7 +29,7 @@
     }
 
     function parseRow(row : string) {
-        let rowSplit = row.split(/[=,\n)(]/);
+        let rowSplit = row.split(/[=,\n)(;]/);
 
         for (let i = rowSplit.length - 1; i > 0; i--) {
             if (!rowSplit[i]?.trim()) {
@@ -80,14 +80,22 @@
 
     function processTransitions() {
         transitions = [];
-        let rows = textInput.split(";");
+        // let rows = textInput.split(";");
+        let rows = textInput.split("\n").filter(Boolean);
 
+        let allTrue : boolean = true;
         for (let row of rows) {
             if (validateTransition(row)) {
                 parseRow(row);
+            } else {
+                allTrue = false;
             }
         }
 
+        input_error_store.update((n) => {
+            n.transitions = allTrue;
+            return n;
+        });
 
         graph_store.update((n) => {
             n.transitions = transitions;
@@ -100,25 +108,27 @@
     }
 
     function validateTransition(transition) {
-        console.log(transition);
-        let regex = /d\([A-Za-z]+[0-9]+,[A-Za-z0-9]\)=[A-Za-z]+[0-9]/;
+        let regex = /d\([A-Za-z]+[0-9]+,[A-Za-z0-9]\)=[A-Za-z]+[0-9];/;
         return regex.test(transition);
     }
 
-    function highlightRow(rowNumber) {
-        highlightedRow = rowNumber;
-    }
+
 
 </script>
 
 <textarea id="function-input"
           bind:value={textInput}
           on:input={processTransitions}
-          class="function-input"
+          class="function-input {$input_error_store.transitions}"
           rows="20"
-          placeholder={`d(q0,a,Z)=(q1,AZ);`} />
+          placeholder={`d(q0,0)=q0;`} />
 
 <style>
+    .false {
+        transition: background-color 0.25s;
+        background-color: #ff0000;
+    }
+
     .function-input {
         /*border-radius: 1rem;*/
         border-radius: 0.3rem;

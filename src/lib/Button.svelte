@@ -49,8 +49,8 @@
     }
 
     .dfa-box{
-        display: inline-block;
-        /*display: flex;*/
+        /*display: inline-block;*/
+        display: flex;
         justify-content: center;
         margin: 1rem auto;
 

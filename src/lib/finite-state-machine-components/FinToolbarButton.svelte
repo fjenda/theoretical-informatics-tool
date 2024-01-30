@@ -58,13 +58,20 @@ onMount(() => {
 
 <style>
     button {
-        /*border-radius: 1rem;*/
         border-radius: 0.3rem;
-        border: 0.1rem solid #c5c5c5;
+        background: #f7f7f8;
+        border: 0.05rem solid #393939;
     }
 
+    :global(body.dark-mode) button {
+        background: #2f3941;
+        border: 0.05rem solid #4A3F64;
+        color: #f4f9ff;
+    }
+
+
     button:hover {
-        outline: 0.1rem solid blue; /* Change the outline when the mouse is over the button */
+        outline: 0.1rem solid #007bff;
     }
 
 

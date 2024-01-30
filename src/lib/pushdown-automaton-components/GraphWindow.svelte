@@ -588,7 +588,7 @@
         graphObject.graph = cytoscape({
 
             container: graphObject.div,
-            wheelSensitivity: 0.2,
+            // wheelSensitivity: 0.2,
             minZoom: 0.5,
             maxZoom: 2,
 
