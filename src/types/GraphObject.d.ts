@@ -18,6 +18,8 @@ export interface GraphObject {
     type : string; //   type of PA (empty/finish) - empty for accepting empty stack, finish for accepting on finish state or both
     startState : string; //   start state of the automaton
     finishState? : string; //   finish state of the automaton
+    generated : boolean,
+    regex : string,
 }
 
 export type GraphObjectWithoutGraph = Omit<GraphObject, 'graph' | 'div'>;

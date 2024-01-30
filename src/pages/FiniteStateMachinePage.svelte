@@ -11,12 +11,14 @@ import ConfigurationTable from "../lib/pushdown-automaton-components/Configurati
 import FinTable from "../lib/finite-state-machine-components/FinTable.svelte";
 import TypeView from "../lib/pushdown-automaton-components/TypeView.svelte";
 import GraphControlPanel from "../lib/pushdown-automaton-components/GraphControlPanel.svelte";
+import RegexInput from "../lib/finite-state-machine-components/regex/RegexInput.svelte";
 
 
     const landingPageUrl = "/Theoretical-informatics-tool/"
     let toolbarFunctions : ToolbarFunctions;
 
     let processTestInputFunction : Function = () => {};
+    let processRegexInputFunction : Function = () => {};
 </script>
 
 <DebugView>
@@ -35,8 +37,10 @@ import GraphControlPanel from "../lib/pushdown-automaton-components/GraphControl
                                                 stopFunc={toolbarFunctions?.resetTestInput}
                 />
                 <Button type="test" text="Test" func={processTestInputFunction} />
-                <FinTestInput phText="ex. (A+B)*" />
-                <Button type="test" text="Generate" />
+                <RegexInput phText="ex. (A+B)*" bind:processFunction={processRegexInputFunction}
+                                                regexInputFunction={toolbarFunctions?.regexInput}
+                />
+                <Button type="test" text="Generate" func={processRegexInputFunction} />
                 <Button type="back" text="Back" url={landingPageUrl} />
             </FinGraphControlPanel>
             <FinGraphWindow bind:toolbarFunctions={toolbarFunctions} slot="window">

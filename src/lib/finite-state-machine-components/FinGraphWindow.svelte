@@ -24,11 +24,16 @@
         resetTestInput,
         generateConfiguration,
         generateGraphFromTransitions,
+        regexInput,
         // preprocessGraphInput,
     } as ToolbarFunctions;
 
     $: if ($graph_store.type) {
         updateConfiguration("type");
+    }
+
+    function regexInput(wordCh : string[]){
+        console.log(wordCh)
     }
 
     function testInput(wordCh : string[]){
@@ -600,6 +605,10 @@
         //console.log(graphObject);
 
         createGraph(false);
+        graph_store.update((n) => {
+            n.generated = true;
+            return n;
+        });
         // graph_store.reset();
         resetInputVar.set(false);
         input_error_store.reset();

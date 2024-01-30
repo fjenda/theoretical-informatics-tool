@@ -29,7 +29,7 @@
     }
 
     function parseRow(row : string) {
-        let rowSplit = row.split(/[=,\n)(]/);
+        let rowSplit = row.split(/[=,\n)(;]/);
 
         for (let i = rowSplit.length - 1; i > 0; i--) {
             if (!rowSplit[i]?.trim()) {
@@ -80,7 +80,8 @@
 
     function processTransitions() {
         transitions = [];
-        let rows = textInput.split(";");
+        // let rows = textInput.split(";");
+        let rows = textInput.split("\n").filter(Boolean);
 
         let allTrue : boolean = true;
         for (let row of rows) {
@@ -107,8 +108,7 @@
     }
 
     function validateTransition(transition) {
-        console.log(transition);
-        let regex = /d\([A-Za-z]+[0-9]+,[A-Za-z0-9]\)=[A-Za-z]+[0-9]/;
+        let regex = /d\([A-Za-z]+[0-9]+,[A-Za-z0-9]\)=[A-Za-z]+[0-9];/;
         return regex.test(transition);
     }
 

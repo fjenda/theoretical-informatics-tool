@@ -50,6 +50,9 @@
 
   .table {
     grid-area: 1 / 4 / 5 / 5;
+    //min-height: 0.5rem;
+    //width: 100%; /* Make the container take up the full width of its parent */
+    //overflow-x: auto;
   }
 
   .window {
