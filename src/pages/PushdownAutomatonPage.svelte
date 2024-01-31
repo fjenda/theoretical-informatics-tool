@@ -47,9 +47,9 @@
                     <ToolbarButton type="delete-graph" text="Delete graph" func={toolbarFunctions?.deleteGraph} />
                     <ToolbarButton type="reset-layout" text="Reset layout" func={toolbarFunctions?.resetLayout} />
                     <ToolbarButton type="show-definition" text="Show definition" func={toolbarFunctions?.generateConfiguration} />
-                    <StackVisualiser stackFunction={toolbarFunctions?.getStack} />
                 </GraphToolbar>
                 <TypeView slot="type"/>
+                <StackVisualiser slot="stack"/>
             </GraphWindow>
             <ConfigurationTable slot="table"/>
         </PushdownAutomatonLayout>

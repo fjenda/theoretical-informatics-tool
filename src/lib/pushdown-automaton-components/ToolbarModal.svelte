@@ -56,9 +56,11 @@
         config += `Γ: {${Array.from(stackAlphabet).join(", ")}}\n`;
 
         // transitions
+        let i = 1;
         config += "δ: {\n";
         $configuration_store.transitions.forEach((transition) => {
-            config += `    (${transition.state}, ${transition.input}, ${transition.stack}) → (${transition.stateAfter}, ${transition.stackAfter})\n`;
+            config += `   ${i}. (${transition.state}, ${transition.input}, ${transition.stack}) → (${transition.stateAfter}, ${transition.stackAfter})\n`;
+            i++;
         });
         config += "}\n";
 

@@ -40,7 +40,7 @@
 
   .layout {
     width: 100vw;
-    height: calc(100vh - 6rem);
+    height: calc(100vh - 7.5rem);
     margin-top: 1rem;
     display: grid;
     grid-template-columns: repeat(3, 1fr);
@@ -53,16 +53,21 @@
     grid-area: 1 / 1 / 2 / 2;
     display: flex;
     justify-content: center;
+    align-items: center;
   }
 
   .table {
     grid-area: 2 / 1 / 3 / 2;
+    display: flex;
+    justify-content: center;
+    align-items: center;
   }
 
   .window {
     grid-area: 1 / 2 / 3 / 4;
     display: flex;
     justify-content: center;
+    align-items: center;
   }
 
   @media screen and (max-width: 1150px) and (min-width: 768px) {

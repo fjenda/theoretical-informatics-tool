@@ -8,6 +8,7 @@
     import CFGResults from "../lib/cf-grammar/CFGResults.svelte";
     import Button from "../lib/Button.svelte";
     import CFGInputField from "../lib/cf-grammar/CFGInputField.svelte";
+    import CFGResultsField from "../lib/cf-grammar/CFGResultsField.svelte";
 
     const landingPageUrl = "/Theoretical-informatics-tool"
 </script>
@@ -23,7 +24,10 @@
             <CFGInput slot="cfg-input">
                 <CFGInputField />
             </CFGInput>
-            <CFGResults slot="cfg-results"/>
+<!--            <CFGResults slot="cfg-results">-->
+<!--                <CFGResultsField />-->
+<!--            </CFGResults>-->
+            <CFGResultsField slot="cfg-results" />
         </ContextFreeGrammarLayout>
     </main>
 </DebugView>

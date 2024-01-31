@@ -1,7 +1,7 @@
 <script lang="ts">
     import cytoscape from "cytoscape";
     import {onMount} from "svelte";
-    import {configuration_store, graph_store, resetInputVar} from "../../stores/graphInitStore";
+    import {configuration_store, graph_store, resetInputVar, stack_store} from "../../stores/graphInitStore";
     import {input_error_store} from "../../stores/inputErrorStore";
     import {PushdownAutomaton} from "./PushdownAutomaton";
 
@@ -69,7 +69,11 @@
         graphObject.stack = ["Z"];
         graphObject.word = wordCharacters;
 
-        console.log($graph_store.traversal);
+        stack_store.update(() => {
+            return graphObject.stack;
+        });
+
+        // console.log($graph_store.traversal);
 
         graphObject.traversal = graphObject.process();
         graph_store.update((n) => {
@@ -97,6 +101,10 @@
         let nextNode = ret.nextNode;
         let nextEdge = ret.nextEdge;
 
+        stack_store.update(() => {
+            return graphObject.stack;
+        });
+
         setTimeout(() => {
             highlightElement(nextNode);
             highlightElement(nextEdge);
@@ -117,6 +125,10 @@
         if (!ret) {
             return;
         }
+
+        stack_store.update(() => {
+            return graphObject.stack;
+        });
 
         let previousNode = ret.previousNode;
         let previousEdge = ret.previousEdge;
@@ -386,14 +398,14 @@
 
     function addEdgeFromButton(edge : GraphEdgeMeta) {
         if (graphObject.transitions.filter((transition : TransitionMeta) => {
-            return transition.state === edge.source && transition.input === edge.label.split(";")[0] && transition.stack === edge.label.split(";")[1] && transition.stateAfter === edge.target && transition.stackAfter === edge.label.split(";")[2];
+            return transition.state === edge.source && transition.input === edge.label.split(",")[0] && transition.stack === edge.label.split(/;,/)[1] && transition.stateAfter === edge.target && transition.stackAfter === edge.label.split(/;,/)[2];
         }).length === 0) {
             graphObject.transitions.push({
                 state: edge.source,
-                input: edge.label.split(";")[0],
-                stack: edge.label.split(";")[1],
+                input: edge.label.split(",")[0],
+                stack: edge.label.split(/;,/)[1],
                 stateAfter: edge.target,
-                stackAfter: edge.label.split(";")[2],
+                stackAfter: edge.label.split(/;,/)[2]
             });
         }
 
@@ -655,7 +667,7 @@
                         "line-color": "#00ff00",
                         "target-arrow-color": "#00ff00",
                         "transition-property": "line-color, target-arrow-color, background-color",
-                        "transition-duration": 100, // Adjust the duration as needed
+                        "transition-duration": 100,
                     }
                 },
             ],
@@ -668,46 +680,46 @@
     }
 
 
-    graphObject.nodes = [
+    let tmp_nodes = [
         { id: "q0", label: "q0", class: "start" },
         { id: "q1", label: "q1" },
         { id: "qF", label: "qF", class: "finish" },
     ];
 
-    graphObject.edges = {
-        "q0-q1": [{
-            id: "q0-q1",
-            label: "a;Z;aZ",
-            source: "q0",
-            target: "q1",
-        }],
-        "q1-qF": [{
-            id: "q1-qF",
-            label: "E;Z;E",
-            source: "q1",
-            target: "qF"
-        },
-        {
-            id: "q1-qF",
-            label: "a;a;E",
-            source: "q1",
-            target: "qF"
-        }],
-        "q1-q0": [{
-            id: "q1-q0",
-            label: "b;a;E",
-            source: "q1",
-            target: "q0"
-        }],
-        "qF-qF": [{
-            id: "qF-qF",
-            label: "E;Z;E",
-            source: "qF",
-            target: "qF"
-        }]
-    };
+    // let tmp_edges = {
+    //     "q0-q1": [{
+    //         id: "q0-q1",
+    //         label: "a,Z;aZ",
+    //         source: "q0",
+    //         target: "q1",
+    //     }],
+    //     "q1-qF": [{
+    //         id: "q1-qF",
+    //         label: "E,Z;E",
+    //         source: "q1",
+    //         target: "qF"
+    //     },
+    //     {
+    //         id: "q1-qF",
+    //         label: "a,a;E",
+    //         source: "q1",
+    //         target: "qF"
+    //     }],
+    //     "q1-q0": [{
+    //         id: "q1-q0",
+    //         label: "b,a;E",
+    //         source: "q1",
+    //         target: "q0"
+    //     }],
+    //     "qF-qF": [{
+    //         id: "qF-qF",
+    //         label: "E,Z;E",
+    //         source: "qF",
+    //         target: "qF"
+    //     }]
+    // };
 
-    graphObject.transitions = [
+    let tmp_transitions = [
         {
             state: "q0",
             input: "a",
@@ -717,9 +729,9 @@
         },
         {
             state: "q1",
-            input: "E",
-            stack: "Z",
-            stateAfter: "qF",
+            input: "b",
+            stack: "a",
+            stateAfter: "q0",
             stackAfter: "E",
         },
         {
@@ -731,9 +743,9 @@
         },
         {
             state: "q1",
-            input: "b",
-            stack: "a",
-            stateAfter: "q0",
+            input: "E",
+            stack: "Z",
+            stateAfter: "qF",
             stackAfter: "E",
         },
         {
@@ -745,9 +757,21 @@
         }
     ];
 
+
+
     onMount(() => {
         graphInit();
-        createGraph(false);
+        // createGraph(false);
+
+        graph_store.update((n) => {
+            n.transitions = tmp_transitions;
+            n.nodes = tmp_nodes;
+            n.startState = "q0";
+            n.finishState = ["qF"];
+            return n;
+        });
+
+        generateGraphFromTransitions();
     });
 </script>
 
@@ -760,6 +784,9 @@
         <div bind:this={graphObject.div} class="graph" />
         <div class="type-wrapper">
             <slot name="type" />
+        </div>
+        <div class="stack-wrapper">
+            <slot name="stack" />
         </div>
     </div>
 </div>
@@ -806,6 +833,13 @@
         position: absolute;
         top: 0;
         left: 1rem;
+        pointer-events: none;
+    }
+
+    .stack-wrapper {
+        position: absolute;
+        top: 0;
+        right: 1rem;
         pointer-events: none;
     }
 </style>

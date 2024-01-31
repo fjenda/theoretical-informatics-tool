@@ -1,6 +1,6 @@
 <script lang="ts">
     import { fly } from "svelte/transition";
-    import {graph_store} from "../../stores/graphInitStore";
+    import {graph_store, table_index_store} from "../../stores/graphInitStore";
     export let testInputFunction : Function = () => {};
     export const processFunction : Function = processTestInput;
     export let nextFunc : Function = () => {};
@@ -15,21 +15,44 @@
         input = input.substring(0, input.length - 1);
     }
     function processTestInput() {
+        table_index_store.set(0);
+
         showArrows = true;
         testInputFunction(input.trim().split(""));
     }
 
     function next() {
+        table_index_store.update((table_index) => {
+            if (table_index < $graph_store.traversal.length) {
+                return table_index + 1;
+            } else {
+                return table_index;
+            }
+        });
+
+        console.log($table_index_store);
+
         nextFunc();
     }
 
     function previous() {
+        table_index_store.update((table_index) => {
+            if (table_index > 0) {
+                return table_index - 1;
+            } else {
+                return table_index;
+            }
+        });
+
         previousFunc();
     }
 
     function stopTesting() {
         showArrows = false;
         console.log("stop");
+
+        table_index_store.set(-1);
+
         stopFunc();
     }
 

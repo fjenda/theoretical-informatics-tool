@@ -1,22 +1,61 @@
 <script lang="ts">
-    import { Button, Dropdown, DropdownItem } from 'flowbite-svelte';
+    import {graph_store, stack_store} from "../../stores/graphInitStore";
+
     let stackElements : string[] = [];
-    export let stackFunction : () => string[] = () => {};
 
-    function getStack() {
-        stackElements = stackFunction()?.slice().reverse();
+    $: if ($stack_store) {
+        if ($graph_store.status === "testing")
+            stackElements = $stack_store.slice().reverse();
+        else
+            stackElements = [];
 
-        if (stackElements?.length) {
-            console.log("stack: " + stackElements);
-        }
+        console.log(stackElements);
     }
+
+
 </script>
 
-<Button style="border-radius: 0.3rem; border: 0.05rem solid #4A3F64; background: #f4f9ff;" on:click={getStack}>Stack</Button>
-<Dropdown on:show={getStack}>
-    {#each stackElements as element}
-        <DropdownItem style="border: 0.1rem solid #c5c5c5;
-                             min-width: 2rem;
-                            ">{element}</DropdownItem>
-    {/each}
-</Dropdown>
+<div class="stack">
+    <div class="stack__title">Stack</div>
+    <div class="stack__elements">
+        {#each stackElements as element}
+            <div class="stack__element">{element}</div>
+        {/each}
+    </div>
+</div>
+
+<style>
+    .stack {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        margin-top: 1rem;
+    }
+
+    .stack__title {
+        font-size: 1.5rem;
+        font-weight: bold;
+        margin-bottom: 0.5rem;
+    }
+
+    .stack__elements {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+    }
+
+    .stack__element {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        height: 2rem;
+        border: 0.1rem solid #c5c5c5;
+        border-radius: 0.3rem;
+        margin-bottom: 0.5rem;
+    }
+</style>

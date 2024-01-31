@@ -52,18 +52,21 @@
     grid-area: 1 / 1 / 3 / 3;
     display: flex;
     justify-content: center;
+    align-items: center;
   }
 
   .input-div {
     grid-area: 1 / 3 / 2 / 4;
     display: flex;
     justify-content: center;
+    align-items: center;
   }
 
   .results-div {
     grid-area: 2 / 3 / 3 / 4;
     display: flex;
     justify-content: center;
+    align-items: center;
   }
 
   @media screen and (max-width: 1000px) and (min-width: 768px) {

@@ -1,5 +1,7 @@
 import {type Writable, writable} from "svelte/store";
 
+export const stack_store = writable([]);
+export const table_index_store = writable(-1);
 export const resetInputVar = writable(false);
 export const configuration_store = function() {
     const {set, update, subscribe} : Writable<Partial<AutomatonConfiguration>> = writable({});

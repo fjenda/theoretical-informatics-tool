@@ -1,9 +1,9 @@
 <script lang="ts">
-    import { graph_store, resetInputVar } from "../../stores/graphInitStore";
+    import {graph_store, resetInputVar} from "../../stores/graphInitStore";
     import {input_error_store} from "../../stores/inputErrorStore";
 
-    let transitions : TransitionMeta[] = [];
-    let textInput : string = "";
+    let transitions: TransitionMeta[] = [];
+    let textInput: string = "";
 // Test input
 // d(q0,a,Z)=(q0,AZ);
 // d(q0,a,A)=(q0,AA);
@@ -85,7 +85,7 @@
         textInput = "";
     }
 
-    function parseRow(row : string) {
+    function parseRow(row: string) {
         let rowSplit = row.split(/[=,\n)(;]/);
         for (let i = rowSplit.length - 1; i > 0; i--) {
             if (!rowSplit[i]?.trim()) {
@@ -112,7 +112,7 @@
 
     function storeNodes() {
         //get nodes from transitions
-        let nodes : GraphNodeMeta[] = [];
+        let nodes: GraphNodeMeta[] = [];
         for (let transition of transitions) {
             if (!nodes.find(node => node.id === transition.state)) {
                 nodes.push({
@@ -138,7 +138,7 @@
         transitions = [];
         let rows = textInput.split("\n").filter(Boolean);
 
-        let allTrue : boolean = true;
+        let allTrue: boolean = true;
         for (let row of rows) {
             console.log(row);
             if (validateTransition(row)) {
@@ -166,17 +166,17 @@
 
 </script>
 
-<textarea id="function-input"
-          bind:value={textInput}
-          on:input={processTransitions}
-          class="function-input {$input_error_store.transitions}"
-          rows="20"
-          placeholder={'d(q0,a,Z)=(q1,AZ);'} />
+<textarea bind:value={textInput}
+      class="function-input {$input_error_store.transitions}"
+      id="function-input"
+      on:input={processTransitions}
+      placeholder={'d(q0,a,Z)=(q1,AZ);'}
+      rows="20"/>
 
 <style>
     .false {
         transition: background-color 0.25s;
-        background-color: #ff0000;
+        background-color: #ff0000 !important;
     }
 
     .function-input {
@@ -185,18 +185,24 @@
         resize: none;
         height: 15rem;
         width: 10.5rem;
+
         background-color: #eee;
+
         border: 0.1rem solid #ccc;
         color: #393939;
     }
 
     :global(body.dark-mode) .function-input {
         border: 0.1rem solid #9c81da;
+
         background-color: #2f3941;
+
         color: #f4f9ff;
     }
 
     .highlight {
         background-color: red;
+        height: 15rem;
+        width: 10.5rem;
     }
 </style>

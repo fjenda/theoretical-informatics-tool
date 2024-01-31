@@ -51,7 +51,7 @@ export class PushdownAutomaton {
                     break;
                 }
 
-                case "final": { //if PA accepts by empty word and finish state
+                case "final": { // if PA accepts by empty word and finish state
                     if ((this.finishState).includes(state) && (index === this.word.length || this.word.length === 0)) {
                         console.log("accepted");
                         this.isAccepted = true;
@@ -154,7 +154,7 @@ export class PushdownAutomaton {
             this.edges[key].push(
                 {
                     id: (transition.state + "-" + transition.stateAfter),
-                    label: (transition.input + ";" + transition.stack + ";" + transition.stackAfter),
+                    label: (transition.input + "," + transition.stack + ";" + transition.stackAfter),
                     source: transition.state,
                     target: transition.stateAfter
                 });

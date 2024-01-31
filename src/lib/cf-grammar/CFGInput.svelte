@@ -4,7 +4,7 @@
 
 <div class="cfg-input">
     <h1>Test input</h1>
-    <slot/>
+    <slot />
 </div>
 
 <style lang="scss">
