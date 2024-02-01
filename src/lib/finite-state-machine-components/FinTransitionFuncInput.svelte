@@ -22,6 +22,9 @@
     let transitions : TransitionMeta[] = [];
     let alphabet : string[] = [];
     let textInput : string = "";
+    let textarea: HTMLTextAreaElement;
+    let backdrop: HTMLDivElement;
+
 
 
     $: if ($resetInputVar) {
@@ -83,12 +86,14 @@
         // let rows = textInput.split(";");
         let rows = textInput.split("\n").filter(Boolean);
 
+        applyHighlights(textInput);
+
         let allTrue : boolean = true;
         for (let row of rows) {
             if (validateTransition(row)) {
                 parseRow(row);
             } else {
-                allTrue = false;
+                // allTrue = false;
             }
         }
 
@@ -112,34 +117,128 @@
         return regex.test(transition);
     }
 
+    function applyHighlights(text) {
+        return text
+            .replace(/\n$/g, '\n\n')
+            .replace(/(d\([A-Za-z]+[0-9]+,[A-Za-z0-9]\)=[A-Za-z]+[0-9];)|(.*)/g, function(match, pattern, other) {
+                if (pattern) {
+                    return match;  // If it matches the pattern, leave it unchanged
+                } else {
+                    return '<mark>' + match + '</mark>';  // If it doesn't match, wrap the entire line in <mark> tags
+                }
+            });
+    }
 
+    function handleScroll() {
+        let scrollTop = textarea.scrollTop;
+        backdrop.scrollTop = scrollTop;
+    }
+
+    function handleInput() {
+        applyHighlights(textInput);
+    }
 
 </script>
 
-<textarea id="function-input"
-          bind:value={textInput}
-          on:input={processTransitions}
-          class="function-input {$input_error_store.transitions}"
-          rows="20"
-          placeholder={`d(q0,0)=q0;`} />
-
+<div class="container">
+    <div class="backdrop" bind:this={backdrop} >
+        <div class="highlights">
+            {@html applyHighlights(textInput)}
+        </div>
+    </div>
+    <textarea id="function-input"
+              bind:value={textInput}
+              bind:this={textarea}
+              on:input={processTransitions}
+              on:scroll={handleScroll}
+              class="function-input"
+              rows="20"
+              placeholder={`d(q0,0)=q0;`} />
+</div>
 <style>
-    .false {
-        transition: background-color 0.25s;
-        background-color: #ff0000;
-    }
-
     .function-input {
-        /*border-radius: 1rem;*/
         border-radius: 0.3rem;
         border: 0.1rem solid #c5c5c5;
-
-        resize: none;
         height: 15rem;
+        width: 10.5rem;
+
+        letter-spacing: 1px;
+        display: block;
+        position: absolute;
+        z-index: 2;
+        margin: 0;
+        /*border: 2px solid #74637f;*/
+        color: #444;
+        background-color: transparent;
+        overflow: auto;
+        resize: none;
+        transition: transform 1s;
+    }
+    textarea {
+        margin: 0;
+        border-radius: 0;
+    }
+
+
+    .highlights{
+        letter-spacing: 1px;
+        white-space: pre-wrap;
+        word-wrap: break-word;
+        color: transparent;
+        margin: 0 auto;
+    }
+
+    .highlights, textarea {
+        padding: 0.05rem;
+        font: 1rem/1.5rem 'Open Sans', sans-serif;
+        letter-spacing: 1px;
+    }
+
+    .backdrop {
+        position: absolute;
+        z-index: 1;
+        /*border: 2px solid #685972;*/
+        background-color: #fff;
+        overflow: auto;
+        pointer-events: none;
+        transition: transform 1s;
+        height: 100%;
+        width: 100%;
+        margin: auto;
+        border: 0.1rem solid transparent;
+    }
+
+    .container{
+        display: block;
+        margin: 0 auto;
+        border: 0.1rem solid transparent;
+        transform: translateZ(0);
+        padding: 0.05rem;
+        height: 15rem;;
         width: 10.5rem;
     }
 
-    .highlight {
-        background-color: red;
+
+    .backdrop {
+        background-color: #fff; /* or whatever */
     }
+
+    :global(mark) {
+        color: transparent;
+        border-radius: 0.2rem;
+        background-color: #f36969; /* or whatever */
+    }
+
+    :global(body.dark-mode) .function-input {
+        border: 0.1rem solid #9c81da;
+
+        /*background-color: #2f3941;*/
+        background-color: transparent;
+        color: #f4f9ff;
+    }
+
+    :global(body.dark-mode) .backdrop {
+        background-color: #2f3941;
+    }
+
 </style>

@@ -183,7 +183,10 @@
 
     //margin: 0 auto;
 
-    overflow: visible auto;
+    //overflow-x: hidden;
+    overflow: auto;
+
+
 
     border-radius: 0.5rem;
 
