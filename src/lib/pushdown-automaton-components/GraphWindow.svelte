@@ -89,6 +89,7 @@
         console.log(graphObject.currentStatus);
     }
 
+    // TODO: when clicking fast on next/previous button, the stack is not updated correctly
     function nextTransition() {
         removeHighlighted();
 

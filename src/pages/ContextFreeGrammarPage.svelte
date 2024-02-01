@@ -5,7 +5,6 @@
     import ContextFreeGrammarLayout from "../lib/cf-grammar/ContextFreeGrammarLayout.svelte";
     import CFGEditor from "../lib/cf-grammar/CFGEditor.svelte";
     import CFGInput from "../lib/cf-grammar/CFGInput.svelte";
-    import CFGResults from "../lib/cf-grammar/CFGResults.svelte";
     import Button from "../lib/Button.svelte";
     import CFGInputField from "../lib/cf-grammar/CFGInputField.svelte";
     import CFGResultsField from "../lib/cf-grammar/CFGResultsField.svelte";

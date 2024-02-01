@@ -4,7 +4,6 @@ import type {TransitionMeta} from "../../types/TransitionMeta";
 import type {AutomatonState} from "../../types/AutomatonState";
 import type {GraphEdgeMeta} from "../../types/GraphEdgeMeta";
 import {graph_store} from "../../stores/graphInitStore";
-import {PDATransition} from "../cf-grammar/CFGToPDA";
 
 export class PushdownAutomaton {
     graph = null;

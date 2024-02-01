@@ -36,9 +36,16 @@
                 firstRuleIndex++;
             }
 
+            // check if word is longer than 10 chars
+            if (wordBackup.length > 10) {
+                word = wordBackup.slice(0, 7) + "...";
+            } else {
+                word = wordBackup;
+            }
+
 
             // push the initial configuration into tableData
-            tableData.push([$graph_store.startState, $graph_store.word.join(""), "Z", firstRuleIndex ? firstRuleIndex : "#", firstRule ? firstRule : "", 0]);
+            tableData.push([$graph_store.startState, word, "Z", firstRuleIndex ? firstRuleIndex : "#", firstRule ? firstRule : "", 0]);
 
             for (let i = 0; i < traversal.length; i++) {
                 // rule about to be used
@@ -176,8 +183,7 @@
 
     //margin: 0 auto;
 
-    overflow: visible scroll;
-
+    overflow: visible auto;
 
     border-radius: 0.5rem;
 
