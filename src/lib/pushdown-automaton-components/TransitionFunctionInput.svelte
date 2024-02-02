@@ -4,6 +4,8 @@
 
     let transitions: TransitionMeta[] = [];
     let textInput: string = "";
+    let textArea: HTMLTextAreaElement;
+    let backdrop: HTMLDivElement;
 // Test input
 // d(q0,a,Z)=(q0,AZ);
 // d(q0,a,A)=(q0,AA);
@@ -138,6 +140,8 @@
         transitions = [];
         let rows = textInput.split("\n").filter(Boolean);
 
+        applyHighlights(textInput);
+
         let allTrue: boolean = true;
         for (let row of rows) {
             console.log(row);
@@ -164,45 +168,111 @@
         return /d\([A-Za-z]+[0-9]+,[A-Za-z],[A-Za-z]\)=\([A-Za-z]+[A-Za-z0-9]+,[A-Za-z]+\);/.test(transition);
     }
 
+    function applyHighlights(text: string) {
+        return text
+            .replace(/\n$/g, '\n\n')
+            .replace(/(d\([A-Za-z]+[0-9]+,[A-Za-z],[A-Za-z]\)=\([A-Za-z]+[A-Za-z0-9]+,[A-Za-z]+\);)|(.*)/g, function (match, pattern, other) {
+                if (pattern) {
+                    return match;
+                } else {
+                    return "<mark>" + match + "</mark>";
+                }
+            });
+    }
+
+    function handleScroll() {
+        backdrop.scrollTop = textArea.scrollTop;
+    }
+
 </script>
 
-<textarea bind:value={textInput}
-      class="function-input {$input_error_store.transitions}"
-      id="function-input"
-      on:input={processTransitions}
-      placeholder={'d(q0,a,Z)=(q1,AZ);'}
-      rows="20"/>
+<div class="container">
+    <div class="backdrop" bind:this={backdrop}>
+        <div class="highlights">
+            {@html applyHighlights(textInput)}
+        </div>
+    </div>
+    <textarea bind:value={textInput}
+              bind:this={textArea}
+              on:scroll={handleScroll}
+              on:input={processTransitions}
+              id="function-input"
+              class="function-input"
+              placeholder={'d(q0,a,Z)=(q1,AZ);'}
+              rows="20"/>
+</div>
 
 <style>
-    .false {
-        transition: background-color 0.25s;
-        background-color: #ff0000 !important;
+    textarea {
+        margin: 0;
+        border-radius: 0;
     }
 
     .function-input {
         border-radius: 0.3rem;
+        border: 0.1rem solid #ccc;
+        background-color: transparent;
+        color: #393939;
 
-        resize: none;
         height: 15rem;
         width: 10.5rem;
 
-        background-color: #eee;
+        resize: none;
 
-        border: 0.1rem solid #ccc;
-        color: #393939;
+        display: block;
+        position: absolute;
+        z-index: 2;
+        margin: 0;
+        overflow: auto;
+        font: 1rem/1.5rem 'Open Sans', sans-serif;
     }
 
     :global(body.dark-mode) .function-input {
         border: 0.1rem solid #9c81da;
-
-        background-color: #2f3941;
-
+        /*background-color: #2f3941;*/
         color: #f4f9ff;
     }
 
-    .highlight {
-        background-color: red;
+    .highlights {
+        white-space: pre-wrap;
+        word-wrap: break-word;
+
+        /*color: orange;*/
+        color: transparent;
+
+        margin: 0 auto;
+        border: 0.1rem solid transparent;
+        font: 1rem/1.5rem 'Open Sans', sans-serif;
+    }
+
+    .backdrop {
+        padding: 0.05rem;
+        position: absolute;
+        z-index: 1;
+        background-color: #eee;
+        overflow: auto;
+        pointer-events: none;
         height: 15rem;
         width: 10.5rem;
+        margin: auto;
+        border: 0.1rem solid transparent;
+    }
+
+    :global(body.dark-mode) .backdrop {
+        background-color: #2f3941;
+    }
+
+    .container {
+        display: block;
+        margin: 0 auto;
+        padding: 0.05rem;
+        height: 15rem;
+        width: 10.5rem;
+    }
+
+    :global(mark) {
+        color: transparent;
+        border-radius: 0.2rem;
+        background-color: #ff6969;
     }
 </style>
