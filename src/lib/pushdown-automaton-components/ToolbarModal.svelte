@@ -59,6 +59,18 @@
         let i = 1;
         config += "δ: {\n";
         $configuration_store.transitions.forEach((transition) => {
+            if (transition.input === "E") {
+                transition.input = "ε";
+            }
+
+            if (transition.stack === "E") {
+                transition.stack = "ε";
+            }
+
+            if (transition.stackAfter === "E") {
+                transition.stackAfter = "ε";
+            }
+
             config += `   ${i}. (${transition.state}, ${transition.input}, ${transition.stack}) → (${transition.stateAfter}, ${transition.stackAfter})\n`;
             i++;
         });

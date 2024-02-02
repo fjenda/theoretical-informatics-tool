@@ -149,7 +149,7 @@
                     <td>{row[0]}</td>
                     <td>{row[1]}</td>
                     <td>{row[2]}</td>
-                    {#if row[3] === "#"}
+                    {#if row[3] === "#" || row[3] === -1}
                         <td>{row[3]}</td>
                     {:else}
                         <td class="tooltip-wrapper"><span
@@ -162,8 +162,8 @@
                     <td>{row[0]}</td>
                     <td>{row[1]}</td>
                     <td>{row[2]}</td>
-                    {#if row[3] === "#"}
-                        <td>{row[3]}</td>
+                    {#if row[3] === "#" || row[3] === -1}
+                    <td>{row[3]}</td>
                     {:else}
                         <td class="tooltip-wrapper"><span
                                 use:tooltip={`δ(${row[4].state}, ${row[4].input}, ${row[4].stack}) → (${row[4].stateAfter}, ${row[4].stackAfter})`}>{row[3]}</span>
@@ -210,11 +210,17 @@
     background-color: #393939 !important;
   }
 
+  table {
+    overflow: visible auto;
+  }
+
   .styled-table {
     height: 100%;
     width: 100%;
 
     z-index: 100;
+
+    position: relative;
 
     //min-width: 9.5rem;
     //min-height: 15.5rem;
@@ -302,7 +308,7 @@
     position: absolute;
     bottom: inherit;
     left: inherit;
-    transform: translate(-52.5%, -100%);
+    transform: translate(-110%, -22.5%);
     padding: 0.2rem 0.35rem;
     background: #F4F8FF;
     color: #333333;
@@ -314,18 +320,19 @@
 
   :global(body.dark-mode #tooltip) {
     background: #333333;
+    outline: 0.125rem solid #4A3F64;
     color: #F4F8FF;
   }
 
-  :global(.tooltip:not(:focus) #tooltip::before) {
-    content: '';
-    position: absolute;
-    top: 100%;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 0.6em;
-    height: 0.25em;
-    background: inherit;
-    clip-path: polygon(0% 0%, 100% 0%, 50% 100%);
-  }
+  //:global(.tooltip:not(:focus) #tooltip::before) {
+  //  content: '';
+  //  position: absolute;
+  //  top: 100%;
+  //  left: 50%;
+  //  transform: translateX(-50%);
+  //  width: 0.6em;
+  //  height: 0.25em;
+  //  background: inherit;
+  //  clip-path: polygon(0% 0%, 100% 0%, 50% 100%);
+  //}
 </style>
