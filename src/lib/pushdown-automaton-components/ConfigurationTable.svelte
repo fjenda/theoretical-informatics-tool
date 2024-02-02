@@ -152,7 +152,7 @@
                     {#if row[3] === "#"}
                         <td>{row[3]}</td>
                     {:else}
-                        <td><span
+                        <td class="tooltip-wrapper"><span
                                 use:tooltip={`(${row[4].state}, ${row[4].input}, ${row[4].stack}) → (${row[4].stateAfter}, ${row[4].stackAfter})`}>{row[3]}</span>
                         </td>
                     {/if}
@@ -165,7 +165,7 @@
                     {#if row[3] === "#"}
                         <td>{row[3]}</td>
                     {:else}
-                        <td><span
+                        <td class="tooltip-wrapper"><span
                                 use:tooltip={`δ(${row[4].state}, ${row[4].input}, ${row[4].stack}) → (${row[4].stateAfter}, ${row[4].stackAfter})`}>{row[3]}</span>
                         </td>
                     {/if}
@@ -177,13 +177,21 @@
 </div>
 
 <style lang="scss">
+
+  .tooltip-wrapper span {
+    //position: absolute;
+
+    //top: 0;
+    //left: 0;
+  }
+
   .wrapper {
     width: 90%;
     height: 90%;
 
     //margin: 0 auto;
 
-    overflow: visible auto;
+    overflow: visible scroll;
 
     border-radius: 0.5rem;
 
@@ -206,6 +214,8 @@
     height: 100%;
     width: 100%;
 
+    z-index: 100;
+
     //min-width: 9.5rem;
     //min-height: 15.5rem;
 
@@ -227,6 +237,8 @@
 
       position: sticky;
       top: 0;
+
+      z-index: 1;
     }
 
     th, td {
@@ -286,7 +298,7 @@
   }
 
   :global(#tooltip) {
-    z-index: 9999;
+    z-index: 999;
     position: absolute;
     bottom: inherit;
     left: inherit;

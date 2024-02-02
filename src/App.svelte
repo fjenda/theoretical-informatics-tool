@@ -4,7 +4,7 @@
     import PushdownAutomatonPage from "./pages/PushdownAutomatonPage.svelte";
     import FiniteStateMachinePage from "./pages/FiniteStateMachinePage.svelte";
     import ContextFreeGrammarPage from "./pages/ContextFreeGrammarPage.svelte";
-  // import 'bootstrap/dist/css/bootstrap.min.css';
+    // import 'bootstrap/dist/css/bootstrap.min.css';
 </script>
 
 <Router basepath="/Theoretical-informatics-tool">

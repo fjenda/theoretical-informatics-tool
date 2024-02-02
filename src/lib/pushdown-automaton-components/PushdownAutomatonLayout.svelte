@@ -39,7 +39,7 @@
   }
 
   .layout {
-    width: 100vw;
+    //width: 100vw;
     height: calc(100vh - 7.5rem);
     margin-top: 1rem;
     display: grid;

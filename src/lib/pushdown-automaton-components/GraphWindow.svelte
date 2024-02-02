@@ -279,6 +279,7 @@
                         stackAlphabet.add(transition.stack);
                     }
                     if (transition.stackAfter !== "E") {
+                        console.log(transition);
                         stackAlphabet.add(transition.stackAfter[0]);
                     }
                 });
@@ -404,9 +405,9 @@
             graphObject.transitions.push({
                 state: edge.source,
                 input: edge.label.split(",")[0],
-                stack: edge.label.split(/;,/)[1],
+                stack: edge.label.split(/[;,]/)[1],
                 stateAfter: edge.target,
-                stackAfter: edge.label.split(/;,/)[2]
+                stackAfter: edge.label.split(/[;,]/)[2]
             });
         }
 
