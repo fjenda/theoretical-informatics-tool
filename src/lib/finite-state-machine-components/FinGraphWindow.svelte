@@ -4,6 +4,7 @@
     import {configuration_store,graph_store, resetInputVar} from "../../stores/graphInitStore";
     import {input_error_store} from "../../stores/inputErrorStore";
     import {FiniteStateAutomaton} from "./FiniteStateAutomaton";
+    import {RegexAutomaton} from "./regex/RegexAutomaton";
 
     let graphObject = new FiniteStateAutomaton();
 
@@ -32,8 +33,16 @@
         updateConfiguration("type");
     }
 
-    function regexInput(wordCh : string[]){
+    function regexInput(wordCh : string){
         console.log(wordCh)
+        let regex = new RegexAutomaton(wordCh);
+        console.log(regex);
+
+        deleteGraph();
+        // console.log($graph_store);
+        Object.assign(graphObject, $graph_store);
+
+        regex.regexProcessFunc();
     }
 
     function testInput(wordCh : string[]){
@@ -616,7 +625,7 @@
         return true;
     }
 
-
+     console.log(graphObject);
     onMount(() => {
         graphConstructor();
         createGraph();
