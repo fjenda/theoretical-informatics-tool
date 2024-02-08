@@ -1,8 +1,21 @@
 <script lang="ts">
-    let input: string[] = [];
+    import {user_grammar_store} from "../../stores/graphInitStore";
+
+    let input: string = "";
+
+    $: if (input) {
+        parseInput();
+    }
 
     function parseInput() {
+        let parsed = input
+            .split('\n')
+            .map((line: string) => line.trim().split(''));
 
+        user_grammar_store.update((n) => {
+            n.validateInputs(parsed);
+            return n;
+        });
     }
 </script>
 

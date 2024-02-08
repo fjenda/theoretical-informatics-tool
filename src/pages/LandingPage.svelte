@@ -2,7 +2,6 @@
     import HomePageLayout from "../lib/HomePageLayout.svelte";
     import GlassPanel from "../lib/GlassPanel.svelte";
     import type {ToolMeta} from "../types/ToolMeta";
-    import DebugView from "../lib/DebugView.svelte";
     import Button from "../lib/Button.svelte";
     import Flare from "../lib/Flare.svelte";
 
@@ -24,16 +23,14 @@
     ]
 </script>
 
-<DebugView>
-    <main>
-        <Flare />
-        <HomePageLayout title="Theoretical Informatics Tool for Students">
-            {#each tools as tool}
-                <GlassPanel info={tool}>
-                    <Button type="read-more" text="Read more" url={tool.scriptsUrl} />
-                    <Button type="tool" text="Tool" url={tool.toolUrl} />
-                </GlassPanel>
-            {/each}
-        </HomePageLayout>
-    </main>
-</DebugView>
+<main>
+    <Flare />
+    <HomePageLayout title="Theoretical Informatics Tool for Students">
+        {#each tools as tool}
+            <GlassPanel info={tool}>
+                <Button type="read-more" text="Read more" url={tool.scriptsUrl} />
+                <Button type="tool" text="Tool" url={tool.toolUrl} />
+            </GlassPanel>
+        {/each}
+    </HomePageLayout>
+</main>

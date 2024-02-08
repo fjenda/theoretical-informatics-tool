@@ -152,6 +152,13 @@
             }
         }
 
+        // remove duplicate transitions
+        transitions = transitions.filter((transition, index, self) =>
+            index === self.findIndex((t) => (
+                transitionEquals(t, transition)
+            ))
+        );
+
         input_error_store.update((n) => {
             n.transitions = allTrue;
             return n;
@@ -182,6 +189,14 @@
 
     function handleScroll() {
         backdrop.scrollTop = textArea.scrollTop;
+    }
+
+    function transitionEquals(t1: TransitionMeta, t2: TransitionMeta) {
+        return t1.state === t2.state &&
+            t1.input === t2.input &&
+            t1.stack === t2.stack &&
+            t1.stateAfter === t2.stateAfter &&
+            t1.stackAfter === t2.stackAfter;
     }
 
 </script>

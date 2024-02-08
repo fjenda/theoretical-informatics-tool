@@ -56,12 +56,12 @@ onMount(() => {
     button {
         /*border-radius: 1rem;*/
         border-radius: 0.3rem;
-        background: #f7f7f8;
+        background-color: #f7f7f8;
         border: 0.05rem solid #393939;
     }
 
     :global(body.dark-mode) button {
-        background: #393939;
+        background-color: #2f3941;
         border: 0.05rem solid #4A3F64;
         color: #f4f9ff;
     }
@@ -71,7 +71,13 @@ onMount(() => {
     }
 
     button:hover {
-        outline: 0.1rem solid #007bff;
+        /*outline: 0.1rem solid #007bff;*/
+        transition: 0.3s;
+        background-color: #e4e8ee;
+    }
+
+    :global(body.dark-mode) button:hover {
+        background-color: #242c2f;
     }
 </style>
 

@@ -114,6 +114,7 @@
         height: 1.25rem;
         background-color: #000;
         margin: 0 1rem;
+        cursor: pointer;
     }
 
     :global(body.dark-mode) .stop {
@@ -124,6 +125,7 @@
         width: 1.25rem;
         height: 1.25rem;
         position: relative;
+        cursor: pointer;
     }
 
     :global(body.dark-mode) .left::before {

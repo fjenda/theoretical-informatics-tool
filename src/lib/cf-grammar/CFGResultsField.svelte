@@ -1,5 +1,11 @@
 <script lang="ts">
+    import {grammar_results_store} from "../../stores/graphInitStore";
 
+    let tableData;
+
+    $: if (grammar_results_store) {
+        tableData = $grammar_results_store;
+    }
 </script>
 
 <div class="wrapper">
@@ -13,12 +19,16 @@
         </tr>
         </thead>
         <tbody>
-        <tr>
-            <td>1</td>
-            <td>a</td>
-            <td>Yes</td>
-            <td>S -> a</td>
-        </tr>
+        {#if tableData}
+            {#each tableData as row, i}
+                <tr>
+                    <td>{i+1}</td>
+                    <td>{`"${row.input.join("")}"`}</td>
+                    <td>{row.accepted ? "Yes" : "No"}</td>
+                    <td>NIY</td>
+                </tr>
+            {/each}
+        {/if}
         </tbody>
     </table>
 </div>
@@ -29,17 +39,10 @@
     height: 90%;
 
     min-height: 15.5rem;
-
     border-radius: 0.5rem;
 
     box-shadow: rgba(0, 0, 0, .2) 0 3px 5px -1px, rgba(0, 0, 0, .14) 0 6px 10px 0, rgba(0, 0, 0, .12) 0 1px 18px 0;
     box-sizing: border-box;
-
-    display: flex;
-    flex-direction: column;
-    justify-content: start;
-    align-items: center;
-    gap: 0.5rem;
 
     //margin: 0 auto;
 
@@ -47,13 +50,13 @@
   }
 
   @media screen and (max-width: 1000px) and (min-width: 768px) {
-    .cfg-results {
+    .wrapper {
       margin: 0.5rem auto;
     }
   }
 
   @media screen and (max-width: 768px) {
-    .cfg-results {
+    .wrapper {
       width: 95%;
       height: 95%;
       margin: 0.5rem auto;

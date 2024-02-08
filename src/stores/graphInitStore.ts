@@ -1,14 +1,25 @@
 import {type Writable, writable} from "svelte/store";
+import {ContextFreeGrammar, GrammarResult} from "../lib/cf-grammar/ContextFreeGrammar";
 
-export const user_grammar_store = function () {
-    const {set, update, subscribe} : Writable<Partial<object>> = writable({
-        rows: [],
-    });
+export const grammar_results_store = function() {
+    const {set, update, subscribe} : Writable<Partial<GrammarResult[]>> = writable([]);
 
     const reset = () => {
-        set({
-            rows: [],
-        });
+        set([]);
+    }
+
+    return {
+        set,
+        update,
+        subscribe,
+        reset,
+    }
+}();
+export const user_grammar_store = function () {
+    const {set, update, subscribe} : Writable<Partial<ContextFreeGrammar>> = writable(new ContextFreeGrammar([], [], []));
+
+    const reset = () => {
+        set(new ContextFreeGrammar([], [], []));
     }
 
     return {

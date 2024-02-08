@@ -1,6 +1,5 @@
 <script lang="ts">
 
-    import DebugView from "../lib/DebugView.svelte";
     import PushdownAutomatonLayout from "../lib/pushdown-automaton-components/PushdownAutomatonLayout.svelte";
     import GraphWindow from "../lib/pushdown-automaton-components/GraphWindow.svelte";
     import GraphControlPanel from "../lib/pushdown-automaton-components/GraphControlPanel.svelte";
@@ -22,36 +21,34 @@
 
 </script>
 
-<DebugView>
-    <main>
-        <ThemeToggle />
-        <PushdownAutomatonLayout title="Pushdown Automaton">
-            <GraphControlPanel slot="control-panel">
-                <TestInput bind:processFunction={processTestInputFunction}
-                           testInputFunction={toolbarFunctions?.testInput}
-                           nextFunc={toolbarFunctions?.nextTransition}
-                           previousFunc={toolbarFunctions?.previousTransition}
-                           stopFunc={toolbarFunctions?.resetTestInput}
-                />
-                <Button type="test" text="Test" class={$graph_store.status === undefined ? "" : $graph_store.status === "idle" ? "btn-animation-slide-down" : "btn-animation-slide-up"} func={processTestInputFunction} />
-                <Button type="back" text="Back" url={landingPageUrl} />
-            </GraphControlPanel>
-            <GraphWindow bind:toolbarFunctions={toolbarFunctions} slot="window">
-                <GraphToolbar>
-                    <ToolbarButton type="generate-graph" text="Generate graph" func={toolbarFunctions?.generateGraphFromTransitions} />
-                    <ToolbarButton type="new-node" text="New node" func={toolbarFunctions?.addNode} />
-                    <ToolbarButton type="new-edge" text="New edge" func={toolbarFunctions?.addEdgeFromButton} />
-                    <ToolbarButton type="delete-element" text="Delete element" func={toolbarFunctions?.toggleDelete} />
-                    <ToolbarButton type="save-graph" text="Save graph" func={toolbarFunctions?.saveGraph} />
-                    <ToolbarButton type="load-graph" text="Load graph" func={toolbarFunctions?.loadGraph} />
-                    <ToolbarButton type="delete-graph" text="Delete graph" func={toolbarFunctions?.deleteGraph} />
-                    <ToolbarButton type="reset-layout" text="Reset layout" func={toolbarFunctions?.resetLayout} />
-                    <ToolbarButton type="show-definition" text="Show definition" func={toolbarFunctions?.generateConfiguration} />
-                </GraphToolbar>
-                <TypeView slot="type"/>
-                <StackVisualiser slot="stack"/>
-            </GraphWindow>
-            <ConfigurationTable slot="table"/>
-        </PushdownAutomatonLayout>
-    </main>
-</DebugView>
+<main>
+    <ThemeToggle />
+    <PushdownAutomatonLayout title="Pushdown Automaton">
+        <GraphControlPanel slot="control-panel">
+            <TestInput bind:processFunction={processTestInputFunction}
+                       testInputFunction={toolbarFunctions?.testInput}
+                       nextFunc={toolbarFunctions?.nextTransition}
+                       previousFunc={toolbarFunctions?.previousTransition}
+                       stopFunc={toolbarFunctions?.resetTestInput}
+            />
+            <Button type="test" text="Test" class={$graph_store.status === undefined ? "" : $graph_store.status === "idle" ? "btn-animation-slide-down" : "btn-animation-slide-up"} func={processTestInputFunction} />
+            <Button type="back" text="Back" url={landingPageUrl} />
+        </GraphControlPanel>
+        <GraphWindow bind:toolbarFunctions={toolbarFunctions} slot="window">
+            <GraphToolbar>
+                <ToolbarButton type="generate-graph" text="Generate graph" func={toolbarFunctions?.generateGraphFromTransitions} />
+                <ToolbarButton type="new-node" text="New node" func={toolbarFunctions?.addNode} />
+                <ToolbarButton type="new-edge" text="New edge" func={toolbarFunctions?.addEdgeFromButton} />
+                <ToolbarButton type="delete-element" text="Delete element" func={toolbarFunctions?.toggleDelete} />
+                <ToolbarButton type="save-graph" text="Save graph" func={toolbarFunctions?.saveGraph} />
+                <ToolbarButton type="load-graph" text="Load graph" func={toolbarFunctions?.loadGraph} />
+                <ToolbarButton type="delete-graph" text="Delete graph" func={toolbarFunctions?.deleteGraph} />
+                <ToolbarButton type="reset-layout" text="Reset layout" func={toolbarFunctions?.resetLayout} />
+                <ToolbarButton type="show-definition" text="Show definition" func={toolbarFunctions?.generateConfiguration} />
+            </GraphToolbar>
+            <TypeView slot="type"/>
+            <StackVisualiser slot="stack"/>
+        </GraphWindow>
+        <ConfigurationTable slot="table"/>
+    </PushdownAutomatonLayout>
+</main>
