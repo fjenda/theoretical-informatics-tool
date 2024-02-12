@@ -14,6 +14,8 @@
             n.type = newState
             return n;
         });
+
+        console.log("KA type: ",newState);
     };
 </script>
 
@@ -21,14 +23,14 @@
     <div class="toggle-label">Type</div>
     <div class="toggle-switch">
         <div
-                class={toggleState === "dfa" ? 'selected' : ''}
-                on:click={() => toggle("dfa")}
+                class={toggleState === "DFA" ? 'selected' : ''}
+                on:click={() => toggle("DFA")}
         >
             DFA
         </div>
         <div
-                class={toggleState === "nfa" ? 'selected' : ''}
-                on:click={() => toggle("nfa")}
+                class={toggleState === "NFA" ? 'selected' : ''}
+                on:click={() => toggle("NFA")}
         >
             NFA
         </div>

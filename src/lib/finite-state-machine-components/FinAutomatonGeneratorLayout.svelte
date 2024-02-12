@@ -4,10 +4,6 @@
 
 <slot name="type-switch"/>
 <div class="layout">
-    <div class="alphabet-box">
-        Alphabet
-        <slot name="alphabet"/>
-    </div>
     <div class="start-state-box">
         <slot name="start-state"/>
     </div>

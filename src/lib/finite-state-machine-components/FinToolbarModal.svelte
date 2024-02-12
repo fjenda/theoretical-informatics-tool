@@ -6,14 +6,14 @@
     import StateMultiSelect from "../StateMultiSelect.svelte";
 
     import FinTransitionFuncInput from "./FinTransitionFuncInput.svelte";
-    import FinTestInput from "./FinTestInput.svelte";
-    import FinAlphabetInput from "./FinAlphabetInput.svelte";
     import {configuration_store, resetInputVar} from "../../stores/graphInitStore";
 
     let currentState = false;
     let startNode  : string;
     let endNode : string;
     let alphabet : string;
+
+    let processAlphabetInputFunction : Function = () => {};
 
     export let showModal : boolean;
     export let type : ToolbarButtonType;
@@ -155,7 +155,6 @@
             {#if type === "generate-automata"}
                 <FinAutomatonGeneratorLayout >
                     <ToggleSwitch slot="type-switch" />
-                    <FinAlphabetInput phText="Alphabet" slot="alphabet"/>
                     <StateComboBox slot="start-state" />
                     <StateMultiSelect />
                     <FinTransitionFuncInput slot="transitions" />

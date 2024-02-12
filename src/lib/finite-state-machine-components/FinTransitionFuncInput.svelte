@@ -1,3 +1,22 @@
+<!--DFA-->
+<!--d(q0,a)=q0;-->
+<!--d(q0,b)=q1;-->
+<!--d(q1,b)=q0;-->
+<!--//-->
+<!--//-->
+<!--d(q0,a)=q0;-->
+<!--d(q0,b)=q1;-->
+<!--d(q1,b)=q2;-->
+<!--d(q2,b)=q1;-->
+<!--d(q2,a)=q0;-->
+<!--//-->
+<!--//-->
+<!--d(q0,a)=q1;-->
+<!--d(q1,a)=q2;-->
+<!--d(q1,b)=q1;-->
+<!--d(q1,c)=q3;-->
+<!--d(q2,a)=q3;-->
+<!--NFA-->
 <!--d(q0,0)=q0;-->
 <!--d(q0,1)=q1;-->
 <!--d(q1,0)=q1;-->
@@ -8,6 +27,12 @@
 <!--d(q2,1)=q2;-->
 <!--//-->
 <!--//-->
+<!--d(q0,E)=q1;-->
+<!--d(q0,E)=q2;-->
+<!--d(q1,0)=q3;-->
+<!--d(q2,1)=q3;-->
+<!--//-->
+<!--//-->
 <!--d(q0,0)=q0;-->
 <!--d(q0,0)=q1;-->
 <!--d(q0,1)=q1;-->
@@ -16,7 +41,7 @@
 
 <script lang="ts">
 
-    import {graph_store, resetInputVar} from "../../stores/graphInitStore";
+    import {configuration_store, graph_store, resetInputVar} from "../../stores/graphInitStore";
     import {input_error_store} from "../../stores/inputErrorStore";
 
     let transitions : TransitionMeta[] = [];
@@ -50,6 +75,7 @@
                 input: rowSplit[1],
                 stateAfter: rowSplit[2],
             });
+
             alphabet.push(rowSplit[1]);
         }
 

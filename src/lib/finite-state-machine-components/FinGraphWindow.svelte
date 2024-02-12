@@ -486,6 +486,8 @@
                 {
                     selector: "node",
                     style: {
+                        // "background-color": window.document.body.classList.contains("dark-mode") ? "#808080" : "#080808",
+                        // "background-color": "var(--node-background-color)", // doesnt work
                         "background-color": "#808080",
                         "border-color": "#000000",
                         "border-width": 1,
@@ -497,19 +499,20 @@
                 },
 
                 {
-                    selector: ".start",
-                    style: {
-                        "background-color": "#6b6b6b",
-                        "border-color": "#ff0000",
-                    }
-                },
-
-                {
                     selector: ".finish",
                     style: {
                         "background-color": "#6b6b6b",
                         "border-width": 5,
                         "border-style": "double",
+                    }
+                },
+
+                {
+                    selector: ".start",
+                    style: {
+                        "background-color": "#6b6b6b",
+                        "border-width": 3,
+                        "border-color": "#0070ff",
                     }
                 },
 
@@ -531,6 +534,7 @@
                         "text-border-width": 1,
                         "text-border-color": "darkgray",
                         "text-wrap": "wrap",
+                        "control-point-distance": 100,
                     }
                 },
 
@@ -540,44 +544,17 @@
                         "background-color": "#00ff00",
                         "line-color": "#00ff00",
                         "target-arrow-color": "#00ff00",
+                        "transition-property": "line-color, target-arrow-color, background-color",
+                        "transition-duration": 100,
                     }
-                }
+                },
             ],
 
-            layout:{
-                name:"circle",
+            layout: {
+                name: "circle",
             }
 
         });
-
-        graphObject.nodes = [
-            { id: "q0", label: "q0", class: "start"},
-            { id: "q1", label: "q1" },
-            { id: "q2", label: "q2" },
-            { id: "q3", label: "q3", class: "finish" },
-        ];
-
-        graphObject.edges = {
-            "q0-q0":[{
-                id: "q0-q0",
-                label: "A",
-                source: "q0",
-                target: "q0"
-            }],
-            "q0-q1":[{
-                id: "q0-q1",
-                label: "B",
-                source: "q0",
-                target: "q1"
-            }],
-            "q1-q2":[{
-                id: "q1-q2",
-                label: "A",
-                source: "q1",
-                target: "q2"
-            }],
-        };
-
     }
 
     function createGraph(genTransitions : boolean = false) {
@@ -625,10 +602,43 @@
         return true;
     }
 
-     console.log(graphObject);
+    let exampleNodes = [
+        { id: "q0", label: "q0", class: "start"},
+        { id: "q1", label: "q1", class: "finish" },
+    ];
+
+    let exampleTransition = [
+        {
+            state: "q0",
+            input: "a",
+            stateAfter: "q0"
+        },
+        {
+            state: "q0",
+            input: "b",
+            stateAfter: "q1"
+        },
+        {
+            state: "q1",
+            input: "b",
+            stateAfter: "q0"
+        }
+    ];
+
     onMount(() => {
         graphConstructor();
-        createGraph();
+
+        graph_store.update((n) => {
+            n.type = "DFA";
+            n.transitions = exampleTransition;
+            n.nodes = exampleNodes;
+            n.startState = "q0";
+            n.finishState = ["q1"];
+            n.input_alphabet = ["a", "b"];
+            return n;
+        });
+        generateGraphFromTransitions();
+        // createGraph();
     });
 
 </script>
