@@ -40,7 +40,7 @@
                     rowData[inputSymbol] = targetStates || '';
                 });
 
-                if (node === $graph_store.startState) {
+                if ($graph_store.startState.includes(node)) {
                     rowData.node = '-> ' +  rowData.node;
                 }
                 if ($graph_store.finishState.includes(node)) {

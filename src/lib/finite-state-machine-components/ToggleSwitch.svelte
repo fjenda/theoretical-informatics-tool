@@ -15,7 +15,7 @@
             return n;
         });
 
-        console.log("KA type: ",newState);
+        console.log("KA type: ",$graph_store.type);
     };
 </script>
 

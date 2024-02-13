@@ -160,7 +160,7 @@ export  class FiniteStateAutomaton{
         nodesArray.forEach(node => {
             if (this.finishState.includes(node.id)) {
                 this.nodes.push({id: node.id, label: node.label, class: "finish"});
-            } else if (node.id === this.startState) {
+            } else if (this.startState.includes(node.id)) {
                 this.nodes.push({id: node.id, label: node.label, class: "start"});
             } else {
                 this.nodes.push({id: node.id, label: node.label});

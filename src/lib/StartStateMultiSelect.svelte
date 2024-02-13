@@ -4,7 +4,6 @@
     import {input_error_store} from "../stores/inputErrorStore";
 
     let selectedOptions = [];
-    let selectHeight = "10.6rem"; // Výchozí výška
 
     $: options = $graph_store.nodes?.map(node => node.id);
 
@@ -12,31 +11,24 @@
         selectedOptions = [];
     }
 
-    $: if ($graph_store.type === "DFA") {
-        selectHeight = "10.6rem"; // Výška pro typ DFA
-    } else if ($graph_store.type === "NFA") {
-        selectHeight = "5.9rem"; // Výška pro typ NFA
-    } else {
-        selectHeight = "10.6rem"; // Výška pro ostatní typy
-    }
-
     function handleSelect(event) {
         input_error_store.update((n) => {
-            n.finishState = true;
+            n.startState = true;
             return n;
         });
 
         selectedOptions = Array.from(event.target.selectedOptions, option => option.value);
         graph_store.update(n => {
-            n.finishState = selectedOptions;
+            n.startState = selectedOptions;
             return n;
         });
+        console.log("Start states" + $graph_store.startState)
     }
 </script>
 
 <div class="select-wrapper">
-    Final States
-    <select class={$input_error_store.finishState} style="height: {selectHeight}" multiple bind:value={selectedOptions} on:change={handleSelect}>
+    Start States
+    <select class={$input_error_store.startState} multiple bind:value={selectedOptions} on:change={handleSelect}>
         {#each options as option (option)}
             <option value={option}>{option}</option>
         {/each}
@@ -58,7 +50,7 @@
 
     select {
         width: 7.5rem;
-        /*height: 5.9rem;*/
+        height: 5.9rem;
         padding: 0.5rem;
 
         border: 0.1rem solid #ccc;

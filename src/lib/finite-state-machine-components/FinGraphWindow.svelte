@@ -46,9 +46,9 @@
     }
 
     function testInput(wordCh : string[]){
-        if (graphObject.type == 'empty'){
-            graphObject.type = 'dfa';
-        }
+        // if (graphObject.type == 'empty'){
+        //     graphObject.type = 'dfa';
+        // }
 
         resetTestInput();
         removeHighlighted();
@@ -584,7 +584,7 @@
         }
 
         deleteGraph();
-        // console.log($graph_store);
+        console.log($graph_store);
         Object.assign(graphObject, $graph_store);
 
         graphObject.generateGraphFromTransitions();
@@ -638,6 +638,7 @@
             return n;
         });
         generateGraphFromTransitions();
+        console.log($graph_store);
         // createGraph();
     });
 
