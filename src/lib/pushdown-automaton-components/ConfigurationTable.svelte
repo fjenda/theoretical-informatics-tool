@@ -14,6 +14,10 @@
     let stackBackup: string = "";
     let stack: string = "";
 
+    $: if ($graph_store.traversal === []) {
+        tableData = [];
+    }
+
     $: if ($graph_store.traversal) {
         tableData = [];
 
@@ -99,8 +103,15 @@
                 tableData.push([traversal[i].stateAfter, word, stack, nextRuleIndex ? nextRuleIndex : "#", nextRule ? nextRule : "", i + 1]);
             }
         } else {
-            // push the initial configuration into tableData
-            tableData.push([$graph_store.startState, $graph_store.word.join(""), "Z", "#", "", 0]);
+            if ($graph_store.word) {
+                if ($graph_store.word.length > 10) {
+                    word = $graph_store.word.slice(0, 7) + "...";
+                } else {
+                    word = $graph_store.word.join("");
+                }
+                // push the initial configuration into tableData
+                tableData.push([$graph_store.startState, $graph_store.word.join(""), "Z", "#", "", 0]);
+            }
         }
 
 

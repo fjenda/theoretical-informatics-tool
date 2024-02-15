@@ -3,14 +3,18 @@
 
     let input: string = "";
 
-    $: if (input) {
-        parseInput();
-    }
-
     function parseInput() {
         let parsed = input
             .split('\n')
-            .map((line: string) => line.trim().split(''));
+            .map((line: string) => line.split(''));
+
+        parsed.forEach((line: string[], index) => {
+            if (line.length < 1) {
+                parsed[index] = [""];
+            }
+        });
+
+        console.log(parsed);
 
         user_grammar_store.update((n) => {
             n.validateInputs(parsed);
@@ -21,6 +25,7 @@
 
 <textarea id="cfg-input"
           bind:value={input}
+          on:input={() => parseInput()}
           rows="5"
           placeholder="{'1+1\n3+1\n1+4\n4+3\n(one test string per line)'}" />
 

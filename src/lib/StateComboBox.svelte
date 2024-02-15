@@ -52,7 +52,7 @@
 <style>
     .false {
         transition: background-color 0.25s;
-        background-color: #ff0000;
+        background-color: #ff6969 !important;
     }
 
     .combo-box, .dropdown {

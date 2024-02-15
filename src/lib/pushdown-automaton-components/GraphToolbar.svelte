@@ -8,7 +8,7 @@
 
 <style>
     .toolbar {
-        width: calc(100% - 1rem);
+        /*width: calc(100% - 1rem);*/
         height: 3rem;
 
         border-radius: 0.5rem 0.5rem 0 0;
@@ -16,8 +16,9 @@
         background: #dedede;
         display: flex;
         align-items: center;
-        gap: 0.5rem;
-        padding-left: 1rem;
+        justify-content: space-evenly;
+        gap: 0.25rem;
+        /*margin-left: 1rem;*/
     }
 
     :global(body.dark-mode) .toolbar {

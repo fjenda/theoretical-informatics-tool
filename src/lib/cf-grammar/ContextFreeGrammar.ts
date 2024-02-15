@@ -5,7 +5,8 @@ export class ContextFreeGrammar {
     startSymbol: string = 'S';
     nonTerminals: string[];
     terminals: string[];
-    rules: CFGRule[] = [new CFGRule('S', ['E'])];
+    rules: CFGRule[] = [new CFGRule('S', ['S+P', 'S-P', 'P'])];
+    // rules: CFGRule[] = [new CFGRule('A', ['', 'B'])];
     parser: EarleyParser = null;
     updateRules: boolean = true;
 
@@ -13,7 +14,7 @@ export class ContextFreeGrammar {
         this.nonTerminals = nonTerminals;
         this.terminals = terminals;
         this.rules.push(...rules);
-        this.parser = new EarleyParser(this.startSymbol, [new Rule('S', ['E'])]);
+        this.parser = new EarleyParser(this.startSymbol, []);
     }
 
     setUpdateRules(update: boolean) {
@@ -23,14 +24,26 @@ export class ContextFreeGrammar {
     convertRulesForParser(rules: CFGRule[]) {
         let newRules: Rule[] = [];
         rules.forEach(rule => {
-            if (rule.rightSide?.length > 1) {
-                // convert rules with more than one symbol on the right side to multiple rules with one symbol on the right side
+            if (rule.rightSide.length > 0) {
                 rule.rightSide.forEach((symbol, index) => {
+                    // if (symbol === '') {
+                    //     newRules.push(new Rule(rule.leftSide, ['']));
+                    //     return;
+                    // }
                     newRules.push(new Rule(rule.leftSide, symbol.split('')));
                 });
             } else {
-                newRules.push(new Rule(rule.leftSide, rule.rightSide));
+                newRules.push(new Rule(rule.leftSide, []));
             }
+
+            // if (rule.rightSide.some(symbol => symbol.length > 1)) {
+            //     // convert rules with more than one symbol on the right side to multiple rules with one symbol on the right side
+            //     rule.rightSide.forEach((symbol, index) => {
+            //         newRules.push(new Rule(rule.leftSide, symbol.split('')));
+            //     });
+            // } else {
+            //     newRules.push(new Rule(rule.leftSide, rule.rightSide));
+            // }
         });
 
         this.parser.setRules(newRules);
@@ -45,7 +58,7 @@ export class ContextFreeGrammar {
     }
 
     updateTerminalsAndNonTerminals() {
-        // TODO: REDO THIS
+        // TODO: REDO THIS (do i really need this though?)
         // this.nonTerminals = this.rules.reduce((acc, rule) => {
         //     if (rule.leftSide === '') return acc;
         //
@@ -113,7 +126,7 @@ export class ContextFreeGrammar {
         P = {\n${logRules.map(rule => rule.toString()).join('\n')}\n}`;
     }
 
-    validateInputs(inputs: string[]) {
+    validateInputs(inputs: string[][]) {
         if (this.updateRules) {
             this.convertRulesForParser(this.rules);
             this.updateRules = false;
@@ -122,7 +135,17 @@ export class ContextFreeGrammar {
         let results: GrammarResult[] = [];
         for (let input of inputs) {
             this.parser.restart();
-            results.push(new GrammarResult(input, this.parser.parse(input)));
+
+            let inputStr = input.join('');
+            let result: { accepted: boolean; length: number; derivation: { rule: string; result: string }[][] } |
+                        { accepted: boolean ;length: number; derivation: { rule: string; result: string }[] };
+
+            if (inputStr.length === 0)
+                result = this.parser.parse("");
+            else
+                result = this.parser.parse(inputStr);
+
+            results.push(new GrammarResult(input, result.accepted, result.length, result.derivation));
         }
 
         grammar_results_store.set(results);
@@ -144,11 +167,18 @@ export class CFGRule {
 }
 
 export class GrammarResult {
-    input: string
+    input: string[];
     accepted: boolean;
+    length: number;
+    derivation: { rule: string; result: string }[] |
+                { rule: string; result: string }[][];
 
-    constructor(input: string, accepted: boolean) {
+    constructor(input: string[], accepted: boolean, length: number, derivation: { rule: string; result: string }[][] |
+                                                                                { rule: string; result: string }[])
+    {
         this.input = input;
         this.accepted = accepted;
+        this.length = length;
+        this.derivation = derivation;
     }
 }

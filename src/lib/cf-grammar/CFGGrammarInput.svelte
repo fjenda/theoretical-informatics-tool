@@ -23,9 +23,9 @@
 // 1
 
     // grammar row object
-    let row1 = new CFGRule('E', ["E+T", "T"]);
-    let row2 = new CFGRule('T', ["T*F", "F"]);
-    let row3 = new CFGRule('F', ["(E)", "1", "2", "3", "4", "5", "6", "7", "8", "9", "0"]);
+    let row1 = new CFGRule('P', ["P*F", "P/F", "F"]);
+    let row2 = new CFGRule('F', ["(S)", "N"]);
+    let row3 = new CFGRule('N', ["1N", "2N", "3N", "4N", "1", "2", "3", "4"]);
 
     // grammar object
     user_grammar_store.update(n => {

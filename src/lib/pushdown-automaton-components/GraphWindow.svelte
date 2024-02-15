@@ -27,6 +27,8 @@
     let highlightedElementsId : string[] = [];
     let deleteButtonActive : boolean = false;
 
+    let stack_wrapper: HTMLDivElement;
+
     export const toolbarFunctions = {
         addNode,
         addEdge,
@@ -106,6 +108,8 @@
             return graphObject.stack;
         });
 
+        scrollToTop();
+
         setTimeout(() => {
             highlightElement(nextNode);
             highlightElement(nextEdge);
@@ -130,6 +134,8 @@
         stack_store.update(() => {
             return graphObject.stack;
         });
+
+        scrollToTop();
 
         let previousNode = ret.previousNode;
         let previousEdge = ret.previousEdge;
@@ -602,7 +608,7 @@
         graphObject.graph = cytoscape({
 
             container: graphObject.div,
-            // wheelSensitivity: 0.2,
+            wheelSensitivity: 10,
             minZoom: 0.5,
             maxZoom: 2,
 
@@ -759,7 +765,9 @@
         }
     ];
 
-
+    function scrollToTop() {
+        stack_wrapper.scrollTop = 0;
+    }
 
     onMount(() => {
         graphInit();
@@ -787,7 +795,7 @@
         <div class="type-wrapper">
             <slot name="type" />
         </div>
-        <div class="stack-wrapper">
+        <div class="stack-wrapper" bind:this={stack_wrapper}>
             <slot name="stack" />
         </div>
     </div>
@@ -842,6 +850,12 @@
         position: absolute;
         top: 0;
         right: 1rem;
-        pointer-events: none;
+        /*pointer-events: ;*/
+
+        max-height: 30vh;
+        overflow-y: scroll;
+
+        padding: 0 1rem;
+        /*outline: 0.125rem solid #000000;*/
     }
 </style>

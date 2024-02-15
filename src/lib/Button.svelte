@@ -1,7 +1,13 @@
 <script lang="ts">
 
     import  { navigate } from "svelte-routing";
-    import {grammar_results_store, graph_store, user_grammar_store} from "../stores/graphInitStore";
+    import {
+        grammar_results_store,
+        graph_store,
+        stack_store,
+        table_index_store,
+        user_grammar_store
+    } from "../stores/graphInitStore";
 
     export let type : ButtonType;
     export let url : string = "";
@@ -12,8 +18,15 @@
     let resettableButtons: string[] = ["read-more", "tool", "back", "tab"];
 
     function resetStores() {
-        graph_store.status = undefined;
-        graph_store.isAccepted = undefined;
+        graph_store.update((n) => {
+            n.status = undefined;
+            n.isAccepted = undefined;
+            n.traversal = [];
+            n.word = "";
+            return n;
+        });
+        stack_store.set([]);
+        table_index_store.set(-1);
         grammar_results_store.reset();
     }
 </script>
@@ -21,11 +34,11 @@
 {#if type !== ""}
     <div class="{type}-box" {...$$restProps}>
         {#if resettableButtons.includes(type.toString())}
-            <button class="button-17" on:click={() => {navigate(url); resetStores(); }} on:click={() => func()}>
+            <button class="button-17 {type}" on:click={() => {navigate(url); resetStores(); }} on:click={() => func()}>
                 {text}
             </button>
         {:else}
-            <button class="button-17" on:click={() => {navigate(url); }} on:click={() => func()}>
+            <button class="button-17 {type}" on:click={() => {navigate(url); }} on:click={() => func()}>
                 {text}
             </button>
         {/if}
@@ -44,14 +57,8 @@
         width: 100%;
     }
 
-    .test-box {
-        display: flex;
-        justify-content: center;
-        margin: 1rem auto;
-
-        font-size: 1.8rem;
-        height: 6vh;
-        width: 60%;
+    .test {
+        width: 12rem !important;
     }
 
     .read-more-box {
