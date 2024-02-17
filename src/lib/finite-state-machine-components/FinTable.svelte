@@ -1,5 +1,5 @@
 <script lang="ts">
-    import {graph_store} from "../../stores/graphInitStore";
+    import {graph_store, table_index_store} from "../../stores/graphInitStore";
     import {input_error_store} from "../../stores/inputErrorStore";
 
     let cols: string[] = [];
@@ -8,8 +8,9 @@
     let generated = false;
     let tableData = [];
 
-    $: if ($graph_store.generated == true) {
+    $: if ($graph_store.generated == true || $graph_store.currentStatus) {
         console.log("HEREHERHER");
+        console.log("Current status change: ", $graph_store.currentStatus);
         // do something when this store value changes
         tableData = [];
         // get traversal
@@ -83,12 +84,33 @@
         </thead>
         <tbody>
         {#each tableData as row}
-            <tr>
-                <td>{row.node}</td>
-                {#each inputSymbols as symbol}
-                    <td>{row[symbol]}</td>
-                {/each}
-            </tr>
+            {#if $graph_store.currentStatus !== undefined &&
+            $graph_store.traversal[$graph_store.currentStatus.step +1 ] !== undefined}
+                {#if (row.node == '-> ' + $graph_store.traversal[$graph_store.currentStatus.step +1 ].state ||
+                    row.node == '<- ' + $graph_store.traversal[$graph_store.currentStatus.step +1].state ||
+                    row.node == $graph_store.traversal[$graph_store.currentStatus.step + 1].state)}
+                    <tr class="active">
+                        <td>{row.node}</td>
+                        {#each inputSymbols as symbol}
+                            <td>{row[symbol]}</td>
+                        {/each}
+                    </tr>
+                {:else}
+                    <tr>
+                        <td>{row.node}</td>
+                        {#each inputSymbols as symbol}
+                            <td>{row[symbol]}</td>
+                        {/each}
+                    </tr>
+                {/if}
+            {:else}
+                <tr>
+                    <td>{row.node}</td>
+                    {#each inputSymbols as symbol}
+                        <td>{row[symbol]}</td>
+                    {/each}
+                </tr>
+            {/if}
         {/each}
         </tbody>
     </table>
@@ -101,9 +123,20 @@
   //  width: 90%;
   //  height: 90%;
   //
-  //  overflow-y: auto;
+  //  //margin: 0 auto;
+  //
+  //  //overflow-x: hidden;
+  //  overflow: auto;
   //
   //
+  //
+  //  border-radius: 0.5rem;
+  //
+  //  box-shadow: rgba(0, 0, 0, .2) 0 3px 5px -1px, rgba(0, 0, 0, .14) 0 6px 10px 0, rgba(0, 0, 0, .12) 0 1px 18px 0;
+  //  box-sizing: border-box;
+  //
+  //  //min-width: 9.5rem;
+  //  //min-height: 15.5rem;
   //}
 
 
@@ -139,11 +172,37 @@
       color: #101820;
       border-bottom: 1rem;
     }
+    tr:nth-child(even) {
+      background-color: #f2f2f2;
+    }
+    
+  }
 
-    //:global(body.dark-mode) .styled-table tbody tr {
-    //  background-color: #25252d;
-    //  color: #ffffff;
-    //}
+  :global(body.dark-mode) .styled-table {
+    background-color: #25252d;
+    color: #ffffff;
+
+    thead tr {
+      background-color: #4A3F64;
+      color: #ffffff;
+    }
+
+    tbody tr {
+      background-color: #25252d;
+      color: #ffffff;
+    }
+
+    tr:nth-child(even) {
+      background-color: #1f1f25;
+    }
+  }
+
+  .active {
+    background-color: #dddddd !important;
+  }
+
+  :global(body.dark-mode) .active {
+    background-color: #393939 !important;
   }
 
   :global(body.dark-mode) .styled-table {

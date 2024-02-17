@@ -20,6 +20,7 @@ export interface GraphObject {
     finishState? : string; //   finish state of the automaton
     generated : boolean,
     regex : string,
+    nextTraversal : (GraphNodeMeta | GraphEdgeMeta)[]; //   array of graph elements traversed by the automaton
 }
 
 export type GraphObjectWithoutGraph = Omit<GraphObject, 'graph' | 'div'>;

@@ -30,8 +30,8 @@ onMount(() => {
 </script>
 
 {#if ["new-node", "new-edge", "generate-automata", "show-configuration"].includes(type)}
-    {#if type === "generate-graph"}
-        <button on:click={() => { showModal = true; resetInputVar.set(true); graph_store.reset(); }}>
+    {#if type === "generate-automata"}
+        <button on:click={() => {showModal = true; resetInputVar.set(true); graph_store.reset(); }}>
             {text}
         </button>
     {:else}

@@ -49,6 +49,7 @@
     let textInput : string = "";
     let textarea: HTMLTextAreaElement;
     let backdrop: HTMLDivElement;
+    let correctInput: boolean = true;
 
 
 
@@ -109,22 +110,41 @@
 
     function processTransitions() {
         transitions = [];
-        // let rows = textInput.split(";");
+
         let rows = textInput.split("\n").filter(Boolean);
 
-        applyHighlights(textInput);
+        if ($graph_store.type == "DFA") {
+            applyHighlightsDFA(textInput);
 
-        let allTrue : boolean = true;
-        for (let row of rows) {
-            if (validateTransition(row)) {
-                parseRow(row);
-            } else {
-                // allTrue = false;
+            for (let row of rows) {
+                if (validateTransitionDFA(row)) {
+                    parseRow(row);
+                    correctInput = true;
+                } else {
+                    correctInput = false;
+                }
             }
+        } else if ($graph_store.type == "NFA") {
+            applyHighlights(textInput);
+
+            for (let row of rows) {
+                if (validateTransition(row)) {
+                    parseRow(row);
+                    correctInput = true;
+                } else {
+                    correctInput = false;
+                }
+            }
+
+        } else {
+            console.log("Invalid type");
         }
 
+
+        console.log("Is input correct: ", correctInput);
+
         input_error_store.update((n) => {
-            n.transitions = allTrue;
+            n.transitions = correctInput;
             return n;
         });
 
@@ -143,13 +163,35 @@
         return regex.test(transition);
     }
 
+    function validateTransitionDFA(transition) {
+        let regex = /^d\([A-Za-z]+[0-9]+,[^E]\)=[A-Za-z]+[0-9]+;$/;
+        return regex.test(transition);
+    }
+
+    function applyHighlightsDFA(text) {
+        return text
+            .replace(/\n$/g, '\n\n')
+            .replace(/(d\([A-Za-z]+[0-9]+,[^E]\)=[A-Za-z]+[0-9]+;)/g, function(match, validTransition, other) {
+                if (validTransition) {
+                    console.log("Valid transition: ", validTransition);
+                    return match;  // If it matches the pattern, leave it unchanged
+                } else {
+                    console.log("Invalid transition: ", match);
+                    return '<mark>' + match + '</mark>';  // If it doesn't match, wrap the entire line in <mark> tags
+                }
+            });
+    }
+
     function applyHighlights(text) {
         return text
             .replace(/\n$/g, '\n\n')
             .replace(/(d\([A-Za-z]+[0-9]+,[A-Za-z0-9]\)=[A-Za-z]+[0-9];)|(.*)/g, function(match, pattern, other) {
                 if (pattern) {
+                    // correctInput = true;
                     return match;  // If it matches the pattern, leave it unchanged
                 } else {
+                    console.log("Invalid transition: ", match);
+                    // correctInput = false;
                     return '<mark>' + match + '</mark>';  // If it doesn't match, wrap the entire line in <mark> tags
                 }
             });
@@ -160,9 +202,9 @@
         backdrop.scrollTop = scrollTop;
     }
 
-    function handleInput() {
-        applyHighlights(textInput);
-    }
+    // function handleInput() {
+    //     applyHighlights(textInput);
+    // }
 
 </script>
 

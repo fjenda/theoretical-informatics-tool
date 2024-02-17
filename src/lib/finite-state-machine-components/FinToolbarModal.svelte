@@ -107,14 +107,6 @@
         }
     }
 
-    // function checkRules(){
-    //     let automata : AutomataMeta = {
-    //         type : 'DFA',
-    //         input : rules,
-    //     }
-    //     func(automata);
-    //     return true;
-    // }
 </script>
 
 <dialog
@@ -156,9 +148,8 @@
                     dialog.close();
                 }}>Cancel</button>
                     <button on:click={() => {
-                    func();
-                    resetInputVar.set(true);
-                    dialog.close();
+                    func() &&
+                    dialog.close()
                 }}>Apply</button>
                 </div>
             </FinAutomatonGeneratorLayout>

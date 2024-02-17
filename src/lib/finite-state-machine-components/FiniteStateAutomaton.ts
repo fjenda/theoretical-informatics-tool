@@ -18,14 +18,124 @@ export  class FiniteStateAutomaton{
     word: string[] = [];
     isAccepted: boolean = false;
     traversal: TransitionMeta[] = [];
-    type: string = "empty";
-    startState: string = "q0";
+    type: string = "DFA";
+    startState?: string[] = ["q0"];
     finishState?: string[] = ["qF"];
+    correctStartState: string = "q0";
 
     constructor() {
         this.graph = null;
 
     };
+
+    preprocessGraphInputDFA(): TransitionMeta[] | null{
+        const queue: { state: string; index: number; path: TransitionMeta[] }[] = [
+            { state: this.startState, index: 0, path: [] },
+        ];
+
+        let closestDeclinedPath: TransitionMeta[] | null = null;
+        while (queue.length > 0) {
+            const { state, index, path } = queue.shift()!;
+
+            const isAccepted =
+                index === this.word.length &&
+                this.finishState.includes(state);
+
+            if (isAccepted) {
+                console.log("Accepted");
+                this.isAccepted = true;
+                return path; // String is accepted
+            }
+            closestDeclinedPath = path;
+            for (const transition of this.transitions) {
+                if (transition.state === state && transition.input === this.word[index]) {
+                    const newPath = path.concat(transition);
+                    queue.push({
+                        state: transition.stateAfter,
+                        index: index + 1,
+                        path: newPath,
+                    });
+                }
+            }
+
+            //epsilon eges
+            for (const transition of this.transitions) {
+                if (transition.state === state && transition.input === "E") {
+                    const newPath = path.concat(transition);
+                    queue.push({
+                        state: transition.stateAfter,
+                        index: index,
+                        path: newPath,
+                    });
+                }
+            }
+        }
+
+
+        console.log("declined");
+        this.isAccepted = false;
+        if (closestDeclinedPath) {
+            return closestDeclinedPath;
+        }
+
+        return null;
+    }
+
+    preprocessGraphInputNFA(): TransitionMeta[] | null{
+        let closestDeclinedPath: TransitionMeta[] | null = null;
+        console.log('Pocateni stavy: ', this.startState);
+        // Pro každý možný počáteční stav
+        for (const startState of this.startState) {
+            const queue: { state: string; index: number; path: TransitionMeta[] }[] = [
+                { state: startState, index: 0, path: [] },
+            ];
+
+            while (queue.length > 0) {
+                const { state, index, path } = queue.shift()!;
+                const isAccepted = index === this.word.length && this.finishState.includes(state);
+
+                if (isAccepted) {
+                    console.log("Accepted");
+                    this.isAccepted = true;
+                    this.correctStartState = startState;
+                    return path; // String is accepted
+                }
+
+                closestDeclinedPath = path;
+
+                // Procházení přechodů na vstupním symbolu
+                for (const transition of this.transitions) {
+                    if (transition.state === state && transition.input === this.word[index]) {
+                        const newPath = path.concat(transition);
+                        queue.push({
+                            state: transition.stateAfter,
+                            index: index + 1,
+                            path: newPath,
+                        });
+                    }
+                }
+
+                // Procházení epsilon přechodů
+                for (const transition of this.transitions) {
+                    if (transition.state === state && transition.input === "E") {
+                        const newPath = path.concat(transition);
+                        queue.push({
+                            state: transition.stateAfter,
+                            index: index,
+                            path: newPath,
+                        });
+                    }
+                }
+            }
+        }
+
+        console.log("declined");
+        this.isAccepted = false;
+        if (closestDeclinedPath) {
+            return closestDeclinedPath;
+        }
+        return null;
+    }
 
     preprocessGraphInput() : TransitionMeta[] | null {
         const queue: { state: string; index: number; path: TransitionMeta[] }[] = [
@@ -158,7 +268,9 @@ export  class FiniteStateAutomaton{
         let nodesArray = this.nodes.slice();
         this.nodes = [];
         nodesArray.forEach(node => {
-            if (this.finishState.includes(node.id)) {
+            if (this.finishState.includes(node.id) && this.startState.includes(node.id)) {
+                this.nodes.push({id: node.id, label: node.label, class: "finish start"});
+            }else if (this.finishState.includes(node.id)) {
                 this.nodes.push({id: node.id, label: node.label, class: "finish"});
             } else if (this.startState.includes(node.id)) {
                 this.nodes.push({id: node.id, label: node.label, class: "start"});
@@ -258,10 +370,11 @@ export  class FiniteStateAutomaton{
             this.status = "idle";
             return;
         }
+        let  currenStatus = this.currentStatus;
         let nextNode = this.traversal[this.currentStatus.step].stateAfter;
         let nextEdge = this.traversal[this.currentStatus.step].state + "-" + nextNode;
 
-        return {nextNode, nextEdge};
+        return {nextNode, nextEdge, currenStatus};
     }
 
     previousTransition(){

@@ -63,21 +63,43 @@
         graphObject.word = wordCh;
         graphObject.status = "testing";
 
-        let tmpNode : GraphNodeMeta;
-        graphObject.nodes.forEach((node : GraphNodeMeta) => {
-            if (node.id === graphObject.startState) {
-                tmpNode = node;
-            }
-        });
+        if (graphObject.type === "DFA") {
+            let tmpNode: GraphNodeMeta;
+            graphObject.nodes.forEach((node: GraphNodeMeta) => {
+                if (node.id === graphObject.startState) {
+                    tmpNode = node;
+                }
+            });
 
-        if (!tmpNode) {
-            return;
+            if (!tmpNode) {
+                return;
+            }
+
+            graphObject.startState = tmpNode.id;
+            graphObject.traversal = graphObject.preprocessGraphInput();
+
+            highlightElement(tmpNode.id);
+            graphObject.currentStatus = {state: tmpNode.id, input: graphObject.word, step: 0};
+            graph_store.update((n) => {
+                n.currentStatus = graphObject.currentStatus;
+                console.log("updating current status", n.currentStatus);
+                return n;
+            });
+        } else {
+            console.log("Jsem v NFA větvi");
+            graphObject.startState = $graph_store.startState;
+            graphObject.traversal = graphObject.preprocessGraphInputNFA();
+            highlightElement(graphObject.correctStartState);
+            graphObject.currentStatus = {state: graphObject.startState, input: graphObject.word, step: 0};
+            graph_store.update((n) => {
+                n.currentStatus = graphObject.currentStatus;
+                console.log("updating current status", n.currentStatus);
+                return n;
+            });
         }
+
         console.log(graphObject);
 
-
-        graphObject.startState = tmpNode.id;
-        graphObject.traversal = graphObject.preprocessGraphInput();
         graph_store.update((n) => {
             n.traversal = graphObject.traversal;
             console.log("updating store", n.traversal);
@@ -85,9 +107,7 @@
         });
         // console.log(graphObject.traversal);
 
-        highlightElement(tmpNode.id);
-        graphObject.currentStatus = {state: tmpNode.id, input: graphObject.word, step: 0};
-        console.log(graphObject.currentStatus);
+
     }
 
     function nextTransition(){
@@ -98,6 +118,13 @@
         if(!result){
             return;
         }
+
+        // console.log(result.currenStatus);
+        // graph_store.update((n) => {
+        //     n.currenStatus = result.currenStatus;
+        //     console.log("updating store", n.currenStatus);
+        //     return n;
+        // });
 
         let nextNode = result.nextNode;
         let nextEdge = result.nextEdge;
@@ -111,6 +138,12 @@
             console.log(graphObject.currentStatus);
 
         }, 250);
+
+        graph_store.update((n) => {
+            n.currentStatus = graphObject.currentStatus;
+            console.log("updating current status", n.currentStatus);
+            return n;
+        });
     }
 
     function previousTransition(){
@@ -132,6 +165,12 @@
             graphObject.currentStatus.state = graphObject.traversal[graphObject.currentStatus.step].state;
             console.log(graphObject.currentStatus);
         }, 250);
+
+        graph_store.update((n) => {
+            n.currentStatus = graphObject.currentStatus;
+            console.log("updating current status", n.currentStatus);
+            return n;
+        });
     }
 
     function resetTestInput(){
@@ -267,6 +306,9 @@
     }
 
     function checkGenerationInput(){
+        if($input_error_store.transitions == false){
+            return false;
+        }
         input_error_store.reset();
 
         if ($graph_store.transitions === undefined || $graph_store.transitions.length === 0) {
@@ -654,9 +696,6 @@
         </div>
     </div>
 </div>
-<!--<div class="svTable">-->
-<!--    <FinTable />-->
-<!--</div>-->
 
 <style>
 
