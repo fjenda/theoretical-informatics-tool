@@ -4,9 +4,10 @@
     import {input_error_store} from "../stores/inputErrorStore";
 
     let selectedOptions = [];
+    let selectedOptionsId = [];
     let selectHeight = "10.6rem"; // Výchozí výška
 
-    $: options = $graph_store.nodes?.map(node => node.id);
+    $: options = $graph_store.nodes?.map(node => node);
 
     $: if ($resetInputVar) {
         selectedOptions = [];
@@ -20,15 +21,29 @@
         selectHeight = "10.6rem"; // Výška pro ostatní typy
     }
 
+    function findIDs(){
+        let finalStates = [];
+        for (let i = 0; i < selectedOptions.length; i++) {
+            for (let j = 0; j < options.length; j++) {
+                if (selectedOptions[i] === options[j].label) {
+                    finalStates.push(options[j].id);
+                }
+            }
+        }
+        return finalStates;
+    }
+
     function handleSelect(event) {
         input_error_store.update((n) => {
             n.finishState = true;
             return n;
         });
-
-        selectedOptions = Array.from(event.target.selectedOptions, option => option.value);
+        selectedOptionsId = findIDs();
+        selectedOptions = Array.from(event.target.selectedOptions, option => option.label);
+        console.log(selectedOptionsId);
+        console.log(selectedOptions);
         graph_store.update(n => {
-            n.finishState = selectedOptions;
+            n.finishState = selectedOptionsId;
             return n;
         });
     }
@@ -38,7 +53,7 @@
     Final States
     <select class={$input_error_store.finishState} style="height: {selectHeight}" multiple bind:value={selectedOptions} on:change={handleSelect}>
         {#each options as option (option)}
-            <option value={option}>{option}</option>
+            <option value={option.label}>{option.label}</option>
         {/each}
     </select>
 </div>

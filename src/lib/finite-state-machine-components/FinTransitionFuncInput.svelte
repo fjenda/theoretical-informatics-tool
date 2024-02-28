@@ -71,11 +71,67 @@
         rowSplit.splice(0, 1);
 
         if (rowSplit.length === 3) {
-            transitions.push({
-                state: rowSplit[0],
-                input: rowSplit[1],
-                stateAfter: rowSplit[2],
-            });
+            let stateId = transitions.find(transition => transition.stateLabel === rowSplit[0])?.state;
+            if (stateId == undefined) {
+                stateId = transitions.find(transition => transition.stateAfterLabel === rowSplit[0])?.stateAfter;
+            }
+
+            let stateAfterId = transitions.find(transition => transition.stateLabel === rowSplit[2])?.state;
+            if (stateAfterId == undefined) {
+                stateAfterId = transitions.find(transition => transition.stateAfterLabel === rowSplit[2])?.stateAfter;
+            }
+
+            if (stateId >= 0) {
+                if (stateAfterId >= 0) {
+                    transitions.push({
+                        state: stateId,
+                        stateLabel: rowSplit[0],
+                        input: rowSplit[1],
+                        stateAfter: stateAfterId,
+                        stateAfterLabel: rowSplit[2],
+                    });
+                } else {
+                    transitions.push({
+                        state: stateId,
+                        stateLabel: rowSplit[0],
+                        input: rowSplit[1],
+                        stateAfter: $graph_store.followingID,
+                        stateAfterLabel: rowSplit[2],
+                    });
+                    $graph_store.followingID++;
+                }
+            } else {
+                if(stateAfterId >= 0) {
+                    transitions.push({
+                        state: $graph_store.followingID,
+                        stateLabel: rowSplit[0],
+                        input: rowSplit[1],
+                        stateAfter: stateAfterId,
+                        stateAfterLabel: rowSplit[2],
+                    });
+                    $graph_store.followingID++;
+                } else {
+                    if (rowSplit[0] == rowSplit[2]) {
+                        transitions.push({
+                            state: $graph_store.followingID,
+                            stateLabel: rowSplit[0],
+                            input: rowSplit[1],
+                            stateAfter: $graph_store.followingID,
+                            stateAfterLabel: rowSplit[2],
+                        });
+                        $graph_store.followingID++;
+                    } else {
+                        transitions.push({
+                            state: $graph_store.followingID,
+                            stateLabel: rowSplit[0],
+                            input: rowSplit[1],
+                            stateAfter: $graph_store.followingID + 1,
+                            stateAfterLabel: rowSplit[2],
+                        });
+                        $graph_store.followingID += 2;
+                    }
+                }
+            }
 
             alphabet.push(rowSplit[1]);
         }
@@ -91,13 +147,15 @@
             if (!nodes.find(node => node.id === transition.state)) {
                 nodes.push({
                     id: transition.state,
-                    label: transition.state,
+                    label: transition.stateLabel,
                 });
             }
+        }
+        for (let transition of transitions) {
             if (!nodes.find(node => node.id === transition.stateAfter)) {
                 nodes.push({
                     id: transition.stateAfter,
-                    label: transition.stateAfter,
+                    label: transition.stateAfterLabel,
                 });
             }
         }
@@ -106,10 +164,12 @@
             n.nodes = nodes;
             return n;
         });
+        console.log("Nodes: ", nodes);
     }
 
     function processTransitions() {
         transitions = [];
+        console.log("Here start transitions: ", transitions);
 
         let rows = textInput.split("\n").filter(Boolean);
 
@@ -173,10 +233,8 @@
             .replace(/\n$/g, '\n\n')
             .replace(/(d\([A-Za-z]+[0-9]+,[^E]\)=[A-Za-z]+[0-9]+;)/g, function(match, validTransition, other) {
                 if (validTransition) {
-                    console.log("Valid transition: ", validTransition);
                     return match;  // If it matches the pattern, leave it unchanged
                 } else {
-                    console.log("Invalid transition: ", match);
                     return '<mark>' + match + '</mark>';  // If it doesn't match, wrap the entire line in <mark> tags
                 }
             });
@@ -187,11 +245,8 @@
             .replace(/\n$/g, '\n\n')
             .replace(/(d\([A-Za-z]+[0-9]+,[A-Za-z0-9]\)=[A-Za-z]+[0-9];)|(.*)/g, function(match, pattern, other) {
                 if (pattern) {
-                    // correctInput = true;
                     return match;  // If it matches the pattern, leave it unchanged
                 } else {
-                    console.log("Invalid transition: ", match);
-                    // correctInput = false;
                     return '<mark>' + match + '</mark>';  // If it doesn't match, wrap the entire line in <mark> tags
                 }
             });
@@ -202,9 +257,6 @@
         backdrop.scrollTop = scrollTop;
     }
 
-    // function handleInput() {
-    //     applyHighlights(textInput);
-    // }
 
 </script>
 

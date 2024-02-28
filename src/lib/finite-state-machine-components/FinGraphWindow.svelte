@@ -34,9 +34,9 @@
     }
 
     function regexInput(wordCh : string){
-        console.log(wordCh)
+        // console.log(wordCh)
         let regex = new RegexAutomaton(wordCh);
-        console.log(regex);
+        // console.log(regex);
 
         deleteGraph();
         // console.log($graph_store);
@@ -82,27 +82,27 @@
             graphObject.currentStatus = {state: tmpNode.id, input: graphObject.word, step: 0};
             graph_store.update((n) => {
                 n.currentStatus = graphObject.currentStatus;
-                console.log("updating current status", n.currentStatus);
+                // console.log("updating current status", n.currentStatus);
                 return n;
             });
         } else {
-            console.log("Jsem v NFA větvi");
+            // console.log("Jsem v NFA větvi");
             graphObject.startState = $graph_store.startState;
             graphObject.traversal = graphObject.preprocessGraphInputNFA();
             highlightElement(graphObject.correctStartState);
             graphObject.currentStatus = {state: graphObject.startState, input: graphObject.word, step: 0};
             graph_store.update((n) => {
                 n.currentStatus = graphObject.currentStatus;
-                console.log("updating current status", n.currentStatus);
+                // console.log("updating current status", n.currentStatus);
                 return n;
             });
         }
 
-        console.log(graphObject);
+        // console.log(graphObject);
 
         graph_store.update((n) => {
             n.traversal = graphObject.traversal;
-            console.log("updating store", n.traversal);
+            // console.log("updating store", n.traversal);
             return n;
         });
         // console.log(graphObject.traversal);
@@ -135,13 +135,13 @@
 
             graphObject.currentStatus.state = graphObject.traversal[graphObject.currentStatus.step].stateAfter;
             graphObject.currentStatus.step++;
-            console.log(graphObject.currentStatus);
+            // console.log(graphObject.currentStatus);
 
         }, 250);
 
         graph_store.update((n) => {
             n.currentStatus = graphObject.currentStatus;
-            console.log("updating current status", n.currentStatus);
+            // console.log("updating current status", n.currentStatus);
             return n;
         });
     }
@@ -163,12 +163,12 @@
             highlightElement(previousEdge);
 
             graphObject.currentStatus.state = graphObject.traversal[graphObject.currentStatus.step].state;
-            console.log(graphObject.currentStatus);
+            // console.log(graphObject.currentStatus);
         }, 250);
 
         graph_store.update((n) => {
             n.currentStatus = graphObject.currentStatus;
-            console.log("updating current status", n.currentStatus);
+            // console.log("updating current status", n.currentStatus);
             return n;
         });
     }
@@ -507,6 +507,7 @@
         graphObject.transitions = [];
         graphObject.startState = "";
         graphObject.finishState = [];
+        graphObject.followingID = 0;
         configuration_store.reset();
     }
 
@@ -626,11 +627,11 @@
         }
 
         deleteGraph();
-        console.log($graph_store);
+        // console.log($graph_store);
         Object.assign(graphObject, $graph_store);
 
         graphObject.generateGraphFromTransitions();
-        //console.log(graphObject);
+        console.log(graphObject);
 
         createGraph(false);
         graph_store.update((n) => {
@@ -645,25 +646,25 @@
     }
 
     let exampleNodes = [
-        { id: "q0", label: "q0", class: "start"},
-        { id: "q1", label: "q1", class: "finish" },
+        { id: "0", label: "q0", class: "start"},
+        { id: "1", label: "q1", class: "finish" },
     ];
 
     let exampleTransition = [
         {
-            state: "q0",
+            state: "0",
             input: "a",
-            stateAfter: "q0"
+            stateAfter: "0"
         },
         {
-            state: "q0",
+            state: "0",
             input: "b",
-            stateAfter: "q1"
+            stateAfter: "1"
         },
         {
-            state: "q1",
+            state: "1",
             input: "b",
-            stateAfter: "q0"
+            stateAfter: "0"
         }
     ];
 
@@ -674,8 +675,8 @@
             n.type = "DFA";
             n.transitions = exampleTransition;
             n.nodes = exampleNodes;
-            n.startState = "q0";
-            n.finishState = ["q1"];
+            n.startState = "0";
+            n.finishState = ["1"];
             n.input_alphabet = ["a", "b"];
             return n;
         });

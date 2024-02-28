@@ -9,24 +9,24 @@
     let tableData = [];
 
     $: if ($graph_store.generated == true || $graph_store.currentStatus) {
-        console.log("HEREHERHER");
-        console.log("Current status change: ", $graph_store.currentStatus);
+        // console.log("HEREHERHER");
+        // console.log("Current status change: ", $graph_store.currentStatus);
         // do something when this store value changes
         tableData = [];
         // get traversal
         transitions = $graph_store.transitions;
 
-        console.log("input_alphabet", $graph_store.input_alphabet);
+        // console.log("input_alphabet", $graph_store.input_alphabet);
 
         if (typeof $graph_store.input_alphabet !== 'undefined'){
             cols = [...$graph_store.input_alphabet];
         }
         // cols = [...$graph_store.input_alphabet];
-        console.log("input_alphabet", $graph_store.input_alphabet);
-        console.log("cols", cols);
+        // console.log("input_alphabet", $graph_store.input_alphabet);
+        // console.log("cols", cols);
 
         if (typeof transitions !== 'undefined' && generated === false) {
-            let nodes = Array.from(new Set(transitions.map(t => t.state)));
+            let nodes = Array.from(new Set(transitions.map(t => t.stateLabel)));
             inputSymbols = Array.from(new Set(transitions.map(t => t.input)));
 
             // Initialize the table data
@@ -36,8 +36,8 @@
             nodes.forEach(node => {
                 let rowData = {node};
                 inputSymbols.forEach(inputSymbol => {
-                    const matchingTransitions = transitions.filter(t => t.state === node && t.input === inputSymbol);
-                    const targetStates = matchingTransitions.map(t => t.stateAfter).join(', ');
+                    const matchingTransitions = transitions.filter(t => t.stateLabel === node && t.input === inputSymbol);
+                    const targetStates = matchingTransitions.map(t => t.stateAfterLabel).join(', ');
                     rowData[inputSymbol] = targetStates || '';
                 });
 

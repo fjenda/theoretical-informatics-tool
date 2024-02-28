@@ -22,6 +22,7 @@ export  class FiniteStateAutomaton{
     startState?: string[] = ["q0"];
     finishState?: string[] = ["qF"];
     correctStartState: string = "q0";
+    followingID : number = 0;
 
     constructor() {
         this.graph = null;
@@ -251,6 +252,7 @@ export  class FiniteStateAutomaton{
     }
 
     generateGraphFromTransitions(){
+        let savedNodeId = "";
         this.transitions.forEach(transition => {
             let key = transition.state + "-" + transition.stateAfter;
             this.edges[key] = this.edges[key] ?? [];

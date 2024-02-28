@@ -5,8 +5,9 @@
     export let type = 'startState';
 
     let isOpen = false;
+    let selectedOptionsID = [];
     let selectedOption = '';
-    $: options = $graph_store.nodes?.map(node => node.id);
+    $: options = $graph_store.nodes?.map(node => node);
 
     $: if ($resetInputVar) {
         selectedOption = '';
@@ -17,14 +18,16 @@
     }
 
     function selectOption(option) {
-        selectedOption = option;
+        selectedOption = option.label;
+        selectedOptionsID.push(option.id);
 
         if (type === "startState") {
             graph_store.update((n) => {
-                n.startState = option;
+                n.startState =  selectedOptionsID;
                 return n;
             });
         }
+        console.log($graph_store.startState);
 
         isOpen = false;
     }
@@ -42,7 +45,7 @@
                                              input_error_store.update((n) => {
                                                  n.startState = true;
                                                  return n;
-                                             });}}>{option}</li>
+                                             });}}>{option.label}</li>
             {/each}
         </ul>
     {/if}

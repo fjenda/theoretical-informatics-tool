@@ -4,11 +4,23 @@
     import {input_error_store} from "../stores/inputErrorStore";
 
     let selectedOptions = [];
-
-    $: options = $graph_store.nodes?.map(node => node.id);
+    let selectedOptionsId = [];
+    $: options = $graph_store.nodes?.map(node => node);
 
     $: if ($resetInputVar) {
         selectedOptions = [];
+    }
+
+    function findIDs(){
+        let finalStates = [];
+        for (let i = 0; i < selectedOptions.length; i++) {
+            for (let j = 0; j < options.length; j++) {
+                if (selectedOptions[i] === options[j].label) {
+                    finalStates.push(options[j].id);
+                }
+            }
+        }
+        return finalStates;
     }
 
     function handleSelect(event) {
@@ -16,13 +28,13 @@
             n.startState = true;
             return n;
         });
-
+        selectedOptionsId = findIDs();
         selectedOptions = Array.from(event.target.selectedOptions, option => option.value);
         graph_store.update(n => {
-            n.startState = selectedOptions;
+            n.startState = selectedOptionsId;
             return n;
         });
-        console.log("Start states" + $graph_store.startState)
+        // console.log("Start states" + $graph_store.startState)
     }
 </script>
 
@@ -30,7 +42,7 @@
     Start States
     <select class={$input_error_store.startState} multiple bind:value={selectedOptions} on:change={handleSelect}>
         {#each options as option (option)}
-            <option value={option}>{option}</option>
+            <option value={option.label}>{option.label}</option>
         {/each}
     </select>
 </div>

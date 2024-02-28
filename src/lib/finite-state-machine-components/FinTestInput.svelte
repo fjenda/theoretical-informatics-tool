@@ -27,7 +27,7 @@
 
         showArrows = true;
         testInputFunction(input.trim().split(""));
-        console.log('Current traversal ',  $graph_store.traversal);
+        // console.log('Current traversal ',  $graph_store.traversal);
         // console.log('su tu >', $graph_store.currentStatus.state)
     }
 
@@ -51,7 +51,7 @@
 
     function stopTesting() {
         showArrows = false;
-        console.log("stop");
+        // console.log("stop");
 
         table_index_store.set(-1);
         stopFunc();
