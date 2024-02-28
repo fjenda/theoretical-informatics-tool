@@ -93,15 +93,20 @@
         switch (type) {
             case "new-node": {
                 console.log("new-node - " + modifiedLabel);
-                func({ id: label, label: label});
+                let folowingID = $graph_store.followingID;
+                console.log('new node string: ' + folowingID.toString());
+                func({ id: folowingID.toString(), label: label});
+                $graph_store.followingID++;
                 return true;
             }
 
             case "new-edge": {
                 const modifiedSource = source.trim();
                 const modifiedTarget = target.trim();
-                console.log("new-edge - " + modifiedLabel + " " + modifiedSource + " -> " + modifiedTarget);
-                func({id: `${source}-${target}`, label: label, source: source, target: target});
+                let sourceID = $graph_store.nodes.find(node => node.label === modifiedSource)?.id;
+                let targetID = $graph_store.nodes.find(node => node.label === modifiedTarget)?.id;
+                console.log("new-edge - " + modifiedLabel + " " + sourceID + " -> " + targetID);
+                func({id: `${sourceID}-${targetID}`, label: label, source: sourceID, target: targetID});
                 return true;
             }
         }

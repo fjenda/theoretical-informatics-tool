@@ -339,11 +339,17 @@
 
     function addNode(node : GraphNodeMeta) {
         try {
+            console.log('Before add node: ', $graph_store);
             graphObject.addNode(node);
         } catch (e) {
             console.log(e);
         } finally {
             updateConfiguration("node");
+            graph_store.update((n) => {
+                n.nodes = graphObject.nodes;
+                return n;
+            });
+            console.log('After add node: ', $graph_store);
             resetLayout();
         }
     }
@@ -653,18 +659,24 @@
     let exampleTransition = [
         {
             state: "0",
+            stateLabel: "q0",
             input: "a",
-            stateAfter: "0"
+            stateAfter: "0",
+            stateAfterLabel: "q0"
         },
         {
             state: "0",
+            stateLabel: "q0",
             input: "b",
-            stateAfter: "1"
+            stateAfter: "1",
+            stateAfterLabel: "q1"
         },
         {
             state: "1",
+            stateLabel: "q1",
             input: "b",
-            stateAfter: "0"
+            stateAfter: "0",
+            stateAfterLabel: "q0"
         }
     ];
 
@@ -680,6 +692,7 @@
             n.input_alphabet = ["a", "b"];
             return n;
         });
+        $graph_store.followingID = 2;
         generateGraphFromTransitions();
         console.log($graph_store);
         // createGraph();

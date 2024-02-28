@@ -192,6 +192,7 @@ export  class FiniteStateAutomaton{
     }
 
     addNode(node : GraphNodeMeta) {
+        console.log(node);
         if (this.graph.$id(node.id).length !== 0) {
             return;
         }
@@ -215,6 +216,8 @@ export  class FiniteStateAutomaton{
         if (node.class?.includes("start")) {
             this.startState = node.id;
         }
+
+
     }
 
     addEdge(edge : GraphEdgeMeta){

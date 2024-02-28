@@ -16,7 +16,8 @@
         // get traversal
         transitions = $graph_store.transitions;
 
-        // console.log("input_alphabet", $graph_store.input_alphabet);
+        console.log("input_alphabet", $graph_store.input_alphabet);
+        console.log("transitions", transitions);
 
         if (typeof $graph_store.input_alphabet !== 'undefined'){
             cols = [...$graph_store.input_alphabet];
