@@ -19,15 +19,48 @@ export  class FiniteStateAutomaton{
     isAccepted: boolean = false;
     traversal: TransitionMeta[] = [];
     type: string = "DFA";
-    startState?: string[] = ["q0"];
-    finishState?: string[] = ["qF"];
+    startState?: string[] = ["0"];
+    finishState?: string[] = ["F"];
     correctStartState: string = "q0";
     followingID : number = 0;
 
-    constructor() {
-        this.graph = null;
+    // constructor() {
+    //     this.graph = null;
+    //
+    // };
 
+    constructor(nodes : GraphNodeMeta[], transitions : TransitionMeta[], startStare : string[], finishState : string[], type : string) {
+        this.graph = null;
+        this.nodes = nodes;
+        this.transitions = transitions;
+        this.startState = startStare;
+        this.finishState = finishState;
+        this.type = type;
     };
+
+    getNodes(){
+        return this.nodes;
+    }
+
+    getEdges(){
+        return this.edges;
+    }
+
+    getTransitions(){
+        return this.transitions;
+    }
+
+    addEpsilonTransition(state : string, stateLabel : string, stateAfter : string, stateAfterLable : string){
+        this.transitions.push({
+            state: state,
+            stateLabel: stateLabel,
+            input: "E",
+            stack: "",
+            stackAfter: "",
+            stateAfter: stateAfter,
+            stateAfterLabel: stateAfterLable,
+        });
+    }
 
     preprocessGraphInputDFA(): TransitionMeta[] | null{
         const queue: { state: string; index: number; path: TransitionMeta[] }[] = [
@@ -283,6 +316,8 @@ export  class FiniteStateAutomaton{
                 this.nodes.push({id: node.id, label: node.label});
             }
         });
+
+        console.log("TADY JE třída koneečného automatu: " , this);
     }
 
     // generateFromRegex(treeNode : TreeNode){

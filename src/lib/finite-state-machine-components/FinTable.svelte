@@ -42,10 +42,14 @@
                     rowData[inputSymbol] = targetStates || '';
                 });
 
-                if ($graph_store.startState.includes(node)) {
+
+                let node_id = $graph_store.nodes.filter(n => n.label === node)[0].id;
+
+                if ($graph_store.startState.includes(node_id)) {
                     rowData.node = '-> ' +  rowData.node;
                 }
-                if ($graph_store.finishState.includes(node)) {
+
+                if ($graph_store.finishState.includes(node_id)) {
                     rowData.node = '<- ' + rowData.node;
                 }
 

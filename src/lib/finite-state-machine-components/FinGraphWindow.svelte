@@ -6,7 +6,7 @@
     import {FiniteStateAutomaton} from "./FiniteStateAutomaton";
     import {RegexAutomaton} from "./regex/RegexAutomaton";
 
-    let graphObject = new FiniteStateAutomaton();
+    let graphObject = new FiniteStateAutomaton([], [], [], [], [], "DFA");
 
     let highlightedNodesIS : String[] = [];
     let deleteButtonActive : boolean = false;
@@ -40,9 +40,30 @@
 
         deleteGraph();
         // console.log($graph_store);
-        Object.assign(graphObject, $graph_store);
 
-        regex.regexProcessFunc();
+        let newFa : FiniteStateAutomaton = regex.regexProcessFunc();
+        console.log("resutl", newFa);
+
+        graphObject.transitions = newFa.transitions;
+        graphObject.nodes = newFa.nodes;
+        graphObject.startState = newFa.startState;
+        graphObject.finishState = newFa.finishState;
+        graphObject.type = newFa.type;
+
+        // Object.assign(graphObject, $graph_store);
+
+        graphObject.generateGraphFromTransitions();
+        console.log(graphObject);
+
+        createGraph(false);
+        graph_store.update((n) => {
+            n.generated = true;
+            return n;
+        });
+        // graph_store.reset();
+        resetInputVar.set(false);
+        input_error_store.reset();
+
     }
 
     function testInput(wordCh : string[]){
