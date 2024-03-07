@@ -1,8 +1,10 @@
 <script lang="ts">
-
+    import {tooltip} from "../tooltipUtils";
 </script>
 
 <slot name="type-switch"/>
+<p class="epsilon">ε - copy if needed</p>
+
 <div class="layout">
     <div class="start-state-box">
         <slot name="start-state"/>
@@ -46,6 +48,12 @@
         display: flex;
         align-items: center;
         justify-content: center;
+    }
+
+    .epsilon {
+        font-size: 0.8rem;
+        color: #a4a4a4;
+        text-align: center;
     }
 
 </style>

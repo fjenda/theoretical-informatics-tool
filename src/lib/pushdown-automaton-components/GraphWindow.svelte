@@ -5,29 +5,13 @@
     import {input_error_store} from "../../stores/inputErrorStore";
     import {PushdownAutomaton} from "./PushdownAutomaton";
 
-    // let graphObject : PushdownAutomaton = {
-    //     graph: null,
-    //     div: null,
-    //     status: "idle",
-    //     nodes: [],
-    //     edges: {},
-    //     transitions: [],
-    //     stack: [],
-    //     currentStatus: {},
-    //     word: [],
-    //     isAccepted: false,
-    //     traversal: [],
-    //     type: "empty",
-    //     startState: "q0",
-    //     finishState: ["qF"],
-    // };
-
     let graphObject = new PushdownAutomaton();
 
     let highlightedElementsId : string[] = [];
     let deleteButtonActive : boolean = false;
 
     let stack_wrapper: HTMLDivElement;
+    let labels_backup : string[] = [];
 
     export const toolbarFunctions = {
         addNode,
@@ -59,6 +43,14 @@
         resetTestInput();
         removeHighlighted();
 
+        //TODO: old labels keeps showing up in the new graph
+        labels_backup = graphObject.graph.elements().map((graphElement) => {
+            if (graphElement.isEdge()) {
+                return graphElement.data("label");
+            }
+        });
+        labels_backup = labels_backup.filter((label) => label !== undefined);
+        console.log(labels_backup);
 
         graph_store.update((n) => {
             n.isAccepted = null;
@@ -68,7 +60,7 @@
         });
 
         graphObject.status = "testing";
-        graphObject.stack = ["Z"];
+        graphObject.stack = [$graph_store.stackBottom];
         graphObject.word = wordCharacters;
 
         stack_store.update(() => {
@@ -91,9 +83,9 @@
         console.log(graphObject.currentStatus);
     }
 
-    // TODO: when clicking fast on next/previous button, the stack is not updated correctly
     function nextTransition() {
         removeHighlighted();
+        resetLabels();
 
         let ret = graphObject.nextTransition();
 
@@ -104,6 +96,21 @@
         let nextNode = ret.nextNode;
         let nextEdge = ret.nextEdge;
 
+        graphObject.currentStatus.state = nextNode;
+        graphObject.currentStatus.stack = graphObject.stack[graphObject.stack.length - 1];
+        graphObject.currentStatus.step++;
+
+        // currently used rule
+        let rule = graphObject.traversal[graphObject.currentStatus.step - 1];
+        // label
+        let label = rule.input + "," + rule.stack + ";" + rule.stackAfter.join("");
+        graphObject.graph.elements().forEach(graphElement => {
+            if (graphElement.id() === nextEdge && graphElement.isEdge()) {
+                console.log("updating label", label);
+                graphElement.data("label", label);
+            }
+        });
+
         stack_store.update(() => {
             return graphObject.stack;
         });
@@ -113,12 +120,6 @@
         setTimeout(() => {
             highlightElement(nextNode);
             highlightElement(nextEdge);
-
-            graphObject.currentStatus.state = nextNode;
-            graphObject.currentStatus.stack = graphObject.stack[graphObject.stack.length - 1];
-            graphObject.currentStatus.step++;
-            console.log(graphObject.currentStatus);
-
         }, 250);
     }
 
@@ -131,6 +132,14 @@
             return;
         }
 
+        let rule = graphObject.traversal[graphObject.currentStatus.step];
+        let label = rule.input + "," + rule.stack + ";" + rule.stackAfter.join("");
+        graphObject.graph.elements().forEach(graphElement => {
+            if (graphElement.id() === ret.previousEdge && graphElement.isEdge()) {
+                graphElement.data("label", label);
+            }
+        });
+
         stack_store.update(() => {
             return graphObject.stack;
         });
@@ -140,13 +149,13 @@
         let previousNode = ret.previousNode;
         let previousEdge = ret.previousEdge;
 
+        graphObject.currentStatus.state = previousNode;
+        graphObject.currentStatus.stack = graphObject.stack[graphObject.stack.length - 1];
+        console.log(graphObject.currentStatus);
+
         setTimeout(() => {
             highlightElement(previousNode);
             highlightElement(previousEdge);
-
-            graphObject.currentStatus.state = previousNode;
-            graphObject.currentStatus.stack = graphObject.stack[graphObject.stack.length - 1];
-            console.log(graphObject.currentStatus);
         }, 250);
     }
 
@@ -160,6 +169,14 @@
         });
 
         graphObject.resetTestInput();
+
+        let i = 0;
+        graphObject.graph.elements().forEach(graphElement => {
+            if (graphElement.isEdge()) {
+                graphElement.data("label", labels_backup[i]);
+                i++;
+            }
+        });
     }
 
     function highlightElement(id : string | number) {
@@ -179,6 +196,18 @@
         });
 
         highlightedElementsId = [];
+    }
+
+    function resetLabels() {
+        console.log(labels_backup);
+
+        let i = 0;
+        graphObject.graph.elements().forEach(graphElement => {
+            if (graphElement.isEdge()) {
+                graphElement.data("label", labels_backup[i]);
+                i++;
+            }
+        });
     }
 
     function generateConfiguration() {
@@ -201,7 +230,7 @@
         // input alphabet
         const alphabet = new Set();
         graphObject.transitions.forEach((transition) => {
-            if (transition.input !== "E") {
+            if (transition.input !== "ε") {
                 alphabet.add(transition.input);
             }
         });
@@ -210,10 +239,10 @@
         // stack alphabet
         const stackAlphabet = new Set();
         graphObject.transitions.forEach((transition) => {
-            if (transition.stack !== "E") {
+            if (transition.stack !== "ε") {
                 stackAlphabet.add(transition.stack);
             }
-            if (transition.stackAfter !== "E") {
+            if (transition.stackAfter !== "ε") {
                 stackAlphabet.add(transition.stackAfter[0]);
             }
         });
@@ -272,7 +301,7 @@
                 // input alphabet
                 const alphabet = new Set();
                 graphObject.transitions.forEach((transition) => {
-                    if (transition.input !== "E") {
+                    if (transition.input !== "ε") {
                         alphabet.add(transition.input);
                     }
                 });
@@ -281,11 +310,11 @@
                 // stack alphabet
                 const stackAlphabet = new Set();
                 graphObject.transitions.forEach((transition) => {
-                    if (transition.stack !== "E") {
+                    if (transition.stack !== "ε") {
                         stackAlphabet.add(transition.stack);
                     }
-                    if (transition.stackAfter !== "E") {
-                        console.log(transition);
+                    if (transition.stackAfter[0] !== "ε") {
+                        // console.log(transition);
                         stackAlphabet.add(transition.stackAfter[0]);
                     }
                 });
@@ -608,9 +637,9 @@
         graphObject.graph = cytoscape({
 
             container: graphObject.div,
-            wheelSensitivity: 10,
+            wheelSensitivity: 2,
             minZoom: 0.5,
-            maxZoom: 2,
+            maxZoom: 3,
 
             style: [
                 {
@@ -658,11 +687,11 @@
                         "color": "#000000",
                         "text-background-opacity": 1,
                         "text-background-color": "#ffffff",
-                        "text-background-shape": "rectangle",
-                        "text-border-style": "solid",
-                        "text-border-opacity": 1,
-                        "text-border-width": 1,
-                        "text-border-color": "darkgray",
+                        "text-background-shape": "round-rectangle",
+                        // "text-border-style": "none",
+                        // "text-border-opacity": 0,
+                        // "text-border-width": 1,
+                        // "text-border-color": "darkgray",
                         "text-wrap": "wrap",
                         "control-point-distance": 100,
                     }
@@ -694,74 +723,41 @@
         { id: "qF", label: "qF", class: "finish" },
     ];
 
-    // let tmp_edges = {
-    //     "q0-q1": [{
-    //         id: "q0-q1",
-    //         label: "a,Z;aZ",
-    //         source: "q0",
-    //         target: "q1",
-    //     }],
-    //     "q1-qF": [{
-    //         id: "q1-qF",
-    //         label: "E,Z;E",
-    //         source: "q1",
-    //         target: "qF"
-    //     },
-    //     {
-    //         id: "q1-qF",
-    //         label: "a,a;E",
-    //         source: "q1",
-    //         target: "qF"
-    //     }],
-    //     "q1-q0": [{
-    //         id: "q1-q0",
-    //         label: "b,a;E",
-    //         source: "q1",
-    //         target: "q0"
-    //     }],
-    //     "qF-qF": [{
-    //         id: "qF-qF",
-    //         label: "E,Z;E",
-    //         source: "qF",
-    //         target: "qF"
-    //     }]
-    // };
-
     let tmp_transitions = [
         {
             state: "q0",
             input: "a",
             stack: "Z",
             stateAfter: "q1",
-            stackAfter: "aZ",
+            stackAfter: ["a", "Z"],
         },
         {
             state: "q1",
             input: "b",
             stack: "a",
             stateAfter: "q0",
-            stackAfter: "E",
+            stackAfter: ["ε"],
         },
         {
             state: "q1",
             input: "a",
             stack: "a",
             stateAfter: "qF",
-            stackAfter: "E",
+            stackAfter: ["ε"],
         },
         {
             state: "q1",
-            input: "E",
+            input: "ε",
             stack: "Z",
             stateAfter: "qF",
-            stackAfter: "E",
+            stackAfter: ["ε"],
         },
         {
             state: "qF",
-            input: "E",
+            input: "ε",
             stack: "Z",
             stateAfter: "qF",
-            stackAfter: "E",
+            stackAfter: ["ε"],
         }
     ];
 
@@ -773,13 +769,13 @@
         graphInit();
         // createGraph(false);
 
-        graph_store.update((n) => {
-            n.transitions = tmp_transitions;
-            n.nodes = tmp_nodes;
-            n.startState = "q0";
-            n.finishState = ["qF"];
-            return n;
-        });
+        // graph_store.update((n) => {
+        //     n.transitions = tmp_transitions;
+        //     n.nodes = tmp_nodes;
+        //     n.startState = "q0";
+        //     n.finishState = ["qF"];
+        //     return n;
+        // });
 
         generateGraphFromTransitions();
     });
@@ -816,7 +812,7 @@
         box-sizing: border-box;
     }
 
-    @media screen and (max-width: 1150px) {
+    @media screen and (max-width: 1023px) {
         .window {
             margin: 0.5rem auto;
         }

@@ -74,8 +74,15 @@
             // focus the next input
             setTimeout(() => {
                 let inputs = document.querySelectorAll('.right-side');
-                inputs[col+1].focus();
-                inputs[col+1].setSelectionRange(0, inputs[col+1].value.length);
+
+                // count the index
+                let index = 0;
+                for (let i = 0; i < row; i++) {
+                    index += $user_grammar_store.rules[i].rightSide.length;
+                }
+                index += col + temp.length - 1;
+
+                inputs[index].focus();
             }, 0);
         }
 
@@ -83,33 +90,35 @@
         return;
     }
 
-    // TODO: fix backspace since it removes the last char from the next input
     function checkIfBackspace(row: number, col: number, event) {
         // if user pressed backspace and the input is empty, remove the input
-        if (event.keyCode === 8) {
-            // if the input is empty and its not the last input, remove the input but dont remove the character from the next input
-            if ($user_grammar_store.rules[row].rightSide[col].length === 0 && $user_grammar_store.rules[row].rightSide.length > 1) {
+        if (event.keyCode === 8 && $user_grammar_store.rules[row].rightSide[col].length === 0) {
+            event.preventDefault(); // Prevent browser default backspace behavior
+            // if it's not the first input, remove the input and move focus to the previous one
+            if (col > 0) {
                 user_grammar_store.update(n => {
                     n.rules[row].rightSide.splice(col, 1);
                     return n;
                 });
+                setTimeout(() => {
+                    let inputs = document.querySelectorAll('.right-side');
 
-                // focus the previous input
-                if (col > 0) {
-                    setTimeout(() => {
-                        let inputs = document.querySelectorAll('.right-side');
+                    // count the index
+                    let index = 0;
+                    for (let i = 0; i < row; i++) {
+                        index += $user_grammar_store.rules[i].rightSide.length;
+                    }
+                    index += col - 1;
 
-                        inputs[col-1].focus();
-                        inputs[col-1].setSelectionRange(inputs[col-1].value.length, inputs[col-1].value.length);
-                    }, 0);
-                }
+                    inputs[index].focus();
+                    // inputs[index].setSelectionRange(0, inputs[index].value.length);
+                }, 0);
             }
         }
-
         updateRows();
     }
 
-    let wrapper;
+    let wrapper: HTMLDivElement;
 
     afterUpdate(() => {
         scrollToBottom();
@@ -123,8 +132,13 @@
 <div class="grammar-wrapper" bind:this={wrapper}>
     {#each $user_grammar_store.rules as row, i}
         <div class="grammar-row">
+            {#if i !== 0}
+                <button class="delete-button" on:click={() => { removeRow(i) } }>X</button>
+            {/if}
             {#if i === 0}
-                <input class="left-side"
+                <button class="delete-button inactive">X</button>
+
+                <input class="left-side padding-left"
                        maxlength="1"
                        type="text"
                        disabled
@@ -147,13 +161,9 @@
                     <span>&nbsp;｜&nbsp;</span>
                 {/if}
             {/each}
-            {#if i !== 0}
-                <span>&nbsp;&nbsp;&nbsp;</span>
-                <button class="delete-button" on:click={() => { removeRow(i) } }>X</button>
-            {/if}
         </div>
     {/each}
-    <button class="add-button" on:click={() => { addRow(new CFGRule('', [''])) } }>Add</button>
+    <button class="add-button" on:click={() => { addRow(new CFGRule('', [''])) } }>Add rule</button>
 </div>
 
 <style>
@@ -166,7 +176,7 @@
         padding: 0;
 
         border: 0.05rem solid #101820;
-        border-radius: 0.45rem;
+        border-radius: 0.3rem;
         background-color: #f4f9ff;
 
         font: 1.5rem/2rem 'Open Sans', sans-serif;
@@ -188,7 +198,7 @@
     }
 
     .left-side {
-        width: 2rem;
+        width: 3rem;
     }
 
     .grammar-wrapper {
@@ -202,11 +212,12 @@
     }
 
     .grammar-row {
-        line-height: 2.25rem;
+        line-height: 2.5rem;
     }
 
     .add-button {
-        width: max-content;
+        width: 30%;
+        height: 10%;
     }
 
     .add-button:hover {
@@ -214,9 +225,21 @@
         background-color: #d4d8de;
     }
 
+    .delete-button {
+        padding: 0 0.5rem;
+        border-radius: 100vh;
+        margin: 0 0.75rem 0 0;
+    }
+
     .delete-button:hover {
         background-color: #ff0000;
         color: #f4f9ff;
         transition: 0.3s;
+    }
+
+    .inactive {
+        visibility: hidden;
+        cursor: none;
+        touch-action: none;
     }
 </style>

@@ -39,15 +39,15 @@
         const alphabet = new Set();
         const stackAlphabet = new Set();
         $configuration_store.transitions.forEach((transition) => {
-            if (transition.input !== "E") {
+            if (transition.input !== "ε") {
                 alphabet.add(transition.input);
             }
 
-            if (transition.stack !== "E") {
+            if (transition.stack !== "ε") {
                 stackAlphabet.add(transition.stack);
             }
 
-            if (transition.stackAfter !== "E") {
+            if (transition.stackAfter !== "ε") {
                 stackAlphabet.add(transition.stackAfter[0]);
             }
 
@@ -59,19 +59,7 @@
         let i = 1;
         config += "δ: {\n";
         $configuration_store.transitions.forEach((transition) => {
-            if (transition.input === "E") {
-                transition.input = "ε";
-            }
-
-            if (transition.stack === "E") {
-                transition.stack = "ε";
-            }
-
-            if (transition.stackAfter === "E") {
-                transition.stackAfter = "ε";
-            }
-
-            config += `   ${i}. (${transition.state}, ${transition.input}, ${transition.stack}) → (${transition.stateAfter}, ${transition.stackAfter})\n`;
+            config += `   ${i}. (${transition.state}, ${transition.input}, ${transition.stack}) → (${transition.stateAfter}, ${transition.stackAfter.join("")})\n`;
             i++;
         });
         config += "}\n";
@@ -148,7 +136,7 @@
 >
     <div on:click|stopPropagation>
         <slot name="header" />
-        <hr />
+<!--        <hr />-->
         <slot />
 
         {#if type === "show-definition"}
@@ -159,8 +147,8 @@
                       value={config}
                       placeholder="Transitions"></textarea>
 
-            <hr />
-            <button on:click={() => dialog.close()}>Cancel</button>
+<!--            <hr />-->
+            <button class="single-button" on:click={() => dialog.close()}>Close</button>
 
         {:else if type === "generate-graph"}
             <AutomatonGeneratorLayout>
@@ -229,6 +217,8 @@
         padding: 0;
         background: #f7f7f8;
         color: #363636;
+
+        overflow: visible;
     }
 
     :global(body.dark-mode) dialog {
@@ -269,12 +259,9 @@
         }
     }
 
-    button {
-        display: block;
-    }
-
     .input-box {
         display: flex;
+        flex-direction: column;
         justify-content: center;
         align-items: center;
         gap: 1rem;
@@ -305,10 +292,53 @@
         pointer-events: none;
         background: #f7f7f8;
         color: #363636;
+        border: none;
+        outline: 0.05rem solid #363636;
+        padding: 0.2rem;
     }
 
     :global(body.dark-mode) #transitions {
         background: #25252d;
         color: #f4f9ff;
+        outline: 0.05rem solid #f4f9ff;
+    }
+
+    button {
+        border-radius: 0.25rem;
+        outline: none;
+        border: none;
+        /*box-shadow: rgba(0, 0, 0, .2) 0 3px 5px -1px,rgba(0, 0, 0, .14) 0 6px 10px 0,rgba(0, 0, 0, .12) 0 1px 18px 0;*/
+        background-color: #9CC6FB;
+        color: #363636;
+        padding: 0.5rem 1rem;
+        font-size: 1rem;
+    }
+
+    :global(body.dark-mode) button {
+        color: #f4f9ff;
+        background: #4A3F64;
+    }
+
+    :global(body.dark-mode) button:hover {
+        color: #4A3F64;
+        background: #f4f9ff;
+    }
+
+    button:hover {
+        color: #174ea6;
+        background: #f4f9ff;
+    }
+
+    button:active {
+        outline: none;
+    }
+
+    button:focus {
+        outline: 2px solid #4285f4;
+    }
+
+    .single-button {
+        display: block;
+        margin: auto;
     }
 </style>

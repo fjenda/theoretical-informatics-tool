@@ -3,5 +3,5 @@ export interface TransitionMeta {
     input : string,
     stack : string,
     stateAfter : string,
-    stackAfter : string,
+    stackAfter : string[],
 }

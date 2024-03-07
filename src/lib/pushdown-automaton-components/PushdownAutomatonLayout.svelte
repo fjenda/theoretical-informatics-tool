@@ -70,7 +70,7 @@
     align-items: center;
   }
 
-  @media screen and (max-width: 1150px) and (min-width: 768px) {
+  @media screen and (max-width: 1023px) and (min-width: 768px) {
     .layout {
       display: grid;
       grid-template-columns: repeat(2, 1fr);

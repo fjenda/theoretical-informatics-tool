@@ -10,10 +10,10 @@
     let input : string = '';
     let showArrows : boolean = false;
 
-    $: if (!/^[a-zA-Z0-9]+$/.test(input) && input !== '') {
-        alert("Test input can be made of alphanumeric characters only!")
-        input = input.substring(0, input.length - 1);
-    }
+    // $: if (!/^[a-zA-Z0-9]+$/.test(input) && input !== '') {
+    //     alert("Test input can be made of alphanumeric characters only!")
+    //     input = input.substring(0, input.length - 1);
+    // }
     function processTestInput() {
         table_index_store.set(0);
 

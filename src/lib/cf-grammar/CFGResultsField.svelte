@@ -26,12 +26,11 @@
     {#if showDerivation}
         <div class="derivation-box">
             <div class="derivation-header">
-                <h1>"{shownInput}"</h1>
-
                 <u class="close-button clickable" on:click={() => { toggleDerivation([], -1) }}>
                     &lt Back
                 </u>
 
+                <p class="in">"{shownInput}"</p>
             </div>
 
             <div class="wrapper-smaller">
@@ -46,8 +45,8 @@
                     {#each shownDerivation as step, i}
                         <div class="divTableBody">
                             <div class="divTableRow">
-                                <div class="divTableCell">{i + 1}</div>
-                                <div class="divTableCell">{step.rule}</div>
+                                <div class="divTableCell step">{i + 1}</div>
+                                <div class="divTableCell rule">{step.rule}</div>
                                 <div class="divTableCell">{step.result}</div>
                             </div>
                         </div>
@@ -69,12 +68,11 @@
                 {#if tableData}
                     {#each tableData as row, i}
                         <div class="divTableRow">
-<!--                            <div class="divTableCell">{i + 1}</div>-->
-                            <div class="divTableCell">{`"${row.input.join("")}"`}</div>
-                            <div class="divTableCell">{row.accepted ? "Yes" : "No"}</div>
+                            <div class="divTableCell input">{`"${row.input.join("")}"`}</div>
+                            <div class="divTableCell acc">{row.accepted ? "Yes" : "No"}</div>
                             {#if row.accepted}
                                 {#if row.length > 1}
-                                    <div class="divTableCell">
+                                    <div class="divTableCell der">
                                         <div class="flex-col">
                                             {#each row.derivation as der, j}
                                                     <u class="clickable" on:click={() => { toggleDerivation(der, i) }}>
@@ -84,7 +82,7 @@
                                         </div>
                                     </div>
                                 {:else}
-                                    <div class="divTableCell">
+                                    <div class="divTableCell der">
                                         <u class="clickable" on:click={() => { toggleDerivation(row.derivation, i) }}>
                                             Show
                                         </u>
@@ -104,7 +102,7 @@
 <style lang="scss">
   .wrapper {
     width: 30vw;
-    height: 38.5vh;
+    height: 37.75vh;
 
     //min-height: 15.5rem;
     border-radius: 0.5rem;
@@ -131,12 +129,6 @@
       height: 40vh;
       margin: 0.5rem auto;
     }
-  }
-
-  h1 {
-    text-align: center;
-    font-size: 1.25rem;
-    margin: 0.75rem 0;
   }
 
   .divTable {
@@ -210,6 +202,22 @@
     color: #101820;
   }
 
+  .acc {
+    width: 10%;
+  }
+
+  .der {
+    width: 20%;
+  }
+
+  .step {
+    width: 10%;
+  }
+
+  .rule {
+    width: 25%;
+  }
+
   :global(body.dark-mode) .divTableCell {
     background-color: #25252d;
     color: #f4f9ff;
@@ -228,14 +236,14 @@
   }
 
   .close-button {
-    position: absolute;
+    font-size: 1rem;
+    margin: auto 0.5rem;
+  }
 
-    font-size: 1.25rem;
-    bottom: 0.75rem;
-    top: 0.75rem;
-    left: 1rem;
-
-    z-index: 10;
+  .in {
+    margin: auto 0.5rem;
+    font-weight: bold;
+    font-size: 1rem;
   }
 
   .derivation-box {
@@ -259,7 +267,7 @@
     position: sticky;
     top: 0;
     display: flex;
-    justify-content: center;
+    justify-content: space-between;
 
     z-index: 10;
 

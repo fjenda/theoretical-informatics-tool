@@ -34,11 +34,11 @@
 {#if type !== ""}
     <div class="{type}-box" {...$$restProps}>
         {#if resettableButtons.includes(type.toString())}
-            <button class="button-17 {type}" on:click={() => {navigate(url); resetStores(); }} on:click={() => func()}>
+            <button class="button-17 {type}" on:click={() => {navigate(url); resetStores(); func(); }}>
                 {text}
             </button>
         {:else}
-            <button class="button-17 {type}" on:click={() => {navigate(url); }} on:click={() => func()}>
+            <button class="button-17 {type}" on:click={() => {navigate(url); func();}}>
                 {text}
             </button>
         {/if}

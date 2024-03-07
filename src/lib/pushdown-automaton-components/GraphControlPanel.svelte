@@ -35,7 +35,7 @@
         background: #25252d;
     }
 
-    @media screen and (max-width: 1150px) and (min-width: 768px) {
+    @media screen and (max-width: 1023px) and (min-width: 768px) {
         .control-panel {
             height: auto;
             margin: 0.5rem auto;

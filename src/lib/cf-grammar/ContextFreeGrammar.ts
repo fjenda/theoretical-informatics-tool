@@ -47,6 +47,7 @@ export class ContextFreeGrammar {
         });
 
         this.parser.setRules(newRules);
+        return newRules;
     }
 
     addRule(rule: CFGRule) {
@@ -58,38 +59,24 @@ export class ContextFreeGrammar {
     }
 
     updateTerminalsAndNonTerminals() {
-        // TODO: REDO THIS (do i really need this though?)
-        // this.nonTerminals = this.rules.reduce((acc, rule) => {
-        //     if (rule.leftSide === '') return acc;
-        //
-        //     if (!acc.includes(rule.leftSide)) {
-        //         acc.push(rule.leftSide);
-        //     }
-        //     return acc;
-        // }, []);
-        //
-        // this.terminals = this.rules.reduce((acc, rule) => {
-        //     rule.rightSide.forEach(symbol => {
-        //
-        //         if (symbol === '') return;
-        //
-        //         // split the symbol into its parts
-        //         const parts = symbol.split('');
-        //
-        //         parts.forEach(part => {
-        //             // if its lowercase and not in the array, add it
-        //             if (part === part.toLowerCase() && !acc.includes(part)) {
-        //                 acc.push(part);
-        //                 // if its uppercase and not a non-terminal and not in the array, add it
-        //             } else if (part === part.toUpperCase() && !this.nonTerminals.includes(part) && !acc.includes(part)) {
-        //                 acc.push(part);
-        //             }
-        //
-        //             // ignore the others
-        //         })
-        //     });
-        //     return acc;
-        // }, []);
+        let splitRules = this.convertRulesForParser(this.rules);
+
+        this.nonTerminals = splitRules.map(rule => rule.lhs);
+        this.terminals = splitRules.reduce((acc, rule) => {
+            rule.rhs.forEach(symbol => {
+                if (this.nonTerminals.indexOf(symbol) === -1 && acc.indexOf(symbol) === -1) {
+                    acc.push(symbol);
+                }
+            });
+            return acc;
+        }, []);
+
+        // remove duplicates
+        this.nonTerminals = this.nonTerminals.filter((value, index, self) => self.indexOf(value) === index);
+        this.terminals = this.terminals.filter((value, index, self) => self.indexOf(value) === index);
+
+
+        // console.log(this.nonTerminals, this.terminals);
     }
 
     toString() {

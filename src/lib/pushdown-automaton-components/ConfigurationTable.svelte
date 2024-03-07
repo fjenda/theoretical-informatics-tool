@@ -11,10 +11,10 @@
     let wordBackup: string = "";
     let word: string = "";
 
-    let stackBackup: string = "";
-    let stack: string = "";
+    let stackBackup: string[] = [];
+    let stack: string[] = [];
 
-    $: if ($graph_store.traversal === []) {
+    $: if ($table_index_store === -1) {
         tableData = [];
     }
 
@@ -49,7 +49,7 @@
 
 
             // push the initial configuration into tableData
-            tableData.push([$graph_store.startState, word, "Z", firstRuleIndex ? firstRuleIndex : "#", firstRule ? firstRule : "", 0]);
+            tableData.push([$graph_store.startState, word, $graph_store.stackBottom, firstRuleIndex ? firstRuleIndex : "#", firstRule ? firstRule : "", 0]);
 
             for (let i = 0; i < traversal.length; i++) {
                 // rule about to be used
@@ -66,7 +66,7 @@
                 }
 
                 // characters remaining
-                if (traversal[i].input === "E") {
+                if (traversal[i].input === "ε") {
                     word = wordBackup
                 } else {
                     word = wordBackup.slice(1);
@@ -83,24 +83,27 @@
                 }
 
                 // stack
-                if (traversal[i].stackAfter === "E") { // pop (from the front)
+                if (traversal[i].stackAfter[0] === "ε") { // pop (from the front)
                     stack = stackBackup.slice(1);
-                } else if (traversal[i].stackAfter !== "E") { // push (to the front) and dont push the last symbol in the stack
-                    stack = traversal[i].stackAfter + stackBackup.slice(1);
+                } else if (traversal[i].stackAfter[0] !== "ε") { // push (to the front) and dont push the last symbol in the stack
+                    stack = traversal[i].stackAfter.concat(stackBackup.slice(1));
                 }
+                console.log(`${traversal[i].stackAfter[0]} -> ${stack}`);
+
 
                 // if stack is empty
-                if (!stack.length) {
-                    stack = "Ø";
+                if (stack.length === 0) {
+                    stack = ["Ø"];
                 } else if (stack.length > 10) { // if stack is too long (> 10 chars)
-                    stack = stack.slice(0, 7) + "...";
+                    stack = stack.slice(0, 7);
+                    stack.push("...");
                 }
 
                 // save stack for next transition
                 stackBackup = stack;
 
                 // push to table data
-                tableData.push([traversal[i].stateAfter, word, stack, nextRuleIndex ? nextRuleIndex : "#", nextRule ? nextRule : "", i + 1]);
+                tableData.push([traversal[i].stateAfter, word, stack.join(""), nextRuleIndex ? nextRuleIndex : "#", nextRule ? nextRule : "", i + 1]);
             }
         } else {
             if ($graph_store.word) {
@@ -110,7 +113,7 @@
                     word = $graph_store.word.join("");
                 }
                 // push the initial configuration into tableData
-                tableData.push([$graph_store.startState, $graph_store.word.join(""), "Z", "#", "", 0]);
+                tableData.push([$graph_store.startState, $graph_store.word.join(""), $graph_store.stackBottom, "#", "", 0]);
             }
         }
 
@@ -138,60 +141,102 @@
         word = "";
 
         // empty stack
-        stackBackup = "";
-        stack = "";
+        stackBackup = [];
+        stack = [];
     }
 </script>
 
 <div class="wrapper">
-    <table class="styled-table">
-        <thead>
-        <tr>
-            <th>State</th>
-            <th>Input</th>
-            <th>Stack</th>
-            <th>Rule</th>
-        </tr>
-        </thead>
-        <tbody>
-        {#each tableData as row}
+<!--    <table class="styled-table">-->
+<!--        <thead>-->
+<!--        <tr>-->
+<!--            <th>State</th>-->
+<!--            <th>Input</th>-->
+<!--            <th>Stack</th>-->
+<!--            <th>Rule</th>-->
+<!--        </tr>-->
+<!--        </thead>-->
+<!--        <tbody>-->
+<!--        {#each tableData as row}-->
+<!--            {#if row[5] === $table_index_store}-->
+<!--                <tr class="active">-->
+<!--                    <td>{row[0]}</td>-->
+<!--                    <td>{row[1]}</td>-->
+<!--                    <td>{row[2]}</td>-->
+<!--                    {#if row[3] === "#" || row[3] === -1}-->
+<!--                        <td>{row[3]}</td>-->
+<!--                    {:else}-->
+<!--                        <td class="tooltip-wrapper"><span-->
+<!--                                use:tooltip={`(${row[4].state}, ${row[4].input}, ${row[4].stack}) → (${row[4].stateAfter}, ${row[4].stackAfter.join("")})`}>{row[3]}</span>-->
+<!--                        </td>-->
+<!--                    {/if}-->
+<!--                </tr>-->
+<!--            {:else}-->
+<!--                <tr>-->
+<!--                    <td>{row[0]}</td>-->
+<!--                    <td>{row[1]}</td>-->
+<!--                    <td>{row[2]}</td>-->
+<!--                    {#if row[3] === "#" || row[3] === -1}-->
+<!--                    <td>{row[3]}</td>-->
+<!--                    {:else}-->
+<!--                        <td>-->
+<!--                            <span use:tooltip={`δ(${row[4].state}, ${row[4].input}, ${row[4].stack}) → (${row[4].stateAfter}, ${row[4].stackAfter.join("")})`}>{row[3]}</span>-->
+<!--                        </td>-->
+<!--                    {/if}-->
+<!--                </tr>-->
+<!--            {/if}-->
+<!--        {/each}-->
+<!--        </tbody>-->
+<!--    </table>-->
+    <div class="divTable">
+        <div class="divTableHeading">
+            <div class="divTableRow">
+                <div class="divTableHead">State</div>
+                <div class="divTableHead">Input</div>
+                <div class="divTableHead">Stack</div>
+                <div class="divTableHead">Rule</div>
+            </div>
+        </div>
+        {#each tableData as row, i}
+            <div class="divTableBody">
+
             {#if row[5] === $table_index_store}
-                <tr class="active">
-                    <td>{row[0]}</td>
-                    <td>{row[1]}</td>
-                    <td>{row[2]}</td>
+                <div class="divTableRow active">
+                    <div class="divTableCell">{row[0]}</div>
+                    <div class="divTableCell">{row[1]}</div>
+                    <div class="divTableCell">{row[2]}</div>
                     {#if row[3] === "#" || row[3] === -1}
-                        <td>{row[3]}</td>
+                        <div class="divTableCell">{row[3]}</div>
                     {:else}
-                        <td class="tooltip-wrapper"><span
-                                use:tooltip={`(${row[4].state}, ${row[4].input}, ${row[4].stack}) → (${row[4].stateAfter}, ${row[4].stackAfter})`}>{row[3]}</span>
-                        </td>
+                        <div class="divTableCell tooltip-wrapper">
+                            <span use:tooltip={`δ(${row[4].state}, ${row[4].input}, ${row[4].stack}) → (${row[4].stateAfter}, ${row[4].stackAfter.join("")})`}>{row[3]}</span>
+                        </div>
                     {/if}
-                </tr>
+                </div>
             {:else}
-                <tr>
-                    <td>{row[0]}</td>
-                    <td>{row[1]}</td>
-                    <td>{row[2]}</td>
+                <div class="divTableRow">
+                    <div class="divTableCell">{row[0]}</div>
+                    <div class="divTableCell">{row[1]}</div>
+                    <div class="divTableCell">{row[2]}</div>
                     {#if row[3] === "#" || row[3] === -1}
-                    <td>{row[3]}</td>
+                        <div class="divTableCell">{row[3]}</div>
                     {:else}
-                        <td>
-                            <span use:tooltip={`δ(${row[4].state}, ${row[4].input}, ${row[4].stack}) → (${row[4].stateAfter}, ${row[4].stackAfter})`}>{row[3]}</span>
-                        </td>
+                        <div class="divTableCell tooltip-wrapper">
+                            <span use:tooltip={`δ(${row[4].state}, ${row[4].input}, ${row[4].stack}) → (${row[4].stateAfter}, ${row[4].stackAfter.join("")})`}>{row[3]}</span>
+                        </div>
                     {/if}
-                </tr>
+                </div>
             {/if}
+            </div>
         {/each}
-        </tbody>
-    </table>
+    </div>
 </div>
 
 <style lang="scss">
 
   .wrapper {
-    width: 90%;
-    height: 90%;
+    width: 30vw;
+    height: 37.75vh;
 
     min-height: 15.5rem;
     border-radius: 0.5rem;
@@ -204,6 +249,22 @@
     overflow: visible scroll;
   }
 
+  @media screen and (max-width: 1000px) and (min-width: 768px) {
+    .wrapper {
+      margin: 0.5rem auto;
+      width: 45vw;
+      height: 33.2vh;
+    }
+  }
+
+  @media screen and (max-width: 768px) {
+    .wrapper {
+      width: 95vw;
+      height: 40vh;
+      margin: 0.5rem auto;
+    }
+  }
+
   .active {
     background-color: #dddddd !important;
   }
@@ -212,90 +273,90 @@
     background-color: #393939 !important;
   }
 
-  table {
-    overflow: visible auto;
-  }
-
-  .styled-table {
-    height: 100%;
-    width: 100%;
-
-    z-index: 100;
-
-    position: relative;
-
-    //min-width: 9.5rem;
-    //min-height: 15.5rem;
-
-    border-spacing: 0;
-
-    font-size: 0.9em;
-    font-family: sans-serif;
-
-    background-color: #f7f7f8;
-
-    table-layout: auto;
-
-    border-collapse: separate;
-
-
-    thead tr {
-      background-color: #9CC6FB;
-      color: #393939;
-
-      position: sticky;
-      top: 0;
-
-      z-index: 1;
-    }
-
-    th, td {
-      padding: 0.5rem;
-    }
-
-    tbody tr {
-      background-color: #f7f7f8;
-      color: #101820;
-      text-align: center;
-    }
-
-    tr:nth-child(even) {
-      background-color: #f2f2f2;
-    }
-  }
-
-  :global(body.dark-mode) .styled-table {
-    background-color: #25252d;
-    color: #ffffff;
-
-    thead tr {
-      background-color: #4A3F64;
-      color: #ffffff;
-    }
-
-    tbody tr {
-      background-color: #25252d;
-      color: #ffffff;
-    }
-
-    tr:nth-child(even) {
-      background-color: #1f1f25;
-    }
-  }
-
-  @media screen and (max-width: 1150px) and (min-width: 768px) {
-    .wrapper {
-      margin: 0.5rem auto;
-    }
-  }
-
-  @media screen and (max-width: 767px) {
-    .wrapper {
-      width: 95%;
-      height: 95%;
-      margin: 0.5rem auto;
-    }
-  }
+  //table {
+  //  overflow: visible auto;
+  //}
+  //
+  //.styled-table {
+  //  height: 100%;
+  //  width: 100%;
+  //
+  //  z-index: 100;
+  //
+  //  position: relative;
+  //
+  //  //min-width: 9.5rem;
+  //  //min-height: 15.5rem;
+  //
+  //  border-spacing: 0;
+  //
+  //  font-size: 0.9em;
+  //  font-family: sans-serif;
+  //
+  //  background-color: #f7f7f8;
+  //
+  //  table-layout: auto;
+  //
+  //  border-collapse: separate;
+  //
+  //
+  //  thead tr {
+  //    background-color: #9CC6FB;
+  //    color: #393939;
+  //
+  //    position: sticky;
+  //    top: 0;
+  //
+  //    z-index: 1;
+  //  }
+  //
+  //  th, td {
+  //    padding: 0.5rem;
+  //  }
+  //
+  //  tbody tr {
+  //    background-color: #f7f7f8;
+  //    color: #101820;
+  //    text-align: center;
+  //  }
+  //
+  //  tr:nth-child(even) {
+  //    background-color: #f2f2f2;
+  //  }
+  //}
+  //
+  //:global(body.dark-mode) .styled-table {
+  //  background-color: #25252d;
+  //  color: #ffffff;
+  //
+  //  thead tr {
+  //    background-color: #4A3F64;
+  //    color: #ffffff;
+  //  }
+  //
+  //  tbody tr {
+  //    background-color: #25252d;
+  //    color: #ffffff;
+  //  }
+  //
+  //  tr:nth-child(even) {
+  //    background-color: #1f1f25;
+  //  }
+  //}
+  //
+  //@media screen and (max-width: 1023px) and (min-width: 768px) {
+  //  .wrapper {
+  //    margin: 0.5rem auto;
+  //  }
+  //}
+  //
+  //@media screen and (max-width: 768px) {
+  //  .wrapper {
+  //    width: 95%;
+  //    height: 95%;
+  //    margin: 0.5rem auto;
+  //  }
+  //}
 
   :global(.tooltip) {
     white-space: nowrap;
@@ -314,7 +375,7 @@
     padding: 0.2rem 0.35rem;
     background: #F4F8FF;
     color: #333333;
-    font-size: 1.25rem;
+    font-size: 1rem;
     border-radius: 0.25rem;
     filter: drop-shadow(0 1px 2px hsla(0, 0%, 0%, 0.2));
     width: max-content;
@@ -337,4 +398,90 @@
   //  background: inherit;
   //  clip-path: polygon(0% 0%, 100% 0%, 50% 100%);
   //}
+
+  .divTable {
+    display: table;
+    width: 100%;
+    height: 100%;
+
+    background-color: #f4f9ff;
+    color: #393939;
+  }
+
+  :global(body.dark-mode) .divTable {
+    background-color: #25252d;
+    color: #f4f9ff;
+  }
+
+  .divTableHeading {
+    display: table-header-group;
+
+    position: sticky;
+    top: 0;
+
+    z-index: 10;
+
+    background-color: #9CC6FB;
+    color: #393939;
+  }
+
+  :global(body.dark-mode) .divTableHeading {
+    background-color: #4A3F64;
+    color: #f4f9ff;
+  }
+
+  .divTableBody {
+    display: table-row-group;
+  }
+
+  :global(body.dark-mode) .divTableBody {
+    background-color: #25252d;
+    color: #f4f9ff;
+  }
+
+  .divTableRow {
+    display: table-row;
+  }
+
+  :global(body.dark-mode) .divTableRow {
+    background-color: #25252d;
+    color: #f4f9ff;
+  }
+
+  .divTableHead, .divTableCell {
+    display: table-cell;
+    padding: 0.5rem;
+    text-align: center;
+    vertical-align: middle;
+  }
+
+  .divTableHead {
+    font-weight: bold;
+    background-color: #9CC6FB;
+    color: #393939;
+    height: 1rem;
+  }
+
+  :global(body.dark-mode) .divTableHead {
+    background-color: #4A3F64;
+    color: #f4f9ff;
+  }
+
+  .divTableCell {
+    background-color: #f7f7f8;
+    color: #101820;
+  }
+
+  :global(body.dark-mode) .divTableCell {
+    background-color: #25252d;
+    color: #f4f9ff;
+  }
+
+  .divTableRow:nth-child(even) {
+    background-color: #f2f2f2;
+  }
+
+  :global(body.dark-mode) .divTableRow:nth-child(even) {
+    background-color: #1f1f25;
+  }
 </style>

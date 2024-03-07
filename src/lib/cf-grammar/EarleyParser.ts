@@ -1,6 +1,3 @@
-import {grammar_results_store} from "../../stores/graphInitStore";
-import {derived} from "svelte/store";
-
 export class Rule {
     // S -> E+T
     lhs: string; // S
@@ -11,8 +8,12 @@ export class Rule {
         this.rhs = rhs;
     }
 
+    equals(other: Rule) {
+        return this.lhs === other.lhs && this.rhs.join("") === other.rhs.join("");
+    }
+
     toString() {
-        return `${this.lhs} -> ${this.rhs.join('')}`;
+        return `${this.lhs} -> ${this.rhs.join(" ")}`;
     }
 }
 
@@ -21,22 +22,28 @@ class EarleyItem {
     rule: Rule; // S -> E+T
     dot: number; // .
     start: number; // (0)
+    action: ItemAction;
+    from: [number, number][];
 
-    constructor(rule: Rule, dot: number, start: number) {
+    constructor(rule: Rule, dot: number, start: number, action: ItemAction, from: [number, number][] = []) {
         this.rule = rule;
         this.dot = dot;
         this.start = start;
+        this.action = action;
+        this.from = from;
     }
 
     equals(item: EarleyItem) {
-        return this.rule.lhs === item.rule.lhs &&
-            this.rule.rhs.join('') === item.rule.rhs.join('') &&
+        return (
+            this.rule.lhs === item.rule.lhs &&
+            this.rule.rhs.join("") === item.rule.rhs.join("") &&
             this.dot === item.dot &&
-            this.start === item.start;
+            this.start === item.start
+        );
     }
 
     toString() {
-        return `${this.rule.lhs} -> ${this.rule.rhs.slice(0, this.dot).join(' ')} . ${this.rule.rhs.slice(this.dot).join(' ')} (${this.start})`;
+        return `${this.rule.lhs} -> ${this.rule.rhs.slice(0, this.dot).join(" ")} . ${this.rule.rhs.slice(this.dot).join(" ")} (${this.start}) - ${ItemAction[this.action]} - ${this.from.map(f => `S[${f[0]},${f[1]}]`).join(" ")}`;
     }
 }
 
@@ -68,30 +75,30 @@ class State {
     }
 }
 
+enum ItemAction {
+    PREDICT,
+    SCAN,
+    COMPLETE,
+};
+
 export class EarleyParser {
     grammar: Rule[] = [];
     nullableRules: boolean[] = [];
     states: State[] = [];
-    startingPoint: string
+    startingPoint: string;
     reversedStates: State[] = [];
 
     constructor(startingPoint: string, grammar: Rule[]) {
         this.grammar = grammar;
-        // this.grammar = [
-        //     new Rule('A', []),
-        //     new Rule('A', ['B']),
-        //     new Rule('B', ['A'])
-        // ]
         this.states[0] = new State();
         this.startingPoint = startingPoint;
-        // this.startingPoint = 'A';
     }
 
     setStartingRules() {
         // add the starting rules to the first state
         const startingRules = this.grammar.filter(rule => rule.lhs === this.startingPoint);
         startingRules.forEach(rule => {
-            this.states[0].push(new EarleyItem(rule, 0, 0));
+            this.states[0].push(new EarleyItem(rule, 0, 0, ItemAction.PREDICT));
         });
     }
 
@@ -103,6 +110,7 @@ export class EarleyParser {
     restart() { // restart the parser
         this.states = [];
         this.states[0] = new State();
+        this.reversedStates = [];
     }
 
     reset() { // reset the parser
@@ -199,7 +207,7 @@ export class EarleyParser {
                 const item = this.states[i].get(j);
 
                 if (item.dot === item.rule.rhs.length) {
-                    this.complete(this.states[i], j);
+                    this.complete(this.states[i], i, j);
                 } else {
                     const symbol = item.rule.rhs[item.dot];
                     if (this.isNonTerminal(symbol)) {
@@ -230,8 +238,8 @@ export class EarleyParser {
 
         // find the items that match
         const lastItems = lastState.items.filter(item => item.rule.lhs === this.startingPoint &&
-                                                                            item.start === 0 &&
-                                                                            item.dot === item.rule.rhs.length);
+            item.start === 0 &&
+            item.dot === item.rule.rhs.length);
 
         // console.log(`\nmatching states: ${lastItems.length}`)
 
@@ -252,20 +260,18 @@ export class EarleyParser {
                 this.reversedStates[i] = new State();
             }
 
-            // for (let i = finishedItems.length - 1; i >= 0; i--) {
-            //     for (let j = finishedItems[i].items.length - 1; j >= 0; j--) {
-            //         let tmpItem = new EarleyItem(finishedItems[i].items[j].rule, finishedItems[i].items[j].dot, i);
-            //         this.reversedStates[finishedItems[i].items[j].start].push(tmpItem);
-            //     }
-            // }
-
             for (let i = 0; i < finishedItems.length; i++) {
                 for (let j = 0; j < finishedItems[i].items.length; j++) {
-                    let tmpItem = new EarleyItem(finishedItems[i].items[j].rule, finishedItems[i].items[j].dot, i);
+                    let tmpItem = new EarleyItem(
+                        finishedItems[i].items[j].rule,
+                        finishedItems[i].items[j].dot,
+                        i,
+                        finishedItems[i].items[j].action,
+                        finishedItems[i].items[j].from,
+                    );
                     this.reversedStates[finishedItems[i].items[j].start].push(tmpItem);
                 }
             }
-
 
             // there could still be a rule position issue (the biggest priority should be at the top of the array)
             // we need to fix that
@@ -273,42 +279,43 @@ export class EarleyParser {
 
             // find the priority of the rules
             this.grammar.forEach((rule) => {
-                if (rulePriority[rule.lhs] === undefined)
+                let index = `${rule.lhs} -> ${rule.rhs.join(" ")}`;
+                if (rulePriority[index] === undefined) {
                     // give the rule a priority of the dict length
-                    rulePriority[rule.lhs] = Object.keys(rulePriority).length;
+                    rulePriority[index] = Object.keys(rulePriority).length;
+                }
             });
 
-            // now we need to sort the reversedStates array
+            // now we need to sort the reversedStates array using the rulePriority
             this.reversedStates.forEach((state) => {
                 state.items.sort((a, b) => {
-                    return rulePriority[a.rule.lhs] - rulePriority[b.rule.lhs];
+                    let indexA = `${a.rule.lhs} -> ${a.rule.rhs.join(" ")}`;
+                    let indexB = `${b.rule.lhs} -> ${b.rule.rhs.join(" ")}`;
+
+                    if (indexA === indexB) return b.start - a.start;
+                    return rulePriority[indexA] - rulePriority[indexB];
                 });
             });
 
 
-            // print the completed results
-            // this.reversedStates.forEach((state, index) => {
-            //     console.log(`\nState ${index}`);
-            //     console.log(state.toString());
-            // });
-
-            // let tree = this.createTree();
-            // console.log('\nParser tree');
-            // tree.print();
-
-            let trees: ParserTree[] = lastItems.map((item) => {
+            let trees = lastItems.map((item) => {
                 let root: TreeNode = new TreeNode(item.rule.lhs);
-                root.setRule(item.rule);
+                root.setItem(item);
 
-                console.log(`root -> ${root.value}, ${root.rule.toString()}`);
                 return this.createTree(root, input);
             });
 
-            trees.forEach((tree, index) => {
-                if (tree === undefined) return;
 
-                console.log(`\nParser tree ${index}`);
-                tree.print();
+            trees.forEach((tree, index) => {
+                if (tree) {
+                    console.log(`\nParser tree ${index}`);
+                    tree.print();
+                    console.log(`\n${tree.findAllLeaves()} === ${input}`);
+
+                    console.log(
+                        `\n${tree.findAllLeaves() === input ? "The input is valid" : "The input is not valid"}`,
+                    );
+                }
             });
 
             if (trees.length > 1) {
@@ -326,79 +333,53 @@ export class EarleyParser {
         return { accepted: false, length: -1, derivation: [] };
     }
 
-    createTree(root: TreeNode, input: string): ParserTree {
-        // create the tree
+    createTree(root: TreeNode, input: string) {
         let tree = new ParserTree(root);
-        let lastTree = new ParserTree(root);
+        let stack = [root];
 
-        // create the children
-        this.reversedStates.forEach((state) => {
-            state.items.forEach((item) => {
-                // split the right side and create nodes from it
-                let nodes: TreeNode[];
+        while (stack.length > 0) {
+            let node = stack.pop();
 
-                // if the rule is empty, create a node with an empty string
-                if (item.rule.rhs.length === 0) {
-                    nodes = [new TreeNode('')];
-                } else {
-                    nodes = item.rule.rhs.map((value) => new TreeNode(value));
+            if (!node) continue;
+
+            let stI = 0;
+            for (let rhs of node.item.rule.rhs) {
+                if (!this.isNonTerminal(rhs)) {
+                    let child = new TreeNode(rhs);
+                    node.addChild(child);
+                    continue;
                 }
 
-                let parent = tree.findLeaf(item.rule.lhs);
+                let start = node.item.from[stI][0];
+                let end = node.item.from[stI][1];
+                let item = this.states[start].items[end];
 
-                // if the parent isn't the root, set the rule
-                if (parent?.rule?.lhs !== root.rule.lhs) parent?.setRule(item.rule);
-
-                // handling the case when the rule is empty
-                if (parent?.rule.rhs.length === 0 && item.rule.rhs.length === 0) {
-                    nodes.forEach((node) => {
-                        parent?.addChild(node);
-                    });
-                } else if (parent?.rule.rhs === item.rule.rhs) {
-                    nodes.forEach((node) => {
-                        parent?.addChild(node);
-                    });
-                }
-            });
-        });
-
-        // check if the tree is completed
-        if (tree.findAllLeaves().join("") === input) {
-            return tree;
-        } else if (tree.findAllLeaves().join("") === lastTree.findAllLeaves().join("")) {
-            return undefined;
-        } else {
-            // remove the starter rule used
-            let found = false;
-            this.reversedStates[0].items.forEach(item => {
-                if (found) return;
-
-                if (item.rule === root.rule) {
-                    this.reversedStates[0].items.splice(this.reversedStates[0].items.indexOf(item), 1);
-                    found = true;
-                }
-            })
-
-            return this.createTree(tree.root, input);
+                let child = new TreeNode(item.rule.lhs);
+                child.setItem(item);
+                node.addChild(child);
+                stack.push(child);
+                stI++;
+            }
         }
+        return tree;
     }
 
     // predict the next non-terminal symbol
     predict(symbol: string, state: State, start: number, stateIndex: number, itemIndex: number) {
-        const rules = this.grammar.filter(rule => rule.lhs === symbol);
+        const rules = this.grammar.filter((rule) => rule.lhs === symbol);
 
-        rules.forEach(rule => {
-            state.push(new EarleyItem(rule, 0, stateIndex));
+        rules.forEach((rule) => {
+            state.push(new EarleyItem(rule, 0, stateIndex, ItemAction.PREDICT));
 
             // magical completion
-            if (this.nullableRules[this.grammar.findIndex(r => r.lhs === rule.lhs)]) {
-                state.push(new EarleyItem(rule, state.items[itemIndex].dot + 1, stateIndex));
+            if (this.nullableRules[this.grammar.findIndex((r) => r.lhs === rule.lhs)]) {
+                state.push(new EarleyItem(rule, state.items[itemIndex].dot + 1, stateIndex, ItemAction.COMPLETE));
             }
         });
 
         // remove duplicates or we will be stuck in an infinite loop
         state.items = state.items.filter((item, index) => {
-            return state.items.findIndex(i => i.equals(item)) === index;
+            return state.items.findIndex((i) => i.equals(item)) === index;
         });
     }
 
@@ -406,25 +387,35 @@ export class EarleyParser {
     scan(input: string, state: State, index: number, stateIndex: number) {
         if (input === state.get(index).rule.rhs[state.get(index).dot]) {
             // we copy the item and move the dot one position to the right
-            let item = new EarleyItem(state.get(index).rule, state.get(index).dot + 1, state.get(index).start);
+            let item = new EarleyItem(
+                state.get(index).rule,
+                state.get(index).dot + 1,
+                state.get(index).start,
+                ItemAction.SCAN,
+                state.get(index).from,
+            );
             this.states[stateIndex + 1] = this.states[stateIndex + 1] || new State();
             this.states[stateIndex + 1].push(item);
         }
     }
 
     // complete the items
-    complete(state: State, index: number) {
-        let stateSet = this.states[state.get(index).start];
-        const rules = stateSet.items.filter(item => item.rule.rhs[item.dot] === state.get(index).rule.lhs);
+    complete(state: State, stateIndex: number, itemIndex: number) {
+        let stateSet = this.states[state.get(itemIndex).start];
+        const rules = stateSet.items.filter(
+            (item) => item.rule.rhs[item.dot] === state.get(itemIndex).rule.lhs,
+        );
 
-        rules.forEach(rule => {
+
+        rules.forEach((rule) => {
+            let f = [...rule.from];
+            f.push([stateIndex, itemIndex]);
+            let item = new EarleyItem(rule.rule, rule.dot + 1, rule.start, ItemAction.COMPLETE, f);
+
             // if item is already completed we don't need to add it again
-            if (state.items.some(item => item.equals(new EarleyItem(rule.rule, rule.dot + 1, rule.start)))) {
+            if (state.items.some((i) => i.equals(item))) {
                 return;
             }
-
-            // shift the dot one position to the right
-            let item = new EarleyItem(rule.rule, rule.dot + 1, rule.start);
 
             // push the completed item into the current state
             state.push(item);
@@ -436,11 +427,36 @@ export class EarleyParser {
     }
 }
 
+class TreeEdge {
+    start: string;
+    end: string;
+    item: EarleyItem;
+
+    constructor(start: string, end: string, item: EarleyItem) {
+        this.start = start;
+        this.end = end;
+        this.item = item;
+    }
+
+    equals(other: TreeEdge) {
+        return (
+            this.start === other.start &&
+            this.end === other.end &&
+            this.item.equals(other.item)
+        );
+    }
+
+    toString() {
+        return `${this.start} -> ${this.end} (${this.item.rule.lhs} -> ${this.item.rule.rhs.join(" ")})`;
+    }
+}
+
 class TreeNode {
     value: string;
-    children: TreeNode[];
+    children: TreeNode[] = [];
     visited: boolean;
-    rule: Rule;
+    item: EarleyItem = {} as EarleyItem;
+    edges: TreeEdge[] = [];
 
     constructor(value: string) {
         this.value = value;
@@ -448,8 +464,12 @@ class TreeNode {
         this.visited = false;
     }
 
-    setRule(rule: Rule) {
-        this.rule = rule;
+    setItem(item: EarleyItem) {
+        this.item = item;
+    }
+
+    addEdge(edge: TreeEdge) {
+        this.edges.push(edge);
     }
 
     addChild(child: TreeNode) {
@@ -457,8 +477,8 @@ class TreeNode {
     }
 
     print(node: TreeNode, indent: string, last: boolean) {
-        console.log(indent + (last ? '└─' : '├─') + node.value);
-        indent += last ? '  ' : '│ ';
+        console.log(indent + (last ? "└─" : "├─") + node.value);
+        indent += last ? "  " : "│ ";
 
         for (let i = 0; i < node.children.length; i++) {
             this.print(node.children[i], indent, i === node.children.length - 1);
@@ -474,7 +494,7 @@ class ParserTree {
     }
 
     // look through the whole tree using depth-first search and find the leaf with the given value
-    findLeaf(value: string) {
+    findLeaf(symbol: string) {
         let stack = [this.root];
 
         while (stack.length > 0) {
@@ -482,12 +502,14 @@ class ParserTree {
 
             if (!node) continue;
 
-            if (node.value === value && node.children.length === 0) {
+            if (node.value === symbol && node.children.length === 0) {
                 return node;
             }
 
             stack.push(...node.children);
         }
+
+        return undefined;
     }
 
     // returns all the leaves (using depth-first search) in the tree (this function is for testing purposes,
@@ -501,47 +523,47 @@ class ParserTree {
 
             if (!node) continue;
 
-            if (node.children.length === 0) {
+            if (node.children.length === 0 && node.value.length === 1) {
                 leaves.push(node.value);
             }
 
             stack.push(...node.children);
         }
 
-        return leaves.reverse();
+        return leaves.reverse().join("");
     }
 
-    // using the breadth-first search we can find the derivation by traversing the tree
+    // using the depth-first search we can find the derivation by traversing the tree
     getDerivation() {
-        let queue = [this.root];
+        let stack = [this.root];
         let derivation: {rule: string, result: string}[] = [{rule: `Start -> ${this.root.value}`, result: `${this.root.value}`}];
         let result = this.root.value;
 
-        while (queue.length > 0) {
-            let node = queue.shift();
+        while (stack.length > 0) {
+            let node = stack.pop();
 
             if (!node) continue;
 
             if (!node.visited) {
-                if (node.rule) {
-                    result = this.parseChar(result, node.rule);
-                    derivation.push({rule: `${node.rule.toString()}`, result: result});
+                if (node.children.length > 0) {
+                    result = this.parseChar(result, node.item.rule);
+                    derivation.push({rule: `${node.item.rule.toString()}`, result: result});
                 }
             }
 
-            queue.push(...node.children);
+            stack.push(...node.children.reverse());
             node.visited = true;
         }
 
         return derivation;
     }
 
-    // helper function to parse the character
     parseChar(input: string, rule: Rule) {
+        console.log(rule.toString());
         for (let char of input) {
             if (char === rule.lhs) {
                 // replace the char with the rule lhs
-                input = input.replace(char, rule.rhs.join(''));
+                input = input.replace(char, rule.rhs.join(""));
                 break;
             }
         }
@@ -549,10 +571,9 @@ class ParserTree {
         return input;
     }
 
-
     // pretty print the tree
     print() {
-        this.root.print(this.root, '', true);
+        this.root.print(this.root, "", true);
     }
 }
 

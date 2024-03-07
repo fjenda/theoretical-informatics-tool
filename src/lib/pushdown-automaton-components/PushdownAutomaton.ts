@@ -20,17 +20,27 @@ export class PushdownAutomaton {
     type: string = "empty";
     startState: string = "q0";
     finishState?: string[] = ["qF"];
+    stackBottom: string = "Z";
 
     constructor() { };
 
     process() : TransitionMeta[] | null {
         const queue: { state: string; stack: string[]; index: number; path: TransitionMeta[] }[] = [
-            { state: this.startState, stack: ["Z"], index: 0 , path: []}
+            { state: this.startState, stack: [this.stackBottom], index: 0 , path: []}
         ];
 
+        const visitedConfigurations: Set<string> = new Set();
         let closestDeclinedPath: TransitionMeta[] | null = null;
+
         while (queue.length > 0) {
             const { state, stack, index, path } = queue.shift()!;
+            const configurationKey = `${state},${stack.join('')},${index}`;
+
+            if (visitedConfigurations.has(configurationKey)) {
+                continue;
+            }
+            visitedConfigurations.add(configurationKey);
+
             switch (this.type) {
                 case "both": {  // if PA accepts by empty stack, empty word and finish state
                     if ((index === this.word.length || this.word.length === 0) && stack.length === 0 && (this.finishState).includes(state)) {
@@ -61,22 +71,24 @@ export class PushdownAutomaton {
 
             closestDeclinedPath = path;
             for (const transition of this.transitions) {
-                if (transition.state === state && (transition.input === this.word[index] || transition.input === "E")) {
-                    const stackTop = stack[stack.length - 1];
-                    // if (stackTop === transition.stack || (transition.stack === "Z" && stack.length === 1)) {
+                if (transition.state === state && (transition.input === this.word[index] || transition.input === "ε")) {
+                    const stackTop = stack[0];
+
                     if (stackTop === transition.stack) {
                         const newPath = path.concat(transition);
                         let newStack = stack.slice();
-                        if (transition.stackAfter === "E") {
-                            newStack.pop();
+                        if (transition.stackAfter[0] === "ε") {
+                            newStack.shift();
                         } else {
-                            newStack.push(...transition.stackAfter.slice(0, -1));
+                            newStack.shift();
+                            newStack.splice(0, 0, ...transition.stackAfter);
                         }
 
+                        console.log(`pushing ${transition.stateAfter} with stack ${newStack.join('')}`)
                         queue.push({
                             state: transition.stateAfter,
                             stack: newStack,
-                            index: index + (transition.input === "E" ? 0 : 1),
+                            index: index + (transition.input === "ε" ? 0 : 1),
                             path: newPath,
                         });
                     }
@@ -147,13 +159,15 @@ export class PushdownAutomaton {
     }
 
     generateGraphFromTransitions() {
+        this.resetGraph();
+
         this.transitions.forEach(transition => {
             let key = transition.state + "-" + transition.stateAfter;
             this.edges[key] = this.edges[key] ?? [];
             this.edges[key].push(
                 {
                     id: (transition.state + "-" + transition.stateAfter),
-                    label: (transition.input + "," + transition.stack + ";" + transition.stackAfter),
+                    label: (transition.input + "," + transition.stack + ";" + transition.stackAfter.join("")),
                     source: transition.state,
                     target: transition.stateAfter
                 });
@@ -198,19 +212,21 @@ export class PushdownAutomaton {
         let nextNode = this.traversal[this.currentStatus.step].stateAfter;
         let nextEdge = this.traversal[this.currentStatus.step].state + "-" + nextNode;
 
-        if (this.traversal[this.currentStatus.step].stackAfter.length > 1) {
-            const nextStack = this.traversal[this.currentStatus.step].stackAfter?.slice(0, -1);
+        if (this.traversal[this.currentStatus.step].stackAfter[0] === "ε") {
+            this.stack.pop();
+        } else {
+            // const nextStack = this.traversal[this.currentStatus.step].stackAfter?.slice(0, -1);
+            const nextStack = this.traversal[this.currentStatus.step].stackAfter;
+            this.stack.pop();
 
             if (nextStack.length > 1) {
-                for (let i = 0; i < nextStack.length; i++) {
+                for (let i = nextStack.length - 1; i >= 0; i--) {
                     this.stack.push(nextStack[i]);
                 }
             }
             else {
-                this.stack.push(nextStack);
+                this.stack.push(...nextStack);
             }
-        } else if (this.traversal[this.currentStatus.step].stackAfter === "E") {
-            this.stack.pop();
         }
 
         return {nextNode, nextEdge};
@@ -231,9 +247,12 @@ export class PushdownAutomaton {
         let previousNode = this.traversal[this.currentStatus.step].state;
         let previousEdge = previousNode + "-" + this.traversal[this.currentStatus.step].stateAfter;
 
-        if (this.traversal[this.currentStatus.step].stackAfter === "E") {
+        let currentTraversal = this.traversal[this.currentStatus.step];
+
+        // TODO: For CF grammars the stack needs to be redone, theres not always E
+        if (currentTraversal.stackAfter[0] === "ε") {
             this.stack.push(this.traversal[this.currentStatus.step].stack);
-        } else if (this.traversal[this.currentStatus.step].stackAfter !== this.traversal[this.currentStatus.step].stack) {
+        } else if (currentTraversal.stackAfter[0] !== currentTraversal.stack[0]) {
             this.stack.pop();
         }
 
@@ -247,8 +266,16 @@ export class PushdownAutomaton {
         this.currentStatus = {
             state: this.startState,
             input: "",
-            stack: "Z",
+            stack: this.stackBottom,
             step: 0,
         };
+    }
+
+    resetGraph() {
+        this.graph.elements().remove();
+    }
+
+    setStackBottom(char: string) {
+        this.stack = [char];
     }
 }

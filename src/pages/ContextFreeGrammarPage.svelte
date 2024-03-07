@@ -8,8 +8,32 @@
     import CFGInputField from "../lib/cf-grammar/CFGInputField.svelte";
     import CFGResultsField from "../lib/cf-grammar/CFGResultsField.svelte";
     import CFGGrammarInput from "../lib/cf-grammar/CFGGrammarInput.svelte";
+    import {Converter} from "../lib/cf-grammar/Converter";
+    import {graph_store, user_grammar_store} from "../stores/graphInitStore";
+    import type {ContextFreeGrammar} from "../lib/cf-grammar/ContextFreeGrammar";
 
     const landingPageUrl = "/Theoretical-informatics-tool"
+    const automatonUrl = "/Theoretical-informatics-tool/tool/pushdown-automaton"
+    const converter = new Converter({});
+
+    function convert()
+    {
+        // update nt and t
+        user_grammar_store.update((n) => {
+            n.updateTerminalsAndNonTerminals();
+            return n;
+        });
+
+
+        // create a copy of the store
+        const grammarCopy: ContextFreeGrammar = {};
+        Object.assign(grammarCopy, $user_grammar_store);
+        converter.setGrammar(grammarCopy);
+        converter.convertToPDA();
+
+        console.log($graph_store.transitions);
+    }
+
 </script>
 
 <main>
@@ -18,7 +42,7 @@
         <CFGEditor slot="cfg-editor">
             <CFGGrammarInput slot="grammar-input" />
             <Button slot="back-button" type="back" text="Back" url={landingPageUrl} />
-            <Button slot="convert-button" type="process" text="Convert to PDA" url={landingPageUrl} />
+            <Button slot="convert-button" type="process" text="Convert to PDA" func={() => convert()} url={automatonUrl} />
         </CFGEditor>
         <CFGInput slot="cfg-input">
             <CFGInputField />
