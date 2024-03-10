@@ -29,12 +29,12 @@
             return n;
         });
         selectedOptionsId = findIDs();
-        selectedOptions = Array.from(event.target.selectedOptions, option => option.value);
+        selectedOptions = Array.from(event.target.selectedOptions, option => option.label);
         graph_store.update(n => {
             n.startState = selectedOptionsId;
             return n;
         });
-        // console.log("Start states" + $graph_store.startState)
+        console.log("Start states v boxu" + $graph_store.startState)
     }
 </script>
 

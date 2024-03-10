@@ -60,7 +60,7 @@ export class  RegexAutomaton{
     fromTreeToAutomaton(root: TreeNode | null) : FiniteStateAutomaton | null {
         if (root.label === "expression") {
             let term = this.fromTreeToAutomaton(root.children[0]);
-            if (root.children.length === 2) {
+            if (root.children.length === 3) {
                 return this.union(term, this.fromTreeToAutomaton(root.children[2]));
             }
             return term;
@@ -150,9 +150,9 @@ export class  RegexAutomaton{
             this.match("|");
             let expression = this.expression();
 
-            if (expression === null) {
-                return null;
-            }
+            // if (expression === null) {
+            //     return null;
+            // }
 
             // term = new TreeNode("expression", [term, new TreeNode("|", null), expression]);
             return new TreeNode("expression", [term, new TreeNode("|", null), expression]);
@@ -244,15 +244,10 @@ export class  RegexAutomaton{
             });
         });
 
-        // transitionsFirst.forEach((transition : TransitionMeta) => {
-        //     if (transition.input === "ε"){
-        //
-        //     }
-        // });
 
         let lastStateOfFirst = nodes[nodes.length - 1].id;
         let firstStateOfSecond = (parseInt(lastStateOfFirst) + 1).toString();
-
+        numberShift = nodes.length;
         let nodesSecond = second.getNodes();
         nodesSecond.forEach((node : GraphNodeMeta) => {
             let newId = (parseInt(node.id) + numberShift).toString();

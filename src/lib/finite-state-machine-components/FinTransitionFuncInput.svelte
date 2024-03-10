@@ -38,6 +38,12 @@
 <!--d(q0,1)=q1;-->
 <!--d(q1,1)=q0;-->
 <!--d(q1,1)=q1;-->
+<!--//-->
+<!--//-->
+<!--d(q1,a)=q2;-->
+<!--d(q1,a)=q3;-->
+<!--d(q2,b)=q3;-->
+<!--d(q1,ε)=q3;-->
 
 <script lang="ts">
 
@@ -219,7 +225,8 @@
     }
 
     function validateTransition(transition) {
-        let regex = /d\([A-Za-z]+[0-9]+,[A-Za-z0-9]\)=[A-Za-z]+[0-9];/;
+        // let regex = /d\([A-Za-z]+[0-9]+,[A-Za-z0-9]\)=[A-Za-z]+[0-9];/;
+        let regex = /d\([A-Za-z]+[0-9]+,(ε|[A-Za-z0-9])\)=[A-Za-z]+[0-9];/;
         return regex.test(transition);
     }
 

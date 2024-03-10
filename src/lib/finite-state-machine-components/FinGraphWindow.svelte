@@ -5,6 +5,7 @@
     import {input_error_store} from "../../stores/inputErrorStore";
     import {FiniteStateAutomaton} from "./FiniteStateAutomaton";
     import {RegexAutomaton} from "./regex/RegexAutomaton";
+    import {ConvertorToDFA} from "./ConvertorToDFA";
 
     let graphObject = new FiniteStateAutomaton([], [], [], [], [], "DFA");
 
@@ -26,6 +27,7 @@
         generateConfiguration,
         generateGraphFromTransitions,
         regexInput,
+        convertToDFA,
         // preprocessGraphInput,
     } as ToolbarFunctions;
 
@@ -33,30 +35,42 @@
         updateConfiguration("type");
     }
 
-    function regexInput(wordCh : string){
-        // console.log(wordCh)
-        let regex = new RegexAutomaton(wordCh);
-        // console.log(regex);
+    function convertToDFA(){
+        console.log("graph object P5sdfsdmfoksdfosdKDPSADM: ", graphObject);
+        console.log("graphStore PRED PREVODEM: ", $graph_store);
 
+        const result = ConvertorToDFA.convertToDFA(graphObject);
         deleteGraph();
-        // console.log($graph_store);
 
-        let newFa : FiniteStateAutomaton = regex.regexProcessFunc();
-        console.log("resutl", newFa);
+        let alphabet = new Set();
+        result.transitions.forEach((transition) => {
+            alphabet.add(transition.input);
+        });
 
-        graphObject.transitions = newFa.transitions;
-        graphObject.nodes = newFa.nodes;
-        graphObject.startState = newFa.startState;
-        graphObject.finishState = newFa.finishState;
-        graphObject.type = newFa.type;
+        //delete duplicates from alphabet
+        let alphabetArr = Array.from(alphabet);
+        let alphabetArrNoDuplicates = alphabetArr.filter((item, index) => alphabetArr.indexOf(item) === index);
 
-        // Object.assign(graphObject, $graph_store);
+        graphObject.input_alphabet = alphabetArrNoDuplicates;
+        graphObject.transitions = result.transitions;
+        graphObject.nodes = result.nodes;
+        graphObject.startState = result.startState;
+        graphObject.finishState = result.finishState;
+        graphObject.type = result.type;
 
         graphObject.generateGraphFromTransitions();
-        console.log(graphObject);
+        console.log("Tady je nový graph object: ", graphObject);
+
+        console.log("Tady je store: ", $graph_store);
 
         createGraph(false);
         graph_store.update((n) => {
+            n.input_alphabet = graphObject.input_alphabet;
+            n.transitions = graphObject.transitions;
+            n.nodes = graphObject.nodes;
+            n.startState = graphObject.startState;
+            n.finishState = graphObject.finishState;
+            n.type = graphObject.type;
             n.generated = true;
             return n;
         });
@@ -64,6 +78,65 @@
         resetInputVar.set(false);
         input_error_store.reset();
 
+    }
+
+    function regexInput(wordCh : string){
+        // console.log(wordCh)
+        let regex = new RegexAutomaton(wordCh);
+        // console.log(regex);
+        console.log("Tady je stary graph object: ", graphObject);
+        deleteGraph();
+        // console.log($graph_store);
+
+        let newFa : FiniteStateAutomaton = regex.regexProcessFunc();
+        console.log("resutl", newFa);
+
+        let alphabet = new Set();
+        newFa.transitions.forEach((transition) => {
+            alphabet.add(transition.input);
+        });
+
+        //delete duplicates from alphabet
+        let alphabetArr = Array.from(alphabet);
+        let alphabetArrNoDuplicates = alphabetArr.filter((item, index) => alphabetArr.indexOf(item) === index);
+
+        // let newStartState : string[] = [];
+        // if (typeof newFa.startState === "string"){
+        //     newStartState.push(newFa.startState);
+        // } else {
+        //     newStartState = newFa.startState;
+        // }
+
+
+
+        graphObject.input_alphabet = alphabetArrNoDuplicates;
+        graphObject.transitions = newFa.transitions;
+        graphObject.nodes = newFa.nodes;
+        graphObject.startState = newFa.startState;
+        graphObject.finishState = newFa.finishState;
+        graphObject.type = newFa.type;
+
+        graphObject.generateGraphFromTransitions();
+        console.log("Tady je nový graph object: ", graphObject);
+
+        console.log("Tady je store: ", $graph_store);
+
+        createGraph(false);
+        graph_store.update((n) => {
+            n.input_alphabet = graphObject.input_alphabet;
+            n.transitions = graphObject.transitions;
+            n.nodes = graphObject.nodes;
+            n.startState = graphObject.startState;
+            n.finishState = graphObject.finishState;
+            n.type = graphObject.type;
+            n.generated = true;
+            return n;
+        });
+        // graph_store.reset();
+        resetInputVar.set(false);
+        input_error_store.reset();
+
+        console.log("HERERERERERERERERE: ", graphObject.finishState);
     }
 
     function testInput(wordCh : string[]){
@@ -238,7 +311,7 @@
         // states
         let states = new Set();
         graphObject.nodes.forEach((node : GraphNodeMeta) => {
-            states.add(node.id);
+            states.add(node.label);
         });
         configuration.nodes = Array.from(states);
 
@@ -256,17 +329,22 @@
         graphObject.transitions.forEach((transition) => {
             configuration.transitions = configuration.transitions ?? [];
             configuration.transitions.push({
-                state: transition.state,
+                state: transition.stateLabel,
                 input: transition.input,
-                stateAfter: transition.stateAfter,
+                stateAfter: transition.stateAfterLabel,
             });
         });
 
+        let startStateLabel = graphObject.nodes.find((node : GraphNodeMeta) => node.id === graphObject.startState).label;
+        let finishStatesLabel = graphObject.finishState.map((node : string) => graphObject.nodes.find((n : GraphNodeMeta) => n.id === node).label);
+
         // start state
-        configuration.start_state = graphObject.startState;
+        // configuration.start_state = graphObject.startState;
+        configuration.start_state = startStateLabel;
 
         // final states
-        configuration.final_states = graphObject.finishState;
+        // configuration.final_states = graphObject.finishState;
+        configuration.final_states = finishStatesLabel;
 
         // type
         configuration.type = graphObject.type;
@@ -360,7 +438,7 @@
 
     function addNode(node : GraphNodeMeta) {
         try {
-            console.log('Before add node: ', $graph_store);
+            // console.log('Before add node: ', $graph_store);
             graphObject.addNode(node);
         } catch (e) {
             console.log(e);
@@ -370,7 +448,7 @@
                 n.nodes = graphObject.nodes;
                 return n;
             });
-            console.log('After add node: ', $graph_store);
+            // console.log('After add node: ', $graph_store);
             resetLayout();
         }
     }
@@ -658,7 +736,9 @@
         Object.assign(graphObject, $graph_store);
 
         graphObject.generateGraphFromTransitions();
-        console.log(graphObject);
+
+
+
 
         createGraph(false);
         graph_store.update((n) => {
@@ -668,6 +748,12 @@
         // graph_store.reset();
         resetInputVar.set(false);
         input_error_store.reset();
+
+
+
+        graphObject.startState = $graph_store.startState;
+
+
 
         return true;
     }

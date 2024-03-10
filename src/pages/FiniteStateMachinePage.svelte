@@ -19,6 +19,8 @@ import RegexInput from "../lib/finite-state-machine-components/regex/RegexInput.
 
     let processTestInputFunction : Function = () => {};
     let processRegexInputFunction : Function = () => {};
+
+    let processConvertToDFAFunction : Function = () => {};
 </script>
 
 <DebugView>
@@ -37,6 +39,7 @@ import RegexInput from "../lib/finite-state-machine-components/regex/RegexInput.
                                                 regexInputFunction={toolbarFunctions?.regexInput}
                 />
                 <Button type="test" text="Generate" func={processRegexInputFunction} />
+                <Button type="convert" text="Convert to DFA" func={toolbarFunctions?.convertToDFA} />
                 <Button type="back" text="Back" url={landingPageUrl} />
             </FinGraphControlPanel>
             <FinGraphWindow bind:toolbarFunctions={toolbarFunctions} slot="window">

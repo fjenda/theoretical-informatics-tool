@@ -23,6 +23,7 @@ export  class FiniteStateAutomaton{
     finishState?: string[] = ["F"];
     correctStartState: string = "q0";
     followingID : number = 0;
+    input_alphabet: string[] = [];
 
     // constructor() {
     //     this.graph = null;
@@ -54,7 +55,7 @@ export  class FiniteStateAutomaton{
         this.transitions.push({
             state: state,
             stateLabel: stateLabel,
-            input: "E",
+            input: "ε",
             stack: "",
             stackAfter: "",
             stateAfter: stateAfter,
@@ -94,7 +95,7 @@ export  class FiniteStateAutomaton{
 
             //epsilon eges
             for (const transition of this.transitions) {
-                if (transition.state === state && transition.input === "E") {
+                if (transition.state === state && transition.input === "ε") {
                     const newPath = path.concat(transition);
                     queue.push({
                         state: transition.stateAfter,
@@ -151,7 +152,7 @@ export  class FiniteStateAutomaton{
 
                 // Procházení epsilon přechodů
                 for (const transition of this.transitions) {
-                    if (transition.state === state && transition.input === "E") {
+                    if (transition.state === state && transition.input === "ε") {
                         const newPath = path.concat(transition);
                         queue.push({
                             state: transition.stateAfter,
@@ -203,7 +204,7 @@ export  class FiniteStateAutomaton{
 
             //epsilon eges
             for (const transition of this.transitions) {
-                if (transition.state === state && transition.input === "E") {
+                if (transition.state === state && transition.input === "ε") {
                     const newPath = path.concat(transition);
                     queue.push({
                         state: transition.stateAfter,
@@ -225,7 +226,7 @@ export  class FiniteStateAutomaton{
     }
 
     addNode(node : GraphNodeMeta) {
-        console.log(node);
+        // console.log(node);
         if (this.graph.$id(node.id).length !== 0) {
             return;
         }
@@ -317,84 +318,7 @@ export  class FiniteStateAutomaton{
             }
         });
 
-        console.log("TADY JE třída koneečného automatu: " , this);
     }
-
-    // generateFromRegex(treeNode : TreeNode){
-    //     if (treeNode.label === "expression") {
-    //         // Handle expression node
-    //         if (treeNode.children && treeNode.children.length >= 3) {
-    //             const term = treeNode.children[0];
-    //             const operator = treeNode.children[1];
-    //             const expression = treeNode.children[2];
-    //
-    //             this.generateFromRegex(term);
-    //             this.generateFromRegex(expression);
-    //
-    //             // Create a transition from term to expression based on the operator
-    //             if (operator.label === "|") {
-    //                 this.addTransition(term.id, expression.id, "E");
-    //             } else {
-    //                 // Handle other operators if needed
-    //             }
-    //         }
-    //     } else if (node.label === "term") {
-    //         // Handle term node
-    //         if (treeNode.children && treeNode.children.length >= 2) {
-    //             const factor = treeNode.children[0];
-    //             const term = treeNode.children[1];
-    //
-    //             this.generateFromRegex(factor);
-    //             this.generateFromRegex(term);
-    //
-    //             // Create a transition from factor to term
-    //             this.addTransition(factor.id, term.id, "E");
-    //         }
-    //     } else if (treeNode.label === "factor") {
-    //         // Handle factor node
-    //         if (treeNode.children && treeNode.children.length >= 1) {
-    //             const atom = treeNode.children[0];
-    //
-    //             this.generateFromRegex(atom);
-    //
-    //             // Create a transition from atom to itself for meta characters (*, +, ?)
-    //             if (treeNode.children.length === 2) {
-    //                 const meta = treeNode.children[1];
-    //                 this.addTransition(atom.id, atom.id, meta.label);
-    //             }
-    //         }
-    //     } else if (treeNode.label === "atom") {
-    //         // Handle atom node
-    //         if (treeNode.children && treeNode.children.length === 3) {
-    //             const openingBracket = treeNode.children[0];
-    //             const expression = treeNode.children[1];
-    //             const closingBracket = treeNode.children[2];
-    //
-    //             this.generateFromRegex(expression);
-    //
-    //             // Create transitions for opening and closing brackets
-    //             this.addTransition(openingBracket.id, expression.id, "E");
-    //             this.addTransition(expression.id, closingBracket.id, "E");
-    //         } else if (treeNode.children && treeNode.children.length === 1) {
-    //             const charNode = treeNode.children[0];
-    //             this.addNode({ id: charNode.id, label: charNode.label });
-    //         }
-    //     } else if (treeNode.label === "char") {
-    //         // Handle char node
-    //         if (treeNode.children && treeNode.children.length === 1) {
-    //             const char = treeNode.children[0];
-    //             this.addNode({ id: char.id, label: char.label });
-    //         }
-    //     }
-    //
-    //     // Recursively traverse child nodes
-    //     if (treeNode.children) {
-    //         for (const childNode of treeNode.children) {
-    //             this.generateFromRegex(childNode);
-    //         }
-    //     }
-    //
-    // }
 
     nextTransition(){
         if (this.status !== "testing") {

@@ -16,11 +16,26 @@
         // get traversal
         transitions = $graph_store.transitions;
 
+        //remove transion with epsilon
+        transitions = transitions.filter(function (el) {
+            return el.input != 'ε';
+        });
+
+        //sort transiton bz state
+        // transitions.sort((a, b) => (a.state > b.state) ? 1 : -1);
+
+
         console.log("input_alphabet", $graph_store.input_alphabet);
         console.log("transitions", transitions);
 
+        let alphabet = $graph_store.input_alphabet;
+        //remove epsilon
+        alphabet = alphabet.filter(function (el) {
+            return el != 'ε';
+        });
+
         if (typeof $graph_store.input_alphabet !== 'undefined'){
-            cols = [...$graph_store.input_alphabet];
+            cols = [...alphabet];
         }
         // cols = [...$graph_store.input_alphabet];
         // console.log("input_alphabet", $graph_store.input_alphabet);
@@ -55,6 +70,7 @@
 
 
                 tableData.push(rowData);
+                console.log("tableData", tableData);
             });
         }
 
