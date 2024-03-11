@@ -5,12 +5,11 @@
     export let type = 'startState';
 
     let isOpen = false;
-    let selectedOptionsID = [];
-    let selectedOption = '';
+    let selectedOption = "";
     $: options = $graph_store.nodes?.map(node => node);
 
     $: if ($resetInputVar) {
-        selectedOption = '';
+        selectedOption = "";
     }
 
     function toggleDropdown() {
@@ -18,12 +17,11 @@
     }
 
     function selectOption(option) {
-        selectedOption = option.label;
-        selectedOptionsID.push(option.id);
+        selectedOption = option.id;
 
         if (type === "startState") {
             graph_store.update((n) => {
-                n.startState =  selectedOptionsID;
+                n.startState =  selectedOption;
                 return n;
             });
         }
