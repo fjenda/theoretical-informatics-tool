@@ -147,47 +147,6 @@
 </script>
 
 <div class="wrapper">
-<!--    <table class="styled-table">-->
-<!--        <thead>-->
-<!--        <tr>-->
-<!--            <th>State</th>-->
-<!--            <th>Input</th>-->
-<!--            <th>Stack</th>-->
-<!--            <th>Rule</th>-->
-<!--        </tr>-->
-<!--        </thead>-->
-<!--        <tbody>-->
-<!--        {#each tableData as row}-->
-<!--            {#if row[5] === $table_index_store}-->
-<!--                <tr class="active">-->
-<!--                    <td>{row[0]}</td>-->
-<!--                    <td>{row[1]}</td>-->
-<!--                    <td>{row[2]}</td>-->
-<!--                    {#if row[3] === "#" || row[3] === -1}-->
-<!--                        <td>{row[3]}</td>-->
-<!--                    {:else}-->
-<!--                        <td class="tooltip-wrapper"><span-->
-<!--                                use:tooltip={`(${row[4].state}, ${row[4].input}, ${row[4].stack}) → (${row[4].stateAfter}, ${row[4].stackAfter.join("")})`}>{row[3]}</span>-->
-<!--                        </td>-->
-<!--                    {/if}-->
-<!--                </tr>-->
-<!--            {:else}-->
-<!--                <tr>-->
-<!--                    <td>{row[0]}</td>-->
-<!--                    <td>{row[1]}</td>-->
-<!--                    <td>{row[2]}</td>-->
-<!--                    {#if row[3] === "#" || row[3] === -1}-->
-<!--                    <td>{row[3]}</td>-->
-<!--                    {:else}-->
-<!--                        <td>-->
-<!--                            <span use:tooltip={`δ(${row[4].state}, ${row[4].input}, ${row[4].stack}) → (${row[4].stateAfter}, ${row[4].stackAfter.join("")})`}>{row[3]}</span>-->
-<!--                        </td>-->
-<!--                    {/if}-->
-<!--                </tr>-->
-<!--            {/if}-->
-<!--        {/each}-->
-<!--        </tbody>-->
-<!--    </table>-->
     <div class="divTable">
         <div class="divTableHeading">
             <div class="divTableRow">
@@ -197,38 +156,37 @@
                 <div class="divTableHead">Rule</div>
             </div>
         </div>
-        {#each tableData as row, i}
-            <div class="divTableBody">
-
-            {#if row[5] === $table_index_store}
-                <div class="divTableRow active">
-                    <div class="divTableCell">{row[0]}</div>
-                    <div class="divTableCell">{row[1]}</div>
-                    <div class="divTableCell">{row[2]}</div>
-                    {#if row[3] === "#" || row[3] === -1}
-                        <div class="divTableCell">{row[3]}</div>
-                    {:else}
-                        <div class="divTableCell tooltip-wrapper">
-                            <span use:tooltip={`δ(${row[4].state}, ${row[4].input}, ${row[4].stack}) → (${row[4].stateAfter}, ${row[4].stackAfter.join("")})`}>{row[3]}</span>
-                        </div>
-                    {/if}
-                </div>
-            {:else}
-                <div class="divTableRow">
-                    <div class="divTableCell">{row[0]}</div>
-                    <div class="divTableCell">{row[1]}</div>
-                    <div class="divTableCell">{row[2]}</div>
-                    {#if row[3] === "#" || row[3] === -1}
-                        <div class="divTableCell">{row[3]}</div>
-                    {:else}
-                        <div class="divTableCell tooltip-wrapper">
-                            <span use:tooltip={`δ(${row[4].state}, ${row[4].input}, ${row[4].stack}) → (${row[4].stateAfter}, ${row[4].stackAfter.join("")})`}>{row[3]}</span>
-                        </div>
-                    {/if}
-                </div>
-            {/if}
-            </div>
-        {/each}
+        <div class="divTableBody">
+            {#each tableData as row, i}
+                {#if row[5] === $table_index_store}
+                    <div class="divTableRow active">
+                        <div class="divTableCell">{row[0]}</div>
+                        <div class="divTableCell">{row[1]}</div>
+                        <div class="divTableCell">{row[2]}</div>
+                        {#if row[3] === "#" || row[3] === -1}
+                            <div class="divTableCell">{row[3]}</div>
+                        {:else}
+                            <div class="divTableCell tooltip-wrapper">
+                                <span use:tooltip={`δ(${row[4].state}, ${row[4].input}, ${row[4].stack}) → (${row[4].stateAfter}, ${row[4].stackAfter.join("")})`}>{row[3]}</span>
+                            </div>
+                        {/if}
+                    </div>
+                {:else}
+                    <div class="divTableRow">
+                        <div class="divTableCell">{row[0]}</div>
+                        <div class="divTableCell">{row[1]}</div>
+                        <div class="divTableCell">{row[2]}</div>
+                        {#if row[3] === "#" || row[3] === -1}
+                            <div class="divTableCell">{row[3]}</div>
+                        {:else}
+                            <div class="divTableCell tooltip-wrapper">
+                                <span use:tooltip={`δ(${row[4].state}, ${row[4].input}, ${row[4].stack}) → (${row[4].stateAfter}, ${row[4].stackAfter.join("")})`}>{row[3]}</span>
+                            </div>
+                        {/if}
+                    </div>
+                {/if}
+            {/each}
+        </div>
     </div>
 </div>
 
@@ -467,15 +425,15 @@
     color: #f4f9ff;
   }
 
-  .divTableCell {
-    background-color: #f7f7f8;
-    color: #101820;
-  }
-
-  :global(body.dark-mode) .divTableCell {
-    background-color: #25252d;
-    color: #f4f9ff;
-  }
+  //.divTableCell {
+  //  background-color: #f7f7f8;
+  //  color: #101820;
+  //}
+  //
+  //:global(body.dark-mode) .divTableCell {
+  //  background-color: #25252d;
+  //  color: #f4f9ff;
+  //}
 
   .divTableRow:nth-child(even) {
     background-color: #f2f2f2;

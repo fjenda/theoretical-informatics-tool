@@ -24,6 +24,11 @@
             return n;
         });
 
+        graph_store.update((n) => {
+            n.type = "cfg";
+            return n;
+        });
+
 
         // create a copy of the store
         const grammarCopy: ContextFreeGrammar = {};

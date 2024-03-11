@@ -769,13 +769,21 @@
         graphInit();
         // createGraph(false);
 
-        // graph_store.update((n) => {
-        //     n.transitions = tmp_transitions;
-        //     n.nodes = tmp_nodes;
-        //     n.startState = "q0";
-        //     n.finishState = ["qF"];
-        //     return n;
-        // });
+        if ($graph_store.type === "cfg") {
+            graph_store.update((n) => {
+                n.type = "empty";
+                return n;
+            });
+        } else {
+            graph_store.update((n) => {
+                n.transitions = tmp_transitions;
+                n.nodes = tmp_nodes;
+                n.startState = "q0";
+                n.finishState = ["qF"];
+                n.stackBottom = "Z";
+                return n;
+            });
+        }
 
         generateGraphFromTransitions();
     });

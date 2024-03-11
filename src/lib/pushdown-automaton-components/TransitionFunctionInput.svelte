@@ -166,6 +166,7 @@
 
         graph_store.update((n) => {
             n.transitions = transitions;
+            n.stackBottom = "Z";
             return n;
         });
         storeNodes();

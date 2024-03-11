@@ -305,7 +305,7 @@ export class EarleyParser {
                 return this.createTree(root, input);
             });
 
-
+            let acc: boolean = false
             trees.forEach((tree, index) => {
                 if (tree) {
                     console.log(`\nParser tree ${index}`);
@@ -315,6 +315,7 @@ export class EarleyParser {
                     console.log(
                         `\n${tree.findAllLeaves() === input ? "The input is valid" : "The input is not valid"}`,
                     );
+                    acc = tree.findAllLeaves() === input;
                 }
             });
 
@@ -323,11 +324,11 @@ export class EarleyParser {
                     if (tree === undefined) return;
                     return tree.getDerivation()
                 });
-                return { accepted: true, length: derivations.length, derivation: derivations };
+                return { accepted: acc, length: derivations.length, derivation: derivations };
             }
 
             let derivation: { rule: string; result: string }[] = trees[0].getDerivation();
-            return { accepted: true, length: 1, derivation: derivation };
+            return { accepted: acc, length: 1, derivation: derivation };
         }
 
         return { accepted: false, length: -1, derivation: [] };
@@ -349,6 +350,8 @@ export class EarleyParser {
                     node.addChild(child);
                     continue;
                 }
+
+                if (node.item.from[stI] === undefined) continue;
 
                 let start = node.item.from[stI][0];
                 let end = node.item.from[stI][1];
