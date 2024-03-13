@@ -21,6 +21,7 @@
         <div class="control-panel"><slot name="control-panel" /></div>
         <div class="window"><slot name="window" /></div>
         <div class="table"><slot name="table" /></div>
+        <div class="convert-table"><slot name="convert-table" /></div>
     </div>
 </div>
 
@@ -49,10 +50,16 @@
   }
 
   .table {
-    grid-area: 1 / 4 / 5 / 5;
+    grid-area: 1 / 4 / 3 / 5;
     //min-height: 0.5rem;
     //width: 100%; /* Make the container take up the full width of its parent */
     //overflow-x: auto;
+  }
+
+  .convert-table {
+    grid-area: 3 / 4 / 5 / 5;
+    //display: flex;
+    //justify-content: center;
   }
 
   .window {

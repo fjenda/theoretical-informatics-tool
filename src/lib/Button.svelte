@@ -50,6 +50,16 @@
         width: 60%;
     }
 
+    .convert-box {
+        display: flex;
+        justify-content: center;
+        margin: 1rem auto;
+
+        font-size: 1.8rem;
+        height: 6vh;
+        width: 60%;
+    }
+
     .read-more-box {
         display: flex;
         justify-content: center;
@@ -140,7 +150,7 @@
         background-color: #9CC6FB;
         border-radius: 0.5rem;
         border-style: none;
-        box-shadow: rgba(0, 0, 0, .2) 0 3px 5px -1px,rgba(0, 0, 0, .14) 0 6px 10px 0,rgba(0, 0, 0, .12) 0 1px 18px 0;
+        /*box-shadow: rgba(0, 0, 0, .2) 0 3px 5px -1px,rgba(0, 0, 0, .14) 0 6px 10px 0,rgba(0, 0, 0, .12) 0 1px 18px 0;*/
         box-sizing: border-box;
         color: #363636;
         cursor: pointer;

@@ -2,7 +2,7 @@
     import type {ToolbarButtonType} from "../../types/ToolbarButtonType";
     import FinAutomatonGeneratorLayout from "./FinAutomatonGeneratorLayout.svelte";
     import ToggleSwitch from "./ToggleSwitch.svelte";
-    import StateComboBox from "../StateComboBox.svelte";
+    import FinStateComboBox from "./FinStateComboBox.svelte";
     import StateMultiSelect from "../StateMultiSelect.svelte";
 
     import FinTransitionFuncInput from "./FinTransitionFuncInput.svelte";
@@ -139,7 +139,7 @@
             <FinAutomatonGeneratorLayout >
                 <ToggleSwitch slot="type-switch" />
 
-                <StateComboBox key={125} slot="start-state" />
+                <FinStateComboBox key={125} slot="start-state" />
 
                 <StartStateMultiSelect key={126} slot="multi-select-start" />
                 <StateMultiSelect key={127} slot="multi-select" />

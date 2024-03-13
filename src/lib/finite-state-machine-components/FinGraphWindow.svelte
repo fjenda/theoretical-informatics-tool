@@ -40,10 +40,13 @@
         console.log("graphStore PRED PREVODEM: ", $graph_store);
 
         const result = ConvertorToDFA.convertToDFA(graphObject);
+        $graph_store.convertDict = ConvertorToDFA.generateConverTable(result.stateRecorder, graphObject);
+        let newFa : FiniteStateAutomaton = result.newFa;
+
         deleteGraph();
 
         let alphabet = new Set();
-        result.transitions.forEach((transition) => {
+        newFa.transitions.forEach((transition) => {
             alphabet.add(transition.input);
         });
 
@@ -52,11 +55,11 @@
         let alphabetArrNoDuplicates = alphabetArr.filter((item, index) => alphabetArr.indexOf(item) === index);
 
         graphObject.input_alphabet = alphabetArrNoDuplicates;
-        graphObject.transitions = result.transitions;
-        graphObject.nodes = result.nodes;
-        graphObject.startState = result.startState;
-        graphObject.finishState = result.finishState;
-        graphObject.type = result.type;
+        graphObject.transitions = newFa.transitions;
+        graphObject.nodes = newFa.nodes;
+        graphObject.startState = newFa.startState;
+        graphObject.finishState = newFa.finishState;
+        graphObject.type = newFa.type;
 
         graphObject.generateGraphFromTransitions();
         console.log("Tady je nový graph object: ", graphObject);
@@ -72,15 +75,16 @@
             n.finishState = graphObject.finishState;
             n.type = graphObject.type;
             n.generated = true;
+            n.hideConvertTable = false;
             return n;
         });
         // graph_store.reset();
         resetInputVar.set(false);
         input_error_store.reset();
-
     }
 
     function regexInput(wordCh : string){
+
         // console.log(wordCh)
         let regex = new RegexAutomaton(wordCh);
         // console.log(regex);
@@ -130,6 +134,7 @@
             n.finishState = graphObject.finishState;
             n.type = graphObject.type;
             n.generated = true;
+            n.hideConvertTable = true;
             return n;
         });
         // graph_store.reset();
@@ -730,7 +735,7 @@
         if (!checkGenerationInput()) {
             return false;
         }
-
+        $graph_store.hideConvertTable = true;
         deleteGraph();
         // console.log($graph_store);
         Object.assign(graphObject, $graph_store);
@@ -797,6 +802,7 @@
             n.startState = "0";
             n.finishState = ["1"];
             n.input_alphabet = ["a", "b"];
+            n.hideConvertTable = true;
             return n;
         });
         $graph_store.followingID = 2;

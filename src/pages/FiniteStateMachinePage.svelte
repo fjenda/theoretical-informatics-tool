@@ -12,6 +12,7 @@ import FinTable from "../lib/finite-state-machine-components/FinTable.svelte";
 import TypeView from "../lib/pushdown-automaton-components/TypeView.svelte";
 import GraphControlPanel from "../lib/pushdown-automaton-components/GraphControlPanel.svelte";
 import RegexInput from "../lib/finite-state-machine-components/regex/RegexInput.svelte";
+import FinConvertTable from "../lib/finite-state-machine-components/FinConvertTable.svelte";
 
 
     const landingPageUrl = "/Theoretical-informatics-tool/"
@@ -57,6 +58,7 @@ import RegexInput from "../lib/finite-state-machine-components/regex/RegexInput.
                 <TypeView slot="type"/>
             </FinGraphWindow>
             <FinTable slot="table"/>
+            <FinConvertTable slot="convert-table"/>
         </FiniteStateMachineLayout>
     </main>
 </DebugView>

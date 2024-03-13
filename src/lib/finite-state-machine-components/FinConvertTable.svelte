@@ -1,35 +1,20 @@
 <script lang="ts">
     import {graph_store, table_index_store} from "../../stores/graphInitStore";
     import {input_error_store} from "../../stores/inputErrorStore";
+    import type {ConvertorTab} from "../../types/ConvertorTab";
 
     let cols: string[] = [];
-    let transitions = [];
-    let inputSymbols = [];
-    let generated = false;
+    let alphabet = [];
     let tableData = [];
-
-    $: if ($graph_store.generated == true || $graph_store.currentStatus) {
-        // console.log("HEREHERHER");
-        // console.log("Current status change: ", $graph_store.currentStatus);
-        // do something when this store value changes
-        tableData = [];
-        // get traversal
-        transitions = $graph_store.transitions;
-
-        //remove transion with epsilon
-        transitions = transitions.filter(function (el) {
-            return el.input != 'ε';
-        });
-
-        //sort transiton bz state
-        // transitions.sort((a, b) => (a.state > b.state) ? 1 : -1);
+    let convertedTable : ConvertorTab[] = [];
+    let hideTable = true;
+    // console.log("convertedTable alpahbet", alphabet);
+    //
 
 
-        console.log("input_alphabet", $graph_store.input_alphabet);
-        console.log("transitions", transitions);
 
-        let alphabet = $graph_store.input_alphabet;
-        //remove epsilon
+    $: if ($graph_store.convertDict) {
+        alphabet = $graph_store.input_alphabet;
         alphabet = alphabet.filter(function (el) {
             return el != 'ε';
         });
@@ -37,61 +22,113 @@
         if (typeof $graph_store.input_alphabet !== 'undefined'){
             cols = [...alphabet];
         }
-        // cols = [...$graph_store.input_alphabet];
-        // console.log("input_alphabet", $graph_store.input_alphabet);
-        // console.log("cols", cols);
 
-        if (typeof transitions !== 'undefined' && generated === false) {
-            let nodes = Array.from(new Set(transitions.map(t => t.stateLabel)));
-            inputSymbols = Array.from(new Set(transitions.map(t => t.input)));
+        convertedTable = $graph_store.convertDict;
 
-            // Initialize the table data
-
-
-            // Generate the table data
-            nodes.forEach(node => {
-                let rowData = {node};
-                inputSymbols.forEach(inputSymbol => {
-                    const matchingTransitions = transitions.filter(t => t.stateLabel === node && t.input === inputSymbol);
-                    const targetStates = matchingTransitions.map(t => t.stateAfterLabel).join(', ');
-                    rowData[inputSymbol] = targetStates || '';
-                });
-
-
-                let node_id = $graph_store.nodes.filter(n => n.label === node)[0].id;
-
-                if ($graph_store.startState.includes(node_id)) {
-                    rowData.node = '-> ' +  rowData.node;
-                }
-
-                if ($graph_store.finishState.includes(node_id)) {
-                    rowData.node = '<- ' + rowData.node;
-                }
-
-
-                tableData.push(rowData);
-                console.log("tableData", tableData);
-            });
-        }
-
-        $graph_store.generated = false;
+        console.log("convertedTable IN TABLE: ", convertedTable);
     }
 
-    $: if ($input_error_store.table) {
-        // do something when this store value changes
-
-        // tableData = [];
-        // empty traversal
-        transitions = [];
-
-        // set to false
-        $input_error_store.table = false;
-
+    $: if ($graph_store.hideConvertTable != hideTable) {
+        hideTable = $graph_store.hideConvertTable;
     }
+
+
+
+
+
+
+
+
+    // let cols: string[] = [];
+    // let transitions = [];
+    // let inputSymbols = [];
+    // let generated = false;
+    // let tableData = [];
+    //
+    // $: if ($graph_store.generated == true || $graph_store.currentStatus) {
+    //     // console.log("HEREHERHER");
+    //     // console.log("Current status change: ", $graph_store.currentStatus);
+    //     // do something when this store value changes
+    //     tableData = [];
+    //     // get traversal
+    //     transitions = $graph_store.transitions;
+    //
+    //     //remove transion with epsilon
+    //     transitions = transitions.filter(function (el) {
+    //         return el.input != 'ε';
+    //     });
+    //
+    //     //sort transiton bz state
+    //     // transitions.sort((a, b) => (a.state > b.state) ? 1 : -1);
+    //
+    //
+    //     console.log("input_alphabet", $graph_store.input_alphabet);
+    //     console.log("transitions", transitions);
+    //
+    //     let alphabet = $graph_store.input_alphabet;
+    //     //remove epsilon
+    //     alphabet = alphabet.filter(function (el) {
+    //         return el != 'ε';
+    //     });
+    //
+    //     if (typeof $graph_store.input_alphabet !== 'undefined'){
+    //         cols = [...alphabet];
+    //     }
+    //     // cols = [...$graph_store.input_alphabet];
+    //     // console.log("input_alphabet", $graph_store.input_alphabet);
+    //     // console.log("cols", cols);
+    //
+    //     if (typeof transitions !== 'undefined' && generated === false) {
+    //         let nodes = Array.from(new Set(transitions.map(t => t.stateLabel)));
+    //         inputSymbols = Array.from(new Set(transitions.map(t => t.input)));
+    //
+    //         // Initialize the table data
+    //
+    //
+    //         // Generate the table data
+    //         nodes.forEach(node => {
+    //             let rowData = {node};
+    //             inputSymbols.forEach(inputSymbol => {
+    //                 const matchingTransitions = transitions.filter(t => t.stateLabel === node && t.input === inputSymbol);
+    //                 const targetStates = matchingTransitions.map(t => t.stateAfterLabel).join(', ');
+    //                 rowData[inputSymbol] = targetStates || '';
+    //             });
+    //
+    //
+    //             let node_id = $graph_store.nodes.filter(n => n.label === node)[0].id;
+    //
+    //             if ($graph_store.startState.includes(node_id)) {
+    //                 rowData.node = '-> ' +  rowData.node;
+    //             }
+    //
+    //             if ($graph_store.finishState.includes(node_id)) {
+    //                 rowData.node = '<- ' + rowData.node;
+    //             }
+    //
+    //
+    //             tableData.push(rowData);
+    //             console.log("tableData", tableData);
+    //         });
+    //     }
+    //
+    //     $graph_store.generated = false;
+    // }
+    //
+    // $: if ($input_error_store.table) {
+    //     // do something when this store value changes
+    //
+    //     // tableData = [];
+    //     // empty traversal
+    //     transitions = [];
+    //
+    //     // set to false
+    //     $input_error_store.table = false;
+    //
+    // }
 
 </script>
 
-<div class="wrapper">
+<div hidden={hideTable} class="wrapper">
     <div class="table">
         <div class="tableHead">
             <div class="tableRow">
@@ -104,34 +141,13 @@
             </div>
         </div>
         <div class="tableBody">
-            {#each tableData as row}
-                {#if $graph_store.currentStatus !== undefined &&
-                $graph_store.traversal[$graph_store.currentStatus.step +1 ] !== undefined}
-                    {#if (row.node == '-> ' + $graph_store.traversal[$graph_store.currentStatus.step +1 ].state ||
-                        row.node == '<- ' + $graph_store.traversal[$graph_store.currentStatus.step +1].state ||
-                        row.node == $graph_store.traversal[$graph_store.currentStatus.step + 1].state)}
-                        <div class="tableRow active">
-                            <div class="tableCell">{row.node}</div>
-                            {#each inputSymbols as symbol}
-                                <div class="tableCell">{row[symbol]}</div>
-                            {/each}
-                        </div>
-                    {:else}
-                        <div class="tableRow">
-                            <div class="tableCell">{row.node}</div>
-                            {#each inputSymbols as symbol}
-                                <div class="tableCell">{row[symbol]}</div>
-                            {/each}
-                        </div>
-                    {/if}
-                {:else}
-                    <div class="tableRow">
-                        <div class="tableCell">{row.node}</div>
-                        {#each inputSymbols as symbol}
-                            <div class="tableCell">{row[symbol]}</div>
-                        {/each}
-                    </div>
-                {/if}
+            {#each convertedTable as row}
+                <div class="tableRow">
+                    <div class="tableCell">{row.key}</div>
+                    {#each row.values as symbol}
+                        <div class="tableCell">{symbol}</div>
+                    {/each}
+                </div>
             {/each}
         </div>
     </div>
@@ -150,34 +166,14 @@
 <!--        </tr>-->
 <!--        </thead>-->
 <!--        <tbody>-->
-<!--        {#each tableData as row}-->
-<!--            {#if $graph_store.currentStatus !== undefined &&-->
-<!--            $graph_store.traversal[$graph_store.currentStatus.step +1 ] !== undefined}-->
-<!--                {#if (row.node == '-> ' + $graph_store.traversal[$graph_store.currentStatus.step +1 ].state ||-->
-<!--                    row.node == '<- ' + $graph_store.traversal[$graph_store.currentStatus.step +1].state ||-->
-<!--                    row.node == $graph_store.traversal[$graph_store.currentStatus.step + 1].state)}-->
-<!--                    <tr class="active">-->
-<!--                        <td>{row.node}</td>-->
-<!--                        {#each inputSymbols as symbol}-->
-<!--                            <td>{row[symbol]}</td>-->
-<!--                        {/each}-->
-<!--                    </tr>-->
-<!--                {:else}-->
-<!--                    <tr>-->
-<!--                        <td>{row.node}</td>-->
-<!--                        {#each inputSymbols as symbol}-->
-<!--                            <td>{row[symbol]}</td>-->
-<!--                        {/each}-->
-<!--                    </tr>-->
-<!--                {/if}-->
-<!--            {:else}-->
-<!--                <tr>-->
-<!--                    <td>{row.node}</td>-->
-<!--                    {#each inputSymbols as symbol}-->
-<!--                        <td>{row[symbol]}</td>-->
-<!--                    {/each}-->
-<!--                </tr>-->
-<!--            {/if}-->
+<!--        {#each convertedTable as row}-->
+<!--            <tr>-->
+<!--                <td>{row.key}</td>-->
+<!--                {#each row.values as symbol}-->
+<!--                    <td>{symbol}</td>-->
+<!--                {/each}-->
+<!--            </tr>-->
+
 <!--        {/each}-->
 <!--        </tbody>-->
 <!--    </table>-->
@@ -325,8 +321,8 @@
   //  //min-width: 9.5rem;
   //  //min-height: 15.5rem;
   //}
-
-
+  //
+  //
   //.styled-table {
   //  margin: 0 auto;
   //  height: 90%;
