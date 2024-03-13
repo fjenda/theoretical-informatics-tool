@@ -3,8 +3,7 @@
 </script>
 
 <div class="cfg-editor">
-    CFG EDITOR
-    <slot/>
+    <slot name="grammar-input"/>
     <div class="button-wrapper">
         <slot name="back-button"/>
         <slot name="convert-button"/>

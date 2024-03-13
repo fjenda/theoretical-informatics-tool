@@ -1,13 +1,31 @@
 <script lang="ts">
-    let input: string[] = [];
+    import {user_grammar_store} from "../../stores/graphInitStore";
+
+    let input: string = "";
 
     function parseInput() {
+        let parsed = input
+            .split('\n')
+            .map((line: string) => line.split(''));
 
+        parsed.forEach((line: string[], index) => {
+            if (line.length < 1) {
+                parsed[index] = [""];
+            }
+        });
+
+        console.log(parsed);
+
+        user_grammar_store.update((n) => {
+            n.validateInputs(parsed);
+            return n;
+        });
     }
 </script>
 
 <textarea id="cfg-input"
           bind:value={input}
+          on:input={() => parseInput()}
           rows="5"
           placeholder="{'1+1\n3+1\n1+4\n4+3\n(one test string per line)'}" />
 

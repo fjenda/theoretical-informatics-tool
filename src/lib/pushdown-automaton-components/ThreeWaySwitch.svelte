@@ -1,12 +1,7 @@
 <!-- Toggle.svelte -->
 <script lang="ts">
-    import { graph_store, resetInputVar } from "../../stores/graphInitStore";
+    import {graph_store} from "../../stores/graphInitStore";
     let toggleState = "empty";
-
-    $: if ($resetInputVar) {
-        console.log("toggle");
-        // toggle($graph_store.type);
-    }
 
     const toggle = (newState) => {
         toggleState = newState;
