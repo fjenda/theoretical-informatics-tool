@@ -2,6 +2,7 @@ import {type Writable, writable} from "svelte/store";
 import {ContextFreeGrammar, GrammarResult} from "../lib/cf-grammar/ContextFreeGrammar";
 import type {PushdownAutomaton} from "../lib/pushdown-automaton-components/PushdownAutomaton";
 import type {GraphObject} from "../types/GraphObject";
+import type {AutomatonConfiguration} from "../types/AutomatonConfiguration";
 
 export const grammar_results_store = function() {
     const {set, update, subscribe} : Writable<Partial<GrammarResult[]>> = writable([]);
