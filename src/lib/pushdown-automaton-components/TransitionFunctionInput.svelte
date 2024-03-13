@@ -7,39 +7,39 @@
     let textArea: HTMLTextAreaElement;
     let backdrop: HTMLDivElement;
 // Test input
-// d(q0,a,Z)=(q0,AZ);
-// d(q0,a,A)=(q0,AA);
-// d(q0,b,A)=(q1,ε;
+// d(q0,a,Z)=(q0,A Z);
+// d(q0,a,A)=(q0,A A);
+// d(q0,b,A)=(q1,ε);
 // d(q1,b,A)=(q1,ε);
 // d(q1,ε,Z)=(q1,ε);
 // aaabbb - patri
 // aabbb - nepatri
 // ----------------
-// d(q0,a,Z)=(q0,aZ);
+// d(q0,a,Z)=(q0,a Z);
 // d(q0,c,a)=(q1,a);
 // d(q0,c,b)=(q1,b);
-// d(q0,b,Z)=(q0,bZ);
+// d(q0,b,Z)=(q0,b Z);
 // d(q0,c,Z)=(q1,ε);
-// d(q0,a,a)=(q0,aa);
-// d(q0,a,b)=(q0,ab);
+// d(q0,a,a)=(q0,a a);
+// d(q0,a,b)=(q0,a b);
 // d(q1,a,a)=(q1,ε);
 // d(q1,b,b)=(q1,ε);
-// d(q0,b,a)=(q0,ba);
-// d(q0,b,b)=(q0,bb);
+// d(q0,b,a)=(q0,b a);
+// d(q0,b,b)=(q0,b b);
 // d(q1,ε,Z)=(q1,ε);
 // abcba - patri
 // abca - nepatri
 // ----------------
-// d(q0,a,Z)=(q0,xxZ);
-// d(q0,a,x)=(q0,xxx);
+// d(q0,a,Z)=(q0,x x Z);
+// d(q0,a,x)=(q0,x x x);
 // d(q0,b,x)=(q1,ε);
 // d(q1,b,x)=(q1,ε);
 // d(q1,ε,Z)=(qf,ε);
 // aabbbb - patri
 // ab - nepatri
 // ----------------
-// d(q0,a,Z)=(q1,AZ);
-// d(q1,a,A)=(q1,AA);
+// d(q0,a,Z)=(q1,A Z);
+// d(q1,a,A)=(q1,A A);
 // d(q1,b,A)=(q2,ε);
 // d(q2,b,A)=(q2,ε);
 // d(q2,ε,Z)=(q3,Z);
@@ -70,11 +70,11 @@
 // aab - nepatri
 // ----------------
 // Context-free grammar (Not implemented yet)
-// d(q,ε,Z)=(q,abZba);
+// d(q,ε,Z)=(q,a b Z b a);
 // d(q,ε,Z)=(q,A);
-// d(q,ε,A)=(q,cAc);
-// d(q,ε,A)=(q,aB);
-// d(q,ε,B)=(q,aB);
+// d(q,ε,A)=(q,c A c);
+// d(q,ε,A)=(q,a B);
+// d(q,ε,B)=(q,a B);
 // d(q,ε,B)=(q,ε);
 // d(q,a,a)=(q,ε);
 // d(q,b,b)=(q,ε);
