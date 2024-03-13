@@ -2,7 +2,6 @@
 
     import  { navigate } from "svelte-routing";
     import {graph_store} from "../stores/graphInitStore";
-    import {isDisabled} from "bootstrap/js/src/util";
 
     export let type : ButtonType;
     export let url : string = "";
