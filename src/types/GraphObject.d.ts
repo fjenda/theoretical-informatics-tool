@@ -24,6 +24,7 @@ export interface GraphObject {
     followingID : number, //last used id
     convertDict : ConvertorTab[], //dictionary of conversion tabs
     hideConvertTable : boolean, //show conversion table
+    input_alphabet : string[], //input alphabet
 }
 
 export type GraphObjectWithoutGraph = Omit<GraphObject, 'graph' | 'div'>;
