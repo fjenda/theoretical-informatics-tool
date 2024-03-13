@@ -26,7 +26,7 @@
 
     $: if (dialog && showModal) dialog.showModal();
 
-    $: if (showModal && type === "show-configuration") {
+    $: if (showModal && type === "show-definition") {
         func();
 
         if ($configuration_store.nodes?.length === 0 || !$configuration_store.nodes) {
@@ -124,7 +124,7 @@
         <hr />
         <slot />
 
-        {#if type === "show-configuration"}
+        {#if type === "show-definition"}
             <textarea id="transitions"
                            class="transitions-input"
                            cols="30" rows="20"
