@@ -43,12 +43,12 @@
         resetTestInput();
         removeHighlighted();
 
-        //TODO: old labels keeps showing up in the new graph
-        labels_backup = graphObject.graph.elements().map((graphElement) => {
-            if (graphElement.isEdge()) {
-                return graphElement.data("label");
+        labels_backup = [];
+        for (let element of graphObject.graph.elements()) {
+            if (element.isEdge()) {
+                labels_backup.push(element.data("label"));
             }
-        });
+        }
         labels_backup = labels_backup.filter((label) => label !== undefined);
         console.log(labels_backup);
 
@@ -85,7 +85,7 @@
 
     function nextTransition() {
         removeHighlighted();
-        resetLabels();
+        resetLabels()
 
         let ret = graphObject.nextTransition();
 
@@ -125,6 +125,7 @@
 
     function previousTransition() {
         removeHighlighted();
+        resetLabels()
 
         let ret = graphObject.previousTransition();
 
@@ -169,14 +170,6 @@
         });
 
         graphObject.resetTestInput();
-
-        let i = 0;
-        graphObject.graph.elements().forEach(graphElement => {
-            if (graphElement.isEdge()) {
-                graphElement.data("label", labels_backup[i]);
-                i++;
-            }
-        });
     }
 
     function highlightElement(id : string | number) {
