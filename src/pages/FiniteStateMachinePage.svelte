@@ -12,6 +12,7 @@ import FinTable from "../lib/finite-state-machine-components/FinTable.svelte";
 import TypeView from "../lib/pushdown-automaton-components/TypeView.svelte";
 import GraphControlPanel from "../lib/pushdown-automaton-components/GraphControlPanel.svelte";
 import RegexInput from "../lib/finite-state-machine-components/regex/RegexInput.svelte";
+import FinConvertTable from "../lib/finite-state-machine-components/FinConvertTable.svelte";
 
 
     const landingPageUrl = "/Theoretical-informatics-tool/"
@@ -19,17 +20,15 @@ import RegexInput from "../lib/finite-state-machine-components/regex/RegexInput.
 
     let processTestInputFunction : Function = () => {};
     let processRegexInputFunction : Function = () => {};
+
+    let processConvertToDFAFunction : Function = () => {};
 </script>
 
 <DebugView>
     <main>
         <FiniteStateMachineLayout title="Finite state automaton">
             <FinGraphControlPanel  slot="control-panel">
-                <div style='text-align: center; display: flex;'>
-                    <Button type="dfa" text="NFA"  />
-                    <div style="width: 45px;"></div>
-                    <Button type="dfa" text="DFA" />
-                </div>
+
                 <FinTestInput phText="ex. ABA" bind:processFunction={processTestInputFunction}
                                                 testInputFunction={toolbarFunctions?.testInput}
                                                 nextFunc={toolbarFunctions?.nextTransition}
@@ -41,6 +40,7 @@ import RegexInput from "../lib/finite-state-machine-components/regex/RegexInput.
                                                 regexInputFunction={toolbarFunctions?.regexInput}
                 />
                 <Button type="test" text="Generate" func={processRegexInputFunction} />
+                <Button type="convert" text="Convert to DFA" func={toolbarFunctions?.convertToDFA} />
                 <Button type="back" text="Back" url={landingPageUrl} />
             </FinGraphControlPanel>
             <FinGraphWindow bind:toolbarFunctions={toolbarFunctions} slot="window">
@@ -58,6 +58,7 @@ import RegexInput from "../lib/finite-state-machine-components/regex/RegexInput.
                 <TypeView slot="type"/>
             </FinGraphWindow>
             <FinTable slot="table"/>
+            <FinConvertTable slot="convert-table"/>
         </FiniteStateMachineLayout>
     </main>
 </DebugView>

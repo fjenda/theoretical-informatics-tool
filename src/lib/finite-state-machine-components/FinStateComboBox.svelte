@@ -1,6 +1,6 @@
 <script lang="ts">
-    import {input_error_store} from "../stores/inputErrorStore";
-    import {graph_store, resetInputVar} from "../stores/graphInitStore";
+    import {input_error_store} from "../../stores/inputErrorStore";
+    import {graph_store, resetInputVar} from "../../stores/graphInitStore";
 
     export let type = 'startState';
 
@@ -23,7 +23,7 @@
 
         if (type === "startState") {
             graph_store.update((n) => {
-                n.startState =  selectedOptionsID;
+                n.startState =  [selectedOptionsID];
                 return n;
             });
         }
@@ -55,7 +55,7 @@
 <style>
     .false {
         transition: background-color 0.25s;
-        background-color: #ff6969 !important;
+        background-color: #ff0000;
     }
 
     .combo-box, .dropdown {

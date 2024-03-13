@@ -5,20 +5,10 @@
 
     let selectedOptions = [];
     let selectedOptionsId = [];
-    let selectHeight = "10.6rem"; // Výchozí výška
-
     $: options = $graph_store.nodes?.map(node => node);
 
     $: if ($resetInputVar) {
         selectedOptions = [];
-    }
-
-    $: if ($graph_store.type === "DFA") {
-        selectHeight = "10.6rem"; // Výška pro typ DFA
-    } else if ($graph_store.type === "NFA") {
-        selectHeight = "5.9rem"; // Výška pro typ NFA
-    } else {
-        selectHeight = "10.6rem"; // Výška pro ostatní typy
     }
 
     function findIDs(){
@@ -35,23 +25,22 @@
 
     function handleSelect(event) {
         input_error_store.update((n) => {
-            n.finishState = true;
+            n.startState = true;
             return n;
         });
         selectedOptionsId = findIDs();
         selectedOptions = Array.from(event.target.selectedOptions, option => option.label);
-        console.log(selectedOptionsId);
-        console.log(selectedOptions);
         graph_store.update(n => {
-            n.finishState = selectedOptionsId;
+            n.startState = selectedOptionsId;
             return n;
         });
+        console.log("Start states v boxu" + $graph_store.startState)
     }
 </script>
 
 <div class="select-wrapper">
-    Final States
-    <select class={$input_error_store.finishState} style="height: {selectHeight}" multiple bind:value={selectedOptions} on:change={handleSelect}>
+    Start States
+    <select class={$input_error_store.startState} multiple bind:value={selectedOptions} on:change={handleSelect}>
         {#each options as option (option)}
             <option value={option.label}>{option.label}</option>
         {/each}
@@ -61,7 +50,7 @@
 <style>
     .false {
         transition: background-color 0.25s;
-        background-color: #ff6969 !important;
+        background-color: #ff0000;
     }
 
     .select-wrapper {
@@ -73,7 +62,7 @@
 
     select {
         width: 7.5rem;
-        /*height: 5.9rem;*/
+        height: 5.9rem;
         padding: 0.5rem;
 
         border: 0.1rem solid #ccc;

@@ -1,4 +1,5 @@
 import type {GraphNodeMeta} from "./GraphNodeMeta";
+import type {ConvertorTab} from "./ConvertorTab";
 
 type GraphEdgeDictionary = {
     [key: string] : GraphEdgeMeta[]
@@ -20,6 +21,9 @@ export interface GraphObject {
     finishState? : string; //   finish state of the automaton
     generated : boolean,
     regex : string,
+    followingID : number, //last used id
+    convertDict : ConvertorTab[], //dictionary of conversion tabs
+    hideConvertTable : boolean, //show conversion table
 }
 
 export type GraphObjectWithoutGraph = Omit<GraphObject, 'graph' | 'div'>;

@@ -60,6 +60,7 @@ export const graph_store = function() {
         set({
             nodes: [],
             type: "empty",
+            followingID: 0,
         });
     }
 

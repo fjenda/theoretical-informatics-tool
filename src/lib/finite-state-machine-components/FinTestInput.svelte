@@ -1,7 +1,7 @@
 <script lang="ts">
 
     import {fly} from 'svelte/transition';
-    import {graph_store} from "../../stores/graphInitStore";
+    import {graph_store, table_index_store} from "../../stores/graphInitStore";
 
     export let phText : string = "";
 
@@ -24,21 +24,36 @@
     }
 
     function processTestInput() {
+
         showArrows = true;
         testInputFunction(input.trim().split(""));
+        // console.log('Current traversal ',  $graph_store.traversal);
+        // console.log('su tu >', $graph_store.currentStatus.state)
     }
 
     function next() {
+        // console.log('traveslal: ' + $graph_store.traversal[$graph_store.currenStatus.step].stateAfter);
         nextFunc();
+
     }
 
     function previous() {
+        // table_index_store.update((table_index) => {
+        //     if (table_index > 0) {
+        //         return table_index - 1;
+        //     } else {
+        //         return table_index;
+        //     }
+        // });
+
         previousFunc();
     }
 
     function stopTesting() {
         showArrows = false;
-        console.log("stop");
+        // console.log("stop");
+
+        table_index_store.set(-1);
         stopFunc();
     }
 </script>

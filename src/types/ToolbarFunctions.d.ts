@@ -17,4 +17,5 @@ export interface ToolbarFunctions {
  resetTestInput : () => void,
  getStack : () => string[],
  regexInput: (string) => void,
+ convertToDFA: () => void,
 }

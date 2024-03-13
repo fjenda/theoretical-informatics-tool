@@ -4,8 +4,10 @@
     import {configuration_store,graph_store, resetInputVar} from "../../stores/graphInitStore";
     import {input_error_store} from "../../stores/inputErrorStore";
     import {FiniteStateAutomaton} from "./FiniteStateAutomaton";
+    import {RegexAutomaton} from "./regex/RegexAutomaton";
+    import {ConvertorToDFA} from "./ConvertorToDFA";
 
-    let graphObject = new FiniteStateAutomaton();
+    let graphObject = new FiniteStateAutomaton([], [], [], [], [], "DFA");
 
     let highlightedNodesIS : String[] = [];
     let deleteButtonActive : boolean = false;
@@ -25,6 +27,7 @@
         generateConfiguration,
         generateGraphFromTransitions,
         regexInput,
+        convertToDFA,
         // preprocessGraphInput,
     } as ToolbarFunctions;
 
@@ -32,14 +35,119 @@
         updateConfiguration("type");
     }
 
-    function regexInput(wordCh : string[]){
-        console.log(wordCh)
+    function convertToDFA(){
+        console.log("graph object P5sdfsdmfoksdfosdKDPSADM: ", graphObject);
+        console.log("graphStore PRED PREVODEM: ", $graph_store);
+
+        const result = ConvertorToDFA.convertToDFA(graphObject);
+        $graph_store.convertDict = ConvertorToDFA.generateConverTable(result.stateRecorder, graphObject);
+        let newFa : FiniteStateAutomaton = result.newFa;
+
+        deleteGraph();
+
+        let alphabet = new Set();
+        newFa.transitions.forEach((transition) => {
+            alphabet.add(transition.input);
+        });
+
+        //delete duplicates from alphabet
+        let alphabetArr = Array.from(alphabet);
+        let alphabetArrNoDuplicates = alphabetArr.filter((item, index) => alphabetArr.indexOf(item) === index);
+
+        graphObject.input_alphabet = alphabetArrNoDuplicates;
+        graphObject.transitions = newFa.transitions;
+        graphObject.nodes = newFa.nodes;
+        graphObject.startState = newFa.startState;
+        graphObject.finishState = newFa.finishState;
+        graphObject.type = newFa.type;
+
+        graphObject.generateGraphFromTransitions();
+        console.log("Tady je nový graph object: ", graphObject);
+
+        console.log("Tady je store: ", $graph_store);
+
+        createGraph(false);
+        graph_store.update((n) => {
+            n.input_alphabet = graphObject.input_alphabet;
+            n.transitions = graphObject.transitions;
+            n.nodes = graphObject.nodes;
+            n.startState = graphObject.startState;
+            n.finishState = graphObject.finishState;
+            n.type = graphObject.type;
+            n.generated = true;
+            n.hideConvertTable = false;
+            return n;
+        });
+        // graph_store.reset();
+        resetInputVar.set(false);
+        input_error_store.reset();
+    }
+
+    function regexInput(wordCh : string){
+
+        // console.log(wordCh)
+        let regex = new RegexAutomaton(wordCh);
+        // console.log(regex);
+        console.log("Tady je stary graph object: ", graphObject);
+        deleteGraph();
+        // console.log($graph_store);
+
+        let newFa : FiniteStateAutomaton = regex.regexProcessFunc();
+        console.log("resutl", newFa);
+
+        let alphabet = new Set();
+        newFa.transitions.forEach((transition) => {
+            alphabet.add(transition.input);
+        });
+
+        //delete duplicates from alphabet
+        let alphabetArr = Array.from(alphabet);
+        let alphabetArrNoDuplicates = alphabetArr.filter((item, index) => alphabetArr.indexOf(item) === index);
+
+        // let newStartState : string[] = [];
+        // if (typeof newFa.startState === "string"){
+        //     newStartState.push(newFa.startState);
+        // } else {
+        //     newStartState = newFa.startState;
+        // }
+
+
+
+        graphObject.input_alphabet = alphabetArrNoDuplicates;
+        graphObject.transitions = newFa.transitions;
+        graphObject.nodes = newFa.nodes;
+        graphObject.startState = newFa.startState;
+        graphObject.finishState = newFa.finishState;
+        graphObject.type = newFa.type;
+
+        graphObject.generateGraphFromTransitions();
+        console.log("Tady je nový graph object: ", graphObject);
+
+        console.log("Tady je store: ", $graph_store);
+
+        createGraph(false);
+        graph_store.update((n) => {
+            n.input_alphabet = graphObject.input_alphabet;
+            n.transitions = graphObject.transitions;
+            n.nodes = graphObject.nodes;
+            n.startState = graphObject.startState;
+            n.finishState = graphObject.finishState;
+            n.type = graphObject.type;
+            n.generated = true;
+            n.hideConvertTable = true;
+            return n;
+        });
+        // graph_store.reset();
+        resetInputVar.set(false);
+        input_error_store.reset();
+
+        console.log("HERERERERERERERERE: ", graphObject.finishState);
     }
 
     function testInput(wordCh : string[]){
-        if (graphObject.type == 'empty'){
-            graphObject.type = 'dfa';
-        }
+        // if (graphObject.type == 'empty'){
+        //     graphObject.type = 'dfa';
+        // }
 
         resetTestInput();
         removeHighlighted();
@@ -54,31 +162,51 @@
         graphObject.word = wordCh;
         graphObject.status = "testing";
 
-        let tmpNode : GraphNodeMeta;
-        graphObject.nodes.forEach((node : GraphNodeMeta) => {
-            if (node.id === graphObject.startState) {
-                tmpNode = node;
+        if (graphObject.type === "DFA") {
+            let tmpNode: GraphNodeMeta;
+            graphObject.nodes.forEach((node: GraphNodeMeta) => {
+                if (node.id === graphObject.startState) {
+                    tmpNode = node;
+                }
+            });
+
+            if (!tmpNode) {
+                return;
             }
-        });
 
-        if (!tmpNode) {
-            return;
+            graphObject.startState = tmpNode.id;
+            graphObject.traversal = graphObject.preprocessGraphInput();
+
+            highlightElement(tmpNode.id);
+            graphObject.currentStatus = {state: tmpNode.id, input: graphObject.word, step: 0};
+            graph_store.update((n) => {
+                n.currentStatus = graphObject.currentStatus;
+                // console.log("updating current status", n.currentStatus);
+                return n;
+            });
+        } else {
+            // console.log("Jsem v NFA větvi");
+            graphObject.startState = $graph_store.startState;
+            graphObject.traversal = graphObject.preprocessGraphInputNFA();
+            highlightElement(graphObject.correctStartState);
+            graphObject.currentStatus = {state: graphObject.startState, input: graphObject.word, step: 0};
+            graph_store.update((n) => {
+                n.currentStatus = graphObject.currentStatus;
+                // console.log("updating current status", n.currentStatus);
+                return n;
+            });
         }
-        console.log(graphObject);
 
+        // console.log(graphObject);
 
-        graphObject.startState = tmpNode.id;
-        graphObject.traversal = graphObject.preprocessGraphInput();
         graph_store.update((n) => {
             n.traversal = graphObject.traversal;
-            console.log("updating store", n.traversal);
+            // console.log("updating store", n.traversal);
             return n;
         });
         // console.log(graphObject.traversal);
 
-        highlightElement(tmpNode.id);
-        graphObject.currentStatus = {state: tmpNode.id, input: graphObject.word, step: 0};
-        console.log(graphObject.currentStatus);
+
     }
 
     function nextTransition(){
@@ -90,6 +218,13 @@
             return;
         }
 
+        // console.log(result.currenStatus);
+        // graph_store.update((n) => {
+        //     n.currenStatus = result.currenStatus;
+        //     console.log("updating store", n.currenStatus);
+        //     return n;
+        // });
+
         let nextNode = result.nextNode;
         let nextEdge = result.nextEdge;
 
@@ -99,9 +234,15 @@
 
             graphObject.currentStatus.state = graphObject.traversal[graphObject.currentStatus.step].stateAfter;
             graphObject.currentStatus.step++;
-            console.log(graphObject.currentStatus);
+            // console.log(graphObject.currentStatus);
 
         }, 250);
+
+        graph_store.update((n) => {
+            n.currentStatus = graphObject.currentStatus;
+            // console.log("updating current status", n.currentStatus);
+            return n;
+        });
     }
 
     function previousTransition(){
@@ -121,8 +262,14 @@
             highlightElement(previousEdge);
 
             graphObject.currentStatus.state = graphObject.traversal[graphObject.currentStatus.step].state;
-            console.log(graphObject.currentStatus);
+            // console.log(graphObject.currentStatus);
         }, 250);
+
+        graph_store.update((n) => {
+            n.currentStatus = graphObject.currentStatus;
+            // console.log("updating current status", n.currentStatus);
+            return n;
+        });
     }
 
     function resetTestInput(){
@@ -169,7 +316,7 @@
         // states
         let states = new Set();
         graphObject.nodes.forEach((node : GraphNodeMeta) => {
-            states.add(node.id);
+            states.add(node.label);
         });
         configuration.nodes = Array.from(states);
 
@@ -187,17 +334,22 @@
         graphObject.transitions.forEach((transition) => {
             configuration.transitions = configuration.transitions ?? [];
             configuration.transitions.push({
-                state: transition.state,
+                state: transition.stateLabel,
                 input: transition.input,
-                stateAfter: transition.stateAfter,
+                stateAfter: transition.stateAfterLabel,
             });
         });
 
+        let startStateLabel = graphObject.nodes.find((node : GraphNodeMeta) => node.id === graphObject.startState).label;
+        let finishStatesLabel = graphObject.finishState.map((node : string) => graphObject.nodes.find((n : GraphNodeMeta) => n.id === node).label);
+
         // start state
-        configuration.start_state = graphObject.startState;
+        // configuration.start_state = graphObject.startState;
+        configuration.start_state = startStateLabel;
 
         // final states
-        configuration.final_states = graphObject.finishState;
+        // configuration.final_states = graphObject.finishState;
+        configuration.final_states = finishStatesLabel;
 
         // type
         configuration.type = graphObject.type;
@@ -258,6 +410,9 @@
     }
 
     function checkGenerationInput(){
+        if($input_error_store.transitions == false){
+            return false;
+        }
         input_error_store.reset();
 
         if ($graph_store.transitions === undefined || $graph_store.transitions.length === 0) {
@@ -288,11 +443,17 @@
 
     function addNode(node : GraphNodeMeta) {
         try {
+            // console.log('Before add node: ', $graph_store);
             graphObject.addNode(node);
         } catch (e) {
             console.log(e);
         } finally {
             updateConfiguration("node");
+            graph_store.update((n) => {
+                n.nodes = graphObject.nodes;
+                return n;
+            });
+            // console.log('After add node: ', $graph_store);
             resetLayout();
         }
     }
@@ -456,6 +617,7 @@
         graphObject.transitions = [];
         graphObject.startState = "";
         graphObject.finishState = [];
+        graphObject.followingID = 0;
         configuration_store.reset();
     }
 
@@ -477,6 +639,8 @@
                 {
                     selector: "node",
                     style: {
+                        // "background-color": window.document.body.classList.contains("dark-mode") ? "#808080" : "#080808",
+                        // "background-color": "var(--node-background-color)", // doesnt work
                         "background-color": "#808080",
                         "border-color": "#000000",
                         "border-width": 1,
@@ -488,19 +652,20 @@
                 },
 
                 {
-                    selector: ".start",
-                    style: {
-                        "background-color": "#6b6b6b",
-                        "border-color": "#ff0000",
-                    }
-                },
-
-                {
                     selector: ".finish",
                     style: {
                         "background-color": "#6b6b6b",
                         "border-width": 5,
                         "border-style": "double",
+                    }
+                },
+
+                {
+                    selector: ".start",
+                    style: {
+                        "background-color": "#6b6b6b",
+                        "border-width": 3,
+                        "border-color": "#0070ff",
                     }
                 },
 
@@ -522,6 +687,7 @@
                         "text-border-width": 1,
                         "text-border-color": "darkgray",
                         "text-wrap": "wrap",
+                        "control-point-distance": 100,
                     }
                 },
 
@@ -531,44 +697,17 @@
                         "background-color": "#00ff00",
                         "line-color": "#00ff00",
                         "target-arrow-color": "#00ff00",
+                        "transition-property": "line-color, target-arrow-color, background-color",
+                        "transition-duration": 100,
                     }
-                }
+                },
             ],
 
-            layout:{
-                name:"circle",
+            layout: {
+                name: "circle",
             }
 
         });
-
-        graphObject.nodes = [
-            { id: "q0", label: "q0", class: "start"},
-            { id: "q1", label: "q1" },
-            { id: "q2", label: "q2" },
-            { id: "q3", label: "q3", class: "finish" },
-        ];
-
-        graphObject.edges = {
-            "q0-q0":[{
-                id: "q0-q0",
-                label: "A",
-                source: "q0",
-                target: "q0"
-            }],
-            "q0-q1":[{
-                id: "q0-q1",
-                label: "B",
-                source: "q0",
-                target: "q1"
-            }],
-            "q1-q2":[{
-                id: "q1-q2",
-                label: "A",
-                source: "q1",
-                target: "q2"
-            }],
-        };
-
     }
 
     function createGraph(genTransitions : boolean = false) {
@@ -596,13 +735,15 @@
         if (!checkGenerationInput()) {
             return false;
         }
-
+        $graph_store.hideConvertTable = true;
         deleteGraph();
         // console.log($graph_store);
         Object.assign(graphObject, $graph_store);
 
         graphObject.generateGraphFromTransitions();
-        //console.log(graphObject);
+
+
+
 
         createGraph(false);
         graph_store.update((n) => {
@@ -613,13 +754,61 @@
         resetInputVar.set(false);
         input_error_store.reset();
 
+
+
+        graphObject.startState = $graph_store.startState;
+
+
+
         return true;
     }
 
+    let exampleNodes = [
+        { id: "0", label: "q0", class: "start"},
+        { id: "1", label: "q1", class: "finish" },
+    ];
+
+    let exampleTransition = [
+        {
+            state: "0",
+            stateLabel: "q0",
+            input: "a",
+            stateAfter: "0",
+            stateAfterLabel: "q0"
+        },
+        {
+            state: "0",
+            stateLabel: "q0",
+            input: "b",
+            stateAfter: "1",
+            stateAfterLabel: "q1"
+        },
+        {
+            state: "1",
+            stateLabel: "q1",
+            input: "b",
+            stateAfter: "0",
+            stateAfterLabel: "q0"
+        }
+    ];
 
     onMount(() => {
         graphConstructor();
-        createGraph();
+
+        graph_store.update((n) => {
+            n.type = "DFA";
+            n.transitions = exampleTransition;
+            n.nodes = exampleNodes;
+            n.startState = "0";
+            n.finishState = ["1"];
+            n.input_alphabet = ["a", "b"];
+            n.hideConvertTable = true;
+            return n;
+        });
+        $graph_store.followingID = 2;
+        generateGraphFromTransitions();
+        console.log($graph_store);
+        // createGraph();
     });
 
 </script>
@@ -634,9 +823,6 @@
         </div>
     </div>
 </div>
-<!--<div class="svTable">-->
-<!--    <FinTable />-->
-<!--</div>-->
 
 <style>
 

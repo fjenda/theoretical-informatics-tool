@@ -1,3 +1,22 @@
+<!--DFA-->
+<!--d(q0,a)=q0;-->
+<!--d(q0,b)=q1;-->
+<!--d(q1,b)=q0;-->
+<!--//-->
+<!--//-->
+<!--d(q0,a)=q0;-->
+<!--d(q0,b)=q1;-->
+<!--d(q1,b)=q2;-->
+<!--d(q2,b)=q1;-->
+<!--d(q2,a)=q0;-->
+<!--//-->
+<!--//-->
+<!--d(q0,a)=q1;-->
+<!--d(q1,a)=q2;-->
+<!--d(q1,b)=q1;-->
+<!--d(q1,c)=q3;-->
+<!--d(q2,a)=q3;-->
+<!--NFA-->
 <!--d(q0,0)=q0;-->
 <!--d(q0,1)=q1;-->
 <!--d(q1,0)=q1;-->
@@ -8,15 +27,27 @@
 <!--d(q2,1)=q2;-->
 <!--//-->
 <!--//-->
+<!--d(q0,E)=q1;-->
+<!--d(q0,E)=q2;-->
+<!--d(q1,0)=q3;-->
+<!--d(q2,1)=q3;-->
+<!--//-->
+<!--//-->
 <!--d(q0,0)=q0;-->
 <!--d(q0,0)=q1;-->
 <!--d(q0,1)=q1;-->
 <!--d(q1,1)=q0;-->
 <!--d(q1,1)=q1;-->
+<!--//-->
+<!--//-->
+<!--d(q1,a)=q2;-->
+<!--d(q1,a)=q3;-->
+<!--d(q2,b)=q3;-->
+<!--d(q1,ε)=q3;-->
 
 <script lang="ts">
 
-    import {graph_store, resetInputVar} from "../../stores/graphInitStore";
+    import {configuration_store, graph_store, resetInputVar} from "../../stores/graphInitStore";
     import {input_error_store} from "../../stores/inputErrorStore";
 
     let transitions : TransitionMeta[] = [];
@@ -24,6 +55,7 @@
     let textInput : string = "";
     let textarea: HTMLTextAreaElement;
     let backdrop: HTMLDivElement;
+    let correctInput: boolean = true;
 
 
 
@@ -45,11 +77,68 @@
         rowSplit.splice(0, 1);
 
         if (rowSplit.length === 3) {
-            transitions.push({
-                state: rowSplit[0],
-                input: rowSplit[1],
-                stateAfter: rowSplit[2],
-            });
+            let stateId = transitions.find(transition => transition.stateLabel === rowSplit[0])?.state;
+            if (stateId == undefined) {
+                stateId = transitions.find(transition => transition.stateAfterLabel === rowSplit[0])?.stateAfter;
+            }
+
+            let stateAfterId = transitions.find(transition => transition.stateLabel === rowSplit[2])?.state;
+            if (stateAfterId == undefined) {
+                stateAfterId = transitions.find(transition => transition.stateAfterLabel === rowSplit[2])?.stateAfter;
+            }
+
+            if (stateId >= 0) {
+                if (stateAfterId >= 0) {
+                    transitions.push({
+                        state: stateId,
+                        stateLabel: rowSplit[0],
+                        input: rowSplit[1],
+                        stateAfter: stateAfterId,
+                        stateAfterLabel: rowSplit[2],
+                    });
+                } else {
+                    transitions.push({
+                        state: stateId,
+                        stateLabel: rowSplit[0],
+                        input: rowSplit[1],
+                        stateAfter: $graph_store.followingID,
+                        stateAfterLabel: rowSplit[2],
+                    });
+                    $graph_store.followingID++;
+                }
+            } else {
+                if(stateAfterId >= 0) {
+                    transitions.push({
+                        state: $graph_store.followingID,
+                        stateLabel: rowSplit[0],
+                        input: rowSplit[1],
+                        stateAfter: stateAfterId,
+                        stateAfterLabel: rowSplit[2],
+                    });
+                    $graph_store.followingID++;
+                } else {
+                    if (rowSplit[0] == rowSplit[2]) {
+                        transitions.push({
+                            state: $graph_store.followingID,
+                            stateLabel: rowSplit[0],
+                            input: rowSplit[1],
+                            stateAfter: $graph_store.followingID,
+                            stateAfterLabel: rowSplit[2],
+                        });
+                        $graph_store.followingID++;
+                    } else {
+                        transitions.push({
+                            state: $graph_store.followingID,
+                            stateLabel: rowSplit[0],
+                            input: rowSplit[1],
+                            stateAfter: $graph_store.followingID + 1,
+                            stateAfterLabel: rowSplit[2],
+                        });
+                        $graph_store.followingID += 2;
+                    }
+                }
+            }
+
             alphabet.push(rowSplit[1]);
         }
 
@@ -64,13 +153,15 @@
             if (!nodes.find(node => node.id === transition.state)) {
                 nodes.push({
                     id: transition.state,
-                    label: transition.state,
+                    label: transition.stateLabel,
                 });
             }
+        }
+        for (let transition of transitions) {
             if (!nodes.find(node => node.id === transition.stateAfter)) {
                 nodes.push({
                     id: transition.stateAfter,
-                    label: transition.stateAfter,
+                    label: transition.stateAfterLabel,
                 });
             }
         }
@@ -79,26 +170,47 @@
             n.nodes = nodes;
             return n;
         });
+        console.log("Nodes: ", nodes);
     }
 
     function processTransitions() {
         transitions = [];
-        // let rows = textInput.split(";");
+        console.log("Here start transitions: ", transitions);
+
         let rows = textInput.split("\n").filter(Boolean);
 
-        applyHighlights(textInput);
+        if ($graph_store.type == "DFA") {
+            applyHighlightsDFA(textInput);
 
-        let allTrue : boolean = true;
-        for (let row of rows) {
-            if (validateTransition(row)) {
-                parseRow(row);
-            } else {
-                // allTrue = false;
+            for (let row of rows) {
+                if (validateTransitionDFA(row)) {
+                    parseRow(row);
+                    correctInput = true;
+                } else {
+                    correctInput = false;
+                }
             }
+        } else if ($graph_store.type == "NFA") {
+            applyHighlights(textInput);
+
+            for (let row of rows) {
+                if (validateTransition(row)) {
+                    parseRow(row);
+                    correctInput = true;
+                } else {
+                    correctInput = false;
+                }
+            }
+
+        } else {
+            console.log("Invalid type");
         }
 
+
+        console.log("Is input correct: ", correctInput);
+
         input_error_store.update((n) => {
-            n.transitions = allTrue;
+            n.transitions = correctInput;
             return n;
         });
 
@@ -113,8 +225,26 @@
     }
 
     function validateTransition(transition) {
-        let regex = /d\([A-Za-z]+[0-9]+,[A-Za-z0-9]\)=[A-Za-z]+[0-9];/;
+        // let regex = /d\([A-Za-z]+[0-9]+,[A-Za-z0-9]\)=[A-Za-z]+[0-9];/;
+        let regex = /d\([A-Za-z]+[0-9]+,(ε|[A-Za-z0-9])\)=[A-Za-z]+[0-9];/;
         return regex.test(transition);
+    }
+
+    function validateTransitionDFA(transition) {
+        let regex = /^d\([A-Za-z]+[0-9]+,[^E]\)=[A-Za-z]+[0-9]+;$/;
+        return regex.test(transition);
+    }
+
+    function applyHighlightsDFA(text) {
+        return text
+            .replace(/\n$/g, '\n\n')
+            .replace(/(d\([A-Za-z]+[0-9]+,[^E]\)=[A-Za-z]+[0-9]+;)/g, function(match, validTransition, other) {
+                if (validTransition) {
+                    return match;  // If it matches the pattern, leave it unchanged
+                } else {
+                    return '<mark>' + match + '</mark>';  // If it doesn't match, wrap the entire line in <mark> tags
+                }
+            });
     }
 
     function applyHighlights(text) {
@@ -134,9 +264,6 @@
         backdrop.scrollTop = scrollTop;
     }
 
-    function handleInput() {
-        applyHighlights(textInput);
-    }
 
 </script>
 

@@ -18,10 +18,10 @@
     let input : string = '';
     // let showArrows : boolean = false;
 
-    $: if (!/^[a-zA-Z0-9]+$/.test(input) && input !== '') {
-        alert("Test input can be made of alphanumeric characters only!")
-        input = input.substring(0, input.length - 1);
-    }
+    // $: if (!/^[a-zA-Z0-9]+$/.test(input) && input !== '') {
+    //     alert("Test input can be made of alphanumeric characters only!")
+    //     input = input.substring(0, input.length - 1);
+    // }
 
     function processTestInput() {
         regexInputFunction(input.trim());
@@ -29,19 +29,6 @@
         // testInputFunction(input.trim().split(""));
     }
 
-    // function next() {
-    //     nextFunc();
-    // }
-    //
-    // function previous() {
-    //     previousFunc();
-    // }
-    //
-    // function stopTesting() {
-    //     showArrows = false;
-    //     console.log("stop");
-    //     stopFunc();
-    // }
 </script>
 
 <div class="input-box">

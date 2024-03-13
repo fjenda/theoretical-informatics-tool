@@ -2,10 +2,16 @@
 <script lang="ts">
     import {graph_store, resetInputVar} from "../../stores/graphInitStore";
 
-    let toggleState = "dfa";
+    let toggleState = "DFA";
 
     $: if ($resetInputVar) {
-        //toggle($graph_store?.type);
+        // toggle($graph_store?.type);
+    }
+
+    $: {
+        if ($graph_store.type == "empty") {
+            $graph_store.type = "DFA";
+        }
     }
 
     const toggle = (newState) => {
@@ -14,6 +20,8 @@
             n.type = newState
             return n;
         });
+
+        console.log("KA type: ",$graph_store.type);
     };
 </script>
 
@@ -21,14 +29,14 @@
     <div class="toggle-label">Type</div>
     <div class="toggle-switch">
         <div
-                class={toggleState === "dfa" ? 'selected' : ''}
-                on:click={() => toggle("dfa")}
+                class={$graph_store.type === "DFA" ? 'selected' : ''}
+                on:click={() => toggle("DFA")}
         >
             DFA
         </div>
         <div
-                class={toggleState === "nfa" ? 'selected' : ''}
-                on:click={() => toggle("nfa")}
+                class={$graph_store.type === "NFA" ? 'selected' : ''}
+                on:click={() => toggle("NFA")}
         >
             NFA
         </div>
