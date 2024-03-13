@@ -781,6 +781,7 @@
                 n.startState = "q0";
                 n.finishState = ["qF"];
                 n.stackBottom = "Z";
+                n.type = "empty";
                 return n;
             });
         }
