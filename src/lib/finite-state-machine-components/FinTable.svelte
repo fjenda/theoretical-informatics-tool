@@ -7,6 +7,7 @@
     let inputSymbols = [];
     let generated = false;
     let tableData = [];
+    let nodesMeta = [];
 
     $: if ($graph_store.generated == true || $graph_store.currentStatus) {
         // console.log("HEREHERHER");
@@ -15,38 +16,29 @@
         tableData = [];
         // get traversal
         transitions = $graph_store.transitions;
-
-        //remove transion with epsilon
-        transitions = transitions.filter(function (el) {
-            return el.input != 'ε';
-        });
-
-        //sort transiton bz state
-        // transitions.sort((a, b) => (a.state > b.state) ? 1 : -1);
-
+        nodesMeta = $graph_store.nodes;
 
         console.log("input_alphabet", $graph_store.input_alphabet);
         console.log("transitions", transitions);
 
         let alphabet = $graph_store.input_alphabet;
-        //remove epsilon
-        alphabet = alphabet.filter(function (el) {
-            return el != 'ε';
-        });
+        if (alphabet.includes('ε')) {
+            alphabet.splice(alphabet.indexOf('ε'), 1);
+            alphabet.push('ε');
+        }
+
 
         if (typeof $graph_store.input_alphabet !== 'undefined'){
             cols = [...alphabet];
         }
-        // cols = [...$graph_store.input_alphabet];
-        // console.log("input_alphabet", $graph_store.input_alphabet);
-        // console.log("cols", cols);
 
         if (typeof transitions !== 'undefined' && generated === false) {
-            let nodes = Array.from(new Set(transitions.map(t => t.stateLabel)));
+            let nodes = Array.from(new Set(nodesMeta.map(t => t.label)));
             inputSymbols = Array.from(new Set(transitions.map(t => t.input)));
-
-            // Initialize the table data
-
+            if (inputSymbols.includes('ε')) {
+                inputSymbols.splice(inputSymbols.indexOf('ε'), 1);
+                inputSymbols.push('ε');
+            }
 
             // Generate the table data
             nodes.forEach(node => {
@@ -71,6 +63,15 @@
 
                 tableData.push(rowData);
                 console.log("tableData", tableData);
+            });
+
+            //if in table data is node and empty stiong fill it with -
+            tableData.forEach(row => {
+                inputSymbols.forEach(inputSymbol => {
+                    if (row[inputSymbol] === '') {
+                        row[inputSymbol] = '-';
+                    }
+                });
             });
         }
 
