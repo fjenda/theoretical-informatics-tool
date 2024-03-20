@@ -1,6 +1,7 @@
 <script lang="ts">
 import FinToolbarModal from "./FinToolbarModal.svelte";
 import {onMount} from "svelte";
+import {tooltip} from "../tooltipUtils";
 import {graph_store, resetInputVar} from "../../stores/graphInitStore";
 
 
@@ -31,7 +32,7 @@ onMount(() => {
 
 {#if ["new-node", "new-edge", "generate-automata", "show-definition"].includes(type)}
     {#if type === "generate-automata"}
-        <button on:click={() => {showModal = true; resetInputVar.set(true); graph_store.reset(); }}>
+        <button on:click={() => {showModal = true; resetInputVar.set(true); graph_store.reset(); $graph_store.hideConvertTable = true; }}>
             {text}
         </button>
     {:else}
@@ -41,8 +42,29 @@ onMount(() => {
     {/if}
 
     <FinToolbarModal bind:showModal type={type} func={func}>
-        <h2 slot="header">
-            {type}
+        <h2 class="header" slot="header">
+            {type.split("-").map((word) => word.charAt(0).toUpperCase() + word.slice(1)).join(" ")}
+
+            {#if type === "generate-automata"}
+                <!--                TODO: Czech version-->
+                <!--                <span class="ttip" use:tooltip={"Pravidla pište ve tvaru\n\n" +-->
+                <!--                                                "d(q0,a,Z)=(q0,A Z);\n" +-->
+                <!--                                                "d(q1,b,A)=(q2,B A);\n" +-->
+                <!--                                                "d(q2,c,B)=(q3,ε);\n" +-->
+                <!--                                                "\nPokud nedáte mezeru mezi charaktery,\n" +-->
+                <!--                                                "které se mají vložit na zásobník,\n" +-->
+                <!--                                                "pravidla se špatně načtou."}>-->
+                <!--                ?</span>-->
+
+                <span class="ttip" use:tooltip={"Write the rules in the form\n\n" +
+                                                "d(q0,a)=q0;\n" +
+                                                "d(q0,b)=q1;\n" +
+                                                "d(q1,b)=q0;\n" +
+                                                "d(q0,ε)=q1;\n" +
+                                                "\nFor NFA you can choose \n" +
+                                                "more then one Start state"}>
+                ?</span>
+            {/if}
         </h2>
     </FinToolbarModal>
 
@@ -61,6 +83,7 @@ onMount(() => {
         border-radius: 0.3rem;
         background: #f7f7f8;
         border: 0.05rem solid #393939;
+        position: relative;
     }
 
     :global(body.dark-mode) button {
@@ -69,15 +92,35 @@ onMount(() => {
         color: #f4f9ff;
     }
 
-
-    button:hover {
-        outline: 0.1rem solid #007bff;
-    }
-
-
     .active {
         outline: 0.1rem solid red;
     }
+
+
+    button:hover {
+        transition: 0.3s;
+        background-color: #e4e8ee;
+    }
+
+    :global(body.dark-mode) button:hover {
+        background-color: #242c2f;
+    }
+
+    .ttip {
+        font-size: 1rem;
+        cursor: pointer;
+        position: absolute;
+        top: 1rem;
+        right: 1.5rem;
+        white-space: break-spaces;
+    }
+
+    .header {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
 </style>
 
 

@@ -107,10 +107,10 @@
         <div class="tableBody">
             {#each tableData as row}
                 {#if $graph_store.currentStatus !== undefined &&
-                $graph_store.traversal[$graph_store.currentStatus.step +1 ] !== undefined}
-                    {#if (row.node == '-> ' + $graph_store.traversal[$graph_store.currentStatus.step +1 ].state ||
-                        row.node == '<- ' + $graph_store.traversal[$graph_store.currentStatus.step +1].state ||
-                        row.node == $graph_store.traversal[$graph_store.currentStatus.step + 1].state)}
+                $graph_store.traversal[$graph_store.currentStep + 1 ] !== undefined}
+                    {#if (row.node == '-> ' + $graph_store.traversal[$graph_store.currentStep +1 ].stateLabel ||
+                        row.node == '<- ' + $graph_store.traversal[$graph_store.currentStep +1 ].stateLabel ||
+                        row.node == $graph_store.traversal[$graph_store.currentStep +1 ].stateLabel)}
                         <div class="tableRow active">
                             <div class="tableCell">{row.node}</div>
                             {#each inputSymbols as symbol}
@@ -137,53 +137,6 @@
         </div>
     </div>
 </div>
-
-<!--<div class="wrapper">-->
-<!--    <table class="styled-table">-->
-<!--        <thead>-->
-<!--        <tr class="styled-row">-->
-<!--            <th>Nodes</th>-->
-<!--            {#if typeof cols !== 'undefined' && cols.length > 0}-->
-<!--                {#each cols as col}-->
-<!--                    <th>{col}</th>-->
-<!--                {/each}-->
-<!--            {/if}-->
-<!--        </tr>-->
-<!--        </thead>-->
-<!--        <tbody>-->
-<!--        {#each tableData as row}-->
-<!--            {#if $graph_store.currentStatus !== undefined &&-->
-<!--            $graph_store.traversal[$graph_store.currentStatus.step +1 ] !== undefined}-->
-<!--                {#if (row.node == '-> ' + $graph_store.traversal[$graph_store.currentStatus.step +1 ].state ||-->
-<!--                    row.node == '<- ' + $graph_store.traversal[$graph_store.currentStatus.step +1].state ||-->
-<!--                    row.node == $graph_store.traversal[$graph_store.currentStatus.step + 1].state)}-->
-<!--                    <tr class="active">-->
-<!--                        <td>{row.node}</td>-->
-<!--                        {#each inputSymbols as symbol}-->
-<!--                            <td>{row[symbol]}</td>-->
-<!--                        {/each}-->
-<!--                    </tr>-->
-<!--                {:else}-->
-<!--                    <tr>-->
-<!--                        <td>{row.node}</td>-->
-<!--                        {#each inputSymbols as symbol}-->
-<!--                            <td>{row[symbol]}</td>-->
-<!--                        {/each}-->
-<!--                    </tr>-->
-<!--                {/if}-->
-<!--            {:else}-->
-<!--                <tr>-->
-<!--                    <td>{row.node}</td>-->
-<!--                    {#each inputSymbols as symbol}-->
-<!--                        <td>{row[symbol]}</td>-->
-<!--                    {/each}-->
-<!--                </tr>-->
-<!--            {/if}-->
-<!--        {/each}-->
-<!--        </tbody>-->
-<!--    </table>-->
-<!--</div>-->
-
 
 <style lang="scss">
 

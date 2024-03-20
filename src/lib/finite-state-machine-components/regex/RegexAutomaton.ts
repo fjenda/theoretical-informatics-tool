@@ -41,6 +41,9 @@ export class  RegexAutomaton{
             { state: this.finAut.startState, index: 0, path: [] },
         ];
 
+        //remove . from the this.regex
+        this.regex = this.regex.replace(/\./g, "");
+
         let alphabet = this.regex.split("");
 
         let tree = this.parse();
@@ -134,7 +137,8 @@ export class  RegexAutomaton{
     }
 
     isMetaChar(c : string) : boolean {
-        return c === "*" || c === "+" || c === "?";
+        // return c === "*" || c === "+" || c === "?";
+        return c === "*";
     }
 
     next() : string | null {
@@ -146,8 +150,8 @@ export class  RegexAutomaton{
 
     expression(): TreeNode | null {
         let term = this.term();
-        while (this.hasMore() && this.peek() === "|") {
-            this.match("|");
+        while (this.hasMore() && this.peek() === "+") {
+            this.match("+");
             let expression = this.expression();
 
             // if (expression === null) {
@@ -155,7 +159,7 @@ export class  RegexAutomaton{
             // }
 
             // term = new TreeNode("expression", [term, new TreeNode("|", null), expression]);
-            return new TreeNode("expression", [term, new TreeNode("|", null), expression]);
+            return new TreeNode("expression", [term, new TreeNode("+", null), expression]);
         }
         return new TreeNode("expression", [term]);
     }
@@ -163,7 +167,7 @@ export class  RegexAutomaton{
     term(): TreeNode | null {
         let factor = this.factor();
 
-        while (this.hasMore() && !(this.peek() === "|") && !(this.peek() === ")")) {
+        while (this.hasMore() && !(this.peek() === "+") && !(this.peek() === ")")) {
             let term = this.term();
 
             return new TreeNode("term", [factor, term]);
@@ -676,6 +680,111 @@ export class  RegexAutomaton{
 
         return new FiniteStateAutomaton(nodes, transitions, [startNode.id], [endNode.id], "DFA");
     }
+
+    // reduceAutomaton(automaton : FiniteStateAutomaton) {
+    //
+    //     this.removeUnnecessaryStates(automaton);
+    //     this.removeUnreachableStates(automaton);
+    // }
+    //
+    // removeUnreachableStates(automaton : FiniteStateAutomaton){
+    //     let reachableStates = [];
+    //     let currentStates = [];
+    //
+    //     reachableStates.push(automaton.startState);
+    //     currentStates.push(automaton.startState);
+    //
+    //     while(currentStates.length > 0){
+    //         currentStates = this.expandReachableStates(currentStates, reachableStates, automaton);
+    //     }
+    //
+    //     let newTransitions = [];
+    //     for(let reachable of reachableStates){
+    //         for(let transition of automaton.transitions){
+    //             if (transition.state === reachable){
+    //                 newTransitions.push(transition);
+    //             }
+    //         }
+    //     }
+    //     automaton.transitions = newTransitions;
+    //
+    //     //if there is a state that is not in reachableStates, remove it
+    //     let newNodes = [];
+    //     for(let node of automaton.nodes){
+    //         if (reachableStates.includes(node.id)){
+    //             newNodes.push(node);
+    //         }
+    //     }
+    //     automaton.nodes = newNodes;
+    // }
+    //
+    // removeUnnecessaryStates(automaton : FiniteStateAutomaton) {
+    //     let necessaryStates = [];
+    //     let currentStates = [];
+    //     let newTransitions = [];
+    //
+    //     necessaryStates.push(automaton.startState);
+    //     currentStates.push(automaton.startState);
+    //
+    //     while(currentStates.length > 0){
+    //         currentStates = this.expandNecessaryStates(currentStates, necessaryStates, newTransitions, automaton);
+    //     }
+    //
+    //     return  null;
+    // }
+    //
+    // expandReachableStates(currentStates : string[],reachableStates : string[], automaton : FiniteStateAutomaton) {
+    //     let newCurrentStates = [];
+    //
+    //     for(let id of currentStates){
+    //         let transitionsForId = [];
+    //         for(let transition of automaton.transitions){
+    //             if (transition.state === id){
+    //                 transitionsForId.push(transition);
+    //             }
+    //         }
+    //         if (transitionsForId.length > 0){
+    //             for(let transition of transitionsForId){
+    //                 if (!reachableStates.includes(transition.stateAfter)){
+    //                     reachableStates.push(transition.stateAfter);
+    //                     newCurrentStates.push(transition.stateAfter);
+    //                 }
+    //             }
+    //         }
+    //     }
+    //     return newCurrentStates;
+    // }
+    //
+    // expandNecessaryStates(currentStates : string[],necessaryStates : string[], newTransition : TransitionMeta[], automaton : FiniteStateAutomaton) {
+    //     let newCurrentStates = [];
+    //
+    //     automaton.transitions.forEach((transition : TransitionMeta) => {
+    //         let transitonForState = [];
+    //
+    //
+    //        if (currentStates.includes(transition.stateAfter)){
+    //            if (!necessaryStates.includes(transition.state) && !newCurrentStates.includes(transition.state)){
+    //                necessaryStates.push(transition.state);
+    //                newCurrentStates.push(transition.state);
+    //            }
+    //            //find if transition.state is in the newTransitions
+    //             let found = false;
+    //             for(let newT of newTransition) {
+    //                 if (newT.state === transition.state) {
+    //                     found = true;
+    //                 }
+    //             }
+    //             if (!found){
+    //                 newTransition.push(transition);
+    //             }
+    //             else{
+    //
+    //             }
+    //        }
+    //     });
+    //
+    //     return null;
+    // }
 
 
 

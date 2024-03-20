@@ -1,54 +1,9 @@
-<!--DFA-->
-<!--d(q0,a)=q0;-->
-<!--d(q0,b)=q1;-->
-<!--d(q1,b)=q0;-->
-<!--//-->
-<!--//-->
-<!--d(q0,a)=q0;-->
-<!--d(q0,b)=q1;-->
-<!--d(q1,b)=q2;-->
-<!--d(q2,b)=q1;-->
-<!--d(q2,a)=q0;-->
-<!--//-->
-<!--//-->
-<!--d(q0,a)=q1;-->
-<!--d(q1,a)=q2;-->
-<!--d(q1,b)=q1;-->
-<!--d(q1,c)=q3;-->
-<!--d(q2,a)=q3;-->
-<!--NFA-->
-<!--d(q0,0)=q0;-->
-<!--d(q0,1)=q1;-->
-<!--d(q1,0)=q1;-->
-<!--d(q1,0)=q2;-->
-<!--d(q1,1)=q1;-->
-<!--d(q2,0)=q2;-->
-<!--d(q2,1)=q1;-->
-<!--d(q2,1)=q2;-->
-<!--//-->
-<!--//-->
-<!--d(q0,E)=q1;-->
-<!--d(q0,E)=q2;-->
-<!--d(q1,0)=q3;-->
-<!--d(q2,1)=q3;-->
-<!--//-->
-<!--//-->
-<!--d(q0,0)=q0;-->
-<!--d(q0,0)=q1;-->
-<!--d(q0,1)=q1;-->
-<!--d(q1,1)=q0;-->
-<!--d(q1,1)=q1;-->
-<!--//-->
-<!--//-->
-<!--d(q1,a)=q2;-->
-<!--d(q1,a)=q3;-->
-<!--d(q2,b)=q3;-->
-<!--d(q1,ε)=q3;-->
-
 <script lang="ts">
 
-    import {configuration_store, graph_store, resetInputVar} from "../../stores/graphInitStore";
-    import {input_error_store} from "../../stores/inputErrorStore";
+    import {first_graph_store, resetInputVar} from "../../../stores/graphInitStore";
+    import type {TransitionMeta} from "../../../types/TransitionMeta";
+    import type {GraphNodeMeta} from "../../../types/GraphNodeMeta";
+    import {input_error_store} from "../../../stores/inputErrorStore";
 
     let transitions : TransitionMeta[] = [];
     let alphabet : string[] = [];
@@ -101,40 +56,40 @@
                         state: stateId,
                         stateLabel: rowSplit[0],
                         input: rowSplit[1],
-                        stateAfter: $graph_store.followingID,
+                        stateAfter: $first_graph_store.followingID,
                         stateAfterLabel: rowSplit[2],
                     });
-                    $graph_store.followingID++;
+                    $first_graph_store.followingID++;
                 }
             } else {
                 if(stateAfterId >= 0) {
                     transitions.push({
-                        state: $graph_store.followingID,
+                        state: $first_graph_store.followingID,
                         stateLabel: rowSplit[0],
                         input: rowSplit[1],
                         stateAfter: stateAfterId,
                         stateAfterLabel: rowSplit[2],
                     });
-                    $graph_store.followingID++;
+                    $first_graph_store.followingID++;
                 } else {
                     if (rowSplit[0] == rowSplit[2]) {
                         transitions.push({
-                            state: $graph_store.followingID,
+                            state: $first_graph_store.followingID,
                             stateLabel: rowSplit[0],
                             input: rowSplit[1],
-                            stateAfter: $graph_store.followingID,
+                            stateAfter: $first_graph_store.followingID,
                             stateAfterLabel: rowSplit[2],
                         });
-                        $graph_store.followingID++;
+                        $first_graph_store.followingID++;
                     } else {
                         transitions.push({
-                            state: $graph_store.followingID,
+                            state: $first_graph_store.followingID,
                             stateLabel: rowSplit[0],
                             input: rowSplit[1],
-                            stateAfter: $graph_store.followingID + 1,
+                            stateAfter: $first_graph_store.followingID + 1,
                             stateAfterLabel: rowSplit[2],
                         });
-                        $graph_store.followingID += 2;
+                        $first_graph_store.followingID += 2;
                     }
                 }
             }
@@ -166,7 +121,7 @@
             }
         }
 
-        graph_store.update((n) => {
+        first_graph_store.update((n) => {
             n.nodes = nodes;
             return n;
         });
@@ -179,7 +134,7 @@
 
         let rows = textInput.split("\n").filter(Boolean);
 
-        if ($graph_store.type == "DFA") {
+        if ($first_graph_store.type == "DFA") {
             applyHighlightsDFA(textInput);
 
             for (let row of rows) {
@@ -190,7 +145,7 @@
                     correctInput = false;
                 }
             }
-        } else if ($graph_store.type == "NFA") {
+        } else if ($first_graph_store.type == "NFA") {
             applyHighlights(textInput);
 
             for (let row of rows) {
@@ -214,7 +169,7 @@
             return n;
         });
 
-        graph_store.update((n) => {
+        first_graph_store.update((n) => {
             n.transitions = transitions;
             n.input_alphabet = alphabet;
             return n;
@@ -231,44 +186,32 @@
     }
 
     function validateTransitionDFA(transition) {
-        let regex = /^d\([A-Za-z]+[0-9]+,[^ε]\)=[A-Za-z]+[0-9]+;$/;
+        let regex = /^d\([A-Za-z]+[0-9]+,[^E]\)=[A-Za-z]+[0-9]+;$/;
         return regex.test(transition);
     }
 
     function applyHighlightsDFA(text) {
         return text
             .replace(/\n$/g, '\n\n')
-            .replace(/(d\([A-Za-z]+[0-9]+,[^ε]\)=[A-Za-z]+[0-9]+;)|(.*)/g, function(match, validTransition, other) {
+            .replace(/(d\([A-Za-z]+[0-9]+,[^E]\)=[A-Za-z]+[0-9]+;)/g, function(match, validTransition, other) {
                 if (validTransition) {
-                    return match;  // If it's a valid transition, leave it unchanged
+                    return match;  // If it matches the pattern, leave it unchanged
                 } else {
-                    return '<mark>' + match + '</mark>';  // If it's not a valid transition, wrap it in <mark> tags
+                    return '<mark>' + match + '</mark>';  // If it doesn't match, wrap the entire line in <mark> tags
                 }
             });
     }
 
     function applyHighlights(text) {
-        if ($graph_store.type == "DFA") {
-            return text
-                .replace(/\n$/g, '\n\n')
-                .replace(/(d\([A-Za-z]+[0-9]+,([A-Za-z0-9])\)=[A-Za-z]+[0-9]+;)|(.*)/g, function (match, validTransition, other) {
-                    if (validTransition) {
-                        return match;  // If it's a valid transition, leave it unchanged
-                    } else {
-                        return '<mark>' + match + '</mark>';  // If it's not a valid transition, wrap it in <mark> tags
-                    }
-                });
-        } else if ($graph_store.type == "NFA") {
-            return text
-                .replace(/\n$/g, '\n\n')
-                .replace(/(d\([A-Za-z]+[0-9]+,(ε|[A-Za-z0-9])\)=[A-Za-z]+[0-9]+;)|(.*)/g, function (match, validTransition, other) {
-                    if (validTransition) {
-                        return match;  // If it's a valid transition, leave it unchanged
-                    } else {
-                        return '<mark>' + match + '</mark>';  // If it's not a valid transition, wrap it in <mark> tags
-                    }
-                });
-        }
+        return text
+            .replace(/\n$/g, '\n\n')
+            .replace(/(d\([A-Za-z]+[0-9]+,[A-Za-z0-9]\)=[A-Za-z]+[0-9];)|(.*)/g, function(match, pattern, other) {
+                if (pattern) {
+                    return match;  // If it matches the pattern, leave it unchanged
+                } else {
+                    return '<mark>' + match + '</mark>';  // If it doesn't match, wrap the entire line in <mark> tags
+                }
+            });
     }
 
     function handleScroll() {

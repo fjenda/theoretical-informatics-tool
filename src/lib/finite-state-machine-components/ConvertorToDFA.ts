@@ -10,6 +10,8 @@ export class ConvertorToDFA  {
         let statesForInput : string = "";
         let stateResult : string[] = [];
         let newConvertorTab : ConvertorTab[] = [];
+        let startState = false;
+        let finishState = false;
 
         if (alphabet.includes("ε")) {
             alphabet = alphabet.filter(item => item !== "ε");
@@ -38,16 +40,68 @@ export class ConvertorToDFA  {
                     }
 
                 }
-                stateResult.push("{"+statesForInput+"}");
+                let splitedStates = statesForInput.split(",");
+                let newSplitedStates = "";
+                for(let split of splitedStates){
+                    nfaAutomaton.nodes.forEach(node => {
+                        if(node.id === split){
+                            if (newSplitedStates){
+                                newSplitedStates += ", " + node.label;
+                            } else {
+                                newSplitedStates = node.label;
+                            }
+                        }
+                    });
+                }
+
+                stateResult.push("{"+newSplitedStates+"}");
                 statesForInput = "";
+                newSplitedStates = "";
             }
-            newConvertorTab.push({key:  "q" + stateRecorder.get(key).toString() + "{"+key+"}", values: stateResult});
+            for(let nodeID of parseKeys){
+                if(nfaAutomaton.startState.includes(nodeID)){
+                    startState = true;
+                }
+                if(nfaAutomaton.finishState.includes(nodeID)){
+                    finishState = true;
+                }
+            }
+            let newKey = "";
+            for(let id of parseKeys){
+                nfaAutomaton.nodes.forEach(node => {
+                    if(node.id === id){
+                        if(newKey){
+                            newKey += ", " + node.label;
+                        } else {
+                            newKey = node.label;
+                        }
+                    }
+                });
+            }
+
+            if(startState && finishState){
+                newConvertorTab.push({key:  "<-->q" + stateRecorder.get(key).toString() + "{"+newKey+"}", values: stateResult});
+                startState = false;
+                finishState = false;
+            } else if(startState){
+                newConvertorTab.push({key:  "->q" + stateRecorder.get(key).toString() + "{"+newKey+"}", values: stateResult});
+                startState = false;
+                finishState = false;
+            } else if(finishState){
+                newConvertorTab.push({key:  "<-q" + stateRecorder.get(key).toString() + "{"+newKey+"}", values: stateResult});
+                finishState = false;
+                startState = false;
+            } else {
+                newConvertorTab.push({key:  "q" + stateRecorder.get(key).toString() + "{"+newKey+"}", values: stateResult});
+            }
+            // newConvertorTab.push({key:  "q" + stateRecorder.get(key).toString() + "{"+key+"}", values: stateResult});
             stateResult = [];
+            newKey = "";
         }
 
         //convert key 99 to Ø and values "" to Ø
         for(let i = 0; i < newConvertorTab.length; i++){
-            if(newConvertorTab[i].key === "q99{99}"){
+            if(newConvertorTab[i].key === "q99{}"){
                 newConvertorTab[i].key = "Ø";
             }
             for(let j = 0; j < newConvertorTab[i].values.length; j++){

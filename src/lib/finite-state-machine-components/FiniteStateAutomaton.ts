@@ -19,7 +19,7 @@ export  class FiniteStateAutomaton{
     isAccepted: boolean = false;
     traversal: TransitionMeta[] = [];
     type: string = "DFA";
-    startState?: string[] = ["0"];
+    startState: string[] = ["0"];
     finishState?: string[] = ["F"];
     correctStartState: string = "q0";
     followingID : number = 0;
@@ -188,6 +188,9 @@ export  class FiniteStateAutomaton{
             if (isAccepted) {
                 console.log("Accepted");
                 this.isAccepted = true;
+
+
+
                 return path; // String is accepted
             }
             closestDeclinedPath = path;
@@ -247,8 +250,8 @@ export  class FiniteStateAutomaton{
         }
 
         //if node class is start
-        if (node.class?.includes("start")) {
-            this.startState = node.id;
+        if (node.class?.includes("start")  && this.startState.filter((startNode : string) => startNode === node.id).length === 0) {
+            this.startState.push(node.id);
         }
 
 

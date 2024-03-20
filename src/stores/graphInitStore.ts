@@ -51,7 +51,103 @@ export const configuration_store = function() {
     }
 }();
 
+export const first_configuration_store = function() {
+    const {set, update, subscribe} : Writable<Partial<AutomatonConfiguration>> = writable({});
+
+    const reset = () => {
+        set({});
+    }
+
+    return {
+        set,
+        update,
+        subscribe,
+        reset,
+    }
+}();
+
+export const second_configuration_store = function() {
+    const {set, update, subscribe} : Writable<Partial<AutomatonConfiguration>> = writable({});
+
+    const reset = () => {
+        set({});
+    }
+
+    return {
+        set,
+        update,
+        subscribe,
+        reset,
+    }
+}();
+
 export const graph_store = function() {
+    const {set, update, subscribe} : Writable<Partial<GraphObject>> = writable({
+        nodes: [],
+        type: "empty",
+    });
+
+    const reset = () => {
+        set({
+            nodes: [],
+            type: "empty",
+            followingID: 0,
+        });
+    }
+
+    return {
+        set,
+        update,
+        subscribe,
+        reset,
+    }
+}();
+
+export const first_graph_store = function() {
+    const {set, update, subscribe} : Writable<Partial<GraphObject>> = writable({
+        nodes: [],
+        type: "empty",
+    });
+
+    const reset = () => {
+        set({
+            nodes: [],
+            type: "empty",
+            followingID: 0,
+        });
+    }
+
+    return {
+        set,
+        update,
+        subscribe,
+        reset,
+    }
+}();
+
+export const second_graph_store = function() {
+    const {set, update, subscribe} : Writable<Partial<GraphObject>> = writable({
+        nodes: [],
+        type: "empty",
+    });
+
+    const reset = () => {
+        set({
+            nodes: [],
+            type: "empty",
+            followingID: 0,
+        });
+    }
+
+    return {
+        set,
+        update,
+        subscribe,
+        reset,
+    }
+}();
+
+export const result_graph_store = function() {
     const {set, update, subscribe} : Writable<Partial<GraphObject>> = writable({
         nodes: [],
         type: "empty",
