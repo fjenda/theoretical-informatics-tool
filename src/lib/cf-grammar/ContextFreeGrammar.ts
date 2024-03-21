@@ -26,24 +26,11 @@ export class ContextFreeGrammar {
         rules.forEach(rule => {
             if (rule.rightSide.length > 0) {
                 rule.rightSide.forEach((symbol, index) => {
-                    // if (symbol === '') {
-                    //     newRules.push(new Rule(rule.leftSide, ['']));
-                    //     return;
-                    // }
                     newRules.push(new Rule(rule.leftSide, symbol.split('')));
                 });
             } else {
                 newRules.push(new Rule(rule.leftSide, []));
             }
-
-            // if (rule.rightSide.some(symbol => symbol.length > 1)) {
-            //     // convert rules with more than one symbol on the right side to multiple rules with one symbol on the right side
-            //     rule.rightSide.forEach((symbol, index) => {
-            //         newRules.push(new Rule(rule.leftSide, symbol.split('')));
-            //     });
-            // } else {
-            //     newRules.push(new Rule(rule.leftSide, rule.rightSide));
-            // }
         });
 
         this.parser.setRules(newRules);
@@ -75,11 +62,11 @@ export class ContextFreeGrammar {
         this.nonTerminals = this.nonTerminals.filter((value, index, self) => self.indexOf(value) === index);
         this.terminals = this.terminals.filter((value, index, self) => self.indexOf(value) === index);
 
-
         // console.log(this.nonTerminals, this.terminals);
     }
 
     toString() {
+        console.log(this);
         // copy the rules to avoid modifying the original rules
         const logRules = this.rules.map(rule => new CFGRule(rule.leftSide, rule.rightSide));
 
@@ -106,11 +93,15 @@ export class ContextFreeGrammar {
             }
         });
 
-        return `G = (Π, Σ, S, P) where
-        Π = {${this.nonTerminals.join(', ')}},
-        Σ = {${this.terminals.join(', ')}},
-        S = ${this.startSymbol},
-        P = {\n${logRules.map(rule => rule.toString()).join('\n')}\n}`;
+//         return `G = (Π, Σ, S, P)
+// Π = {${this.nonTerminals.join(', ')}},
+// Σ = {${this.terminals.join(', ')}},
+// S = ${this.startSymbol},
+// P = {\n    ${logRules.map(rule => rule.toString()).join('\n    ')}\n}`;
+        return `Π = {${this.nonTerminals.join(', ')}},
+Σ = {${this.terminals.join(', ')}},
+S = ${this.startSymbol},
+P = {\n    ${logRules.map(rule => rule.toString()).join('\n    ')}\n}`;
     }
 
     validateInputs(inputs: string[][]) {

@@ -11,6 +11,7 @@
     import {Converter} from "../lib/cf-grammar/Converter";
     import {graph_store, user_grammar_store} from "../stores/graphInitStore";
     import type {ContextFreeGrammar} from "../lib/cf-grammar/ContextFreeGrammar";
+    import ToolbarButton from "../lib/pushdown-automaton-components/ToolbarButton.svelte";
 
     const landingPageUrl = "/Theoretical-informatics-tool"
     const automatonUrl = "/Theoretical-informatics-tool/tool/pushdown-automaton"
@@ -45,6 +46,7 @@
     <ThemeToggle />
     <ContextFreeGrammarLayout title="Context-free Grammar">
         <CFGEditor slot="cfg-editor">
+            <ToolbarButton slot="definition" type="cfg-definition" text="Show definition" func={() => $user_grammar_store.toString()} />
             <CFGGrammarInput slot="grammar-input" />
             <Button slot="back-button" type="back" text="Back" url={landingPageUrl} />
             <Button slot="convert-button" type="process" text="Convert to PDA" func={() => convert()} url={automatonUrl} />

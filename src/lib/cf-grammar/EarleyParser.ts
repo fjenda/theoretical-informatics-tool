@@ -13,7 +13,8 @@ export class Rule {
     }
 
     toString() {
-        return `${this.lhs} -> ${this.rhs.join(" ")}`;
+        let right = this.rhs.join("");
+        return `${this.lhs} → ${right.length === 0 ? 'ε' : right}`;
     }
 }
 
@@ -83,7 +84,8 @@ enum ItemAction {
 
 export class EarleyParser {
     grammar: Rule[] = [];
-    nullableRules: boolean[] = [];
+    // nullableRules: boolean[] = [];
+    nullables: string[] = [];
     states: State[] = [];
     startingPoint: string;
     reversedStates: State[] = [];
@@ -115,81 +117,36 @@ export class EarleyParser {
 
     reset() { // reset the parser
         this.grammar = [];
-        this.nullableRules = [];
+        // this.nullableRules = [];
+        this.nullables = [];
         this.states = [];
         this.states[0] = new State();
     }
 
     // function to find nullable rules
-    findNullables(rules: Rule[]): boolean[] {
-        const lhsRules: { [key: string]: Rule[] } = {}; // Table of lists of rules indexed by LHS
-        const rhsRules: { [key: string]: Rule[] } = {}; // Table of lists of rules indexed by RHS symbol
-        const nullable: boolean[] = []; // Array of booleans indexed by symbol ID
-        const workStack: string[] = []; // Work stack
+    findNullables() {
+        // find direct nullables
+        this.nullables.push(
+            ...this.grammar
+                .filter((rule) => rule.rhs.length === 0)
+                .map((rule) => rule.lhs),
+        );
 
-        // Initialize tables and arrays
-        for (const rule of rules) {
-            if (!lhsRules[rule.lhs]) {
-                lhsRules[rule.lhs] = [];
-            }
-            lhsRules[rule.lhs].push(rule);
-
-            for (const symbol of rule.rhs) {
-                if (!rhsRules[symbol]) {
-                    rhsRules[symbol] = [];
+        let sizeBefore = 0;
+        while (sizeBefore !== this.nullables.length) {
+            sizeBefore = this.nullables.length;
+            // find nullables in the right side
+            this.grammar.filter((rule) => {
+                // if the production is made of nullables
+                if (rule.rhs.every((symbol) => this.nullables.some((nullable) => nullable === symbol),)) {
+                    if (!this.nullables.includes(rule.lhs)) this.nullables.push(rule.lhs);
                 }
-                rhsRules[symbol].push(rule);
-            }
+            });
         }
 
-        // Initialize nullable array, marking LHS of empty rules as nullable
-        for (let i = 0; i < rules.length; i++) {
-            nullable[i] = false;
-
-            if (rules[i].rhs.length === 0) {
-                nullable[i] = true;
-                workStack.push(rules[i].lhs);
-            }
-        }
-
-        // Symbol loop
-        while (workStack.length > 0) {
-            const workSymbol = workStack.pop();
-
-            // Rule loop
-            if (workSymbol === undefined) continue;
-            const rulesWithWorkSymbol = rhsRules[workSymbol];
-
-            if (rulesWithWorkSymbol) {
-                for (const workRule of rulesWithWorkSymbol) {
-                    if (nullable[rules.indexOf(workRule)]) continue; // LHS already marked nullable
-
-                    // console.log(`\nworkRule -> ${workRule.lhs} -> ${workRule.rhs}`);
-
-                    // For every RHS symbol of the work rule
-                    for (const symbol of workRule.rhs) {
-                        // if it is not marked nullable, continue with the next rule of the rule loop.
-                        if (!this.isMarkedNullable(symbol, nullable)) break;
-                    }
-
-                    // If we reach this point, the LHS of the work rule is nullable, but is not marked nullable.
-                    // Mark the LHS of the work rule nullable.
-                    nullable[rules.indexOf(workRule)] = true;
-
-                    // Push the LHS of the work rule onto the "work stack".
-                    workStack.push(workRule.lhs);
-
-                    // Continue with the next rule of the rule loop.
-                }
-            }
-        }
-
-        return nullable;
-    }
-
-    // check if the symbol is nullable
-    isMarkedNullable(symbol: string, nullableArray: boolean[]) {
-        return nullableArray[this.grammar.findIndex(rule => rule.lhs === symbol)];
+        // console.log(this.nullables);
+        // remove duplicates
+        this.nullables = this.nullables.filter((value, index, self) => self.indexOf(value) === index);
     }
 
     // parse the input
@@ -198,7 +155,8 @@ export class EarleyParser {
         this.setStartingRules();
 
         // initialize nullable rules
-        this.nullableRules = this.findNullables(this.grammar);
+        // this.nullableRules = this.findNullables(this.grammar);
+        this.findNullables();
 
         // outer loop
         for (let i = 0; i < this.states.length; i++) {
@@ -221,10 +179,10 @@ export class EarleyParser {
             }
         }
         // print the result
-        // this.states.forEach((state, index) => {
-        //     console.log(`\nState ${index}`);
-        //     console.log(state.toString());
-        // });
+        this.states.forEach((state, index) => {
+            console.log(`\nState ${index}`);
+            console.log(state.toString());
+        });
 
         // check if we read the whole input
         if (this.states.length < input.length + 1) {
@@ -297,7 +255,6 @@ export class EarleyParser {
                 });
             });
 
-
             let trees = lastItems.map((item) => {
                 let root: TreeNode = new TreeNode(item.rule.lhs);
                 root.setItem(item);
@@ -311,7 +268,6 @@ export class EarleyParser {
                     console.log(`\nParser tree ${index}`);
                     tree.print();
                     console.log(`\n${tree.findAllLeaves()} === ${input}`);
-
                     console.log(
                         `\n${tree.findAllLeaves() === input ? "The input is valid" : "The input is not valid"}`,
                     );
@@ -322,12 +278,12 @@ export class EarleyParser {
             if (trees.length > 1) {
                 let derivations = trees.map(tree => {
                     if (tree === undefined) return;
-                    return tree.getDerivation()
+                    return tree.getDerivation(this)
                 });
                 return { accepted: acc, length: derivations.length, derivation: derivations };
             }
 
-            let derivation: { rule: string; result: string }[] = trees[0].getDerivation();
+            let derivation: { rule: string; result: string }[] = trees[0].getDerivation(this);
             return { accepted: acc, length: 1, derivation: derivation };
         }
 
@@ -342,6 +298,11 @@ export class EarleyParser {
             let node = stack.pop();
 
             if (!node) continue;
+
+            if (node.item.rule.rhs.length === 0) {
+                let child = new TreeNode("");
+                node.addChild(child);
+            }
 
             let stI = 0;
             for (let rhs of node.item.rule.rhs) {
@@ -364,6 +325,8 @@ export class EarleyParser {
                 stI++;
             }
         }
+
+        console.log(tree);
         return tree;
     }
 
@@ -375,8 +338,10 @@ export class EarleyParser {
             state.push(new EarleyItem(rule, 0, stateIndex, ItemAction.PREDICT));
 
             // magical completion
-            if (this.nullableRules[this.grammar.findIndex((r) => r.lhs === rule.lhs)]) {
-                state.push(new EarleyItem(rule, state.items[itemIndex].dot + 1, stateIndex, ItemAction.COMPLETE));
+            if (this.nullables.includes(rule.lhs)) {
+                let newItem = new EarleyItem(state.get(itemIndex).rule, state.get(itemIndex).dot + 1, state.get(itemIndex).start, ItemAction.COMPLETE);
+                state.push(newItem);
+                console.log(`\nPredicting nullable ${state.items[state.items.length - 1].toString()}`);
             }
         });
 
@@ -533,13 +498,14 @@ class ParserTree {
             stack.push(...node.children);
         }
 
+        leaves = leaves.filter((value) => value !== " ");
         return leaves.reverse().join("");
     }
 
     // using the depth-first search we can find the derivation by traversing the tree
-    getDerivation() {
+    getDerivation(parser: EarleyParser) {
         let stack = [this.root];
-        let derivation: {rule: string, result: string}[] = [{rule: `Start -> ${this.root.value}`, result: `${this.root.value}`}];
+        let derivation: {rule: string, result: string}[] = [{rule: `Start → ${this.root.value}`, result: `${this.root.value}`}];
         let result = this.root.value;
 
         while (stack.length > 0) {
@@ -557,6 +523,23 @@ class ParserTree {
             stack.push(...node.children.reverse());
             node.visited = true;
         }
+
+        // get nullable rules
+        let nt: Rule[] = parser.grammar.filter(r => parser.nullables.includes(r.lhs) &&
+            (r.rhs.length === 0 || r.rhs.every(rhs_ => parser.nullables.includes(rhs_))));
+
+        // check if the last derivation has any nonterminals
+        for (let i = 0; i < result.length; i++) {
+            for (let rule of nt) {
+                if (result[i] === rule.lhs) {
+                    result = this.parseChar(result, rule);
+                    derivation.push({rule: rule.toString(), result: result});
+                    i = 0;
+                    break;
+                }
+            }
+        }
+        console.log(nt);
 
         return derivation;
     }
