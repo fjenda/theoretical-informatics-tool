@@ -53,7 +53,7 @@ import FinConvertTable from "../lib/finite-state-machine-components/FinConvertTa
                     <FinToolbarButton type="load-graph" text="Load graph" func={toolbarFunctions?.loadGraph} />
                     <FinToolbarButton type="delete-graph" text="Delete graph" func={toolbarFunctions?.deleteGraph}/>
                     <FinToolbarButton type="reset-layout" text="Reset layout" func={toolbarFunctions?.resetLayout} />
-                    <FinToolbarButton type="show-configuration" text="Show configuration" func={toolbarFunctions?.generateConfiguration} />
+                    <FinToolbarButton type="show-definition" text="Show definition" func={toolbarFunctions?.generateConfiguration} />
                 </FinGraphToolbar>
                 <TypeView slot="type"/>
             </FinGraphWindow>

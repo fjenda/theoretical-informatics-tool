@@ -4,7 +4,7 @@
     export let title : string;
 
     const tabs = [
-        ["NFA -> DFA", "nfa-to-dfa"],
+        ["Set operations", "set-operations"],
     ];
 </script>
 
