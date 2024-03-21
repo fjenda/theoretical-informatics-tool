@@ -30,41 +30,6 @@
     </div>
 </div>
 
-<!--{#if $first_graph_store.type === "DFA"}-->
-<!--    <div class="layout">-->
-<!--        <div class="start-state-box">-->
-<!--            <slot name="start-state" />-->
-<!--        </div>-->
-<!--        <div class="final-states-box">-->
-<!--            <slot name="multi-select"  />-->
-<!--        </div>-->
-<!--        <div class="transitions-box">-->
-<!--            <slot name="transitions" />-->
-<!--        </div>-->
-<!--    </div>-->
-<!--{:else if $first_graph_store.type === "NFA"}-->
-<!--    <div class="layout">-->
-<!--        <div class="start-state-box">-->
-<!--            <slot  name="multi-select-start"/>-->
-<!--        </div>-->
-<!--        <div class="final-states-box">-->
-<!--            <slot  name="multi-select"/>-->
-<!--        </div>-->
-<!--        <div class="transitions-box">-->
-<!--            <slot name="transitions" />-->
-<!--        </div>-->
-<!--    </div>-->
-<!--{:else}-->
-<!--    <div class="layout">-->
-<!--        <div class="start-state-box">-->
-<!--            <slot name="start-state" />-->
-<!--        </div>-->
-<!--        <div class="transitions-box">-->
-<!--            <slot name="transitions" />-->
-<!--        </div>-->
-<!--    </div>-->
-<!--{/if}-->
-
 <slot name="buttons"/>
 
 <style>
@@ -77,6 +42,12 @@
                              "combo transitions transitions"
                              "multi transitions transitions"
                              "multi transitions transitions";
+    }
+
+    .epsilon {
+        font-size: 0.8rem;
+        color: #a4a4a4;
+        text-align: center;
     }
 
     .transitions-box {

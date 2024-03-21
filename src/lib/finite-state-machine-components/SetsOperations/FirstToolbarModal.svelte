@@ -1,6 +1,11 @@
 <script lang="ts">
     import type {ToolbarButtonType} from "../../../types/ToolbarButtonType";
-    import {first_configuration_store, first_graph_store, resetInputVar} from "../../../stores/graphInitStore.js";
+    import {
+        configuration_store,
+        first_configuration_store,
+        first_graph_store,
+        resetInputVar
+    } from "../../../stores/graphInitStore.js";
     import FirstAutomatonGeneratorLayout from "./FirstAutomatonGeneratorLayout.svelte";
     import FirstToggleSwitch from "./FirstToggleSwitch.svelte";
     import FirstStateComboBox from "./FirstStateComboBox.svelte";
@@ -58,7 +63,7 @@
         config += "}\n";
 
         // start state
-        config += `q0: ${$first_configuration_store.start_state}\n`;
+        config += `S: {${$first_configuration_store.start_state.join(", ")}}\n`;
 
         // final states
         config += `F: {${$first_configuration_store.final_states.join(", ")}}\n`;
@@ -120,7 +125,6 @@
 >
     <div on:click|stopPropagation>
         <slot name="header" />
-        <hr />
         <slot />
 
         {#if type === "show-definition"}

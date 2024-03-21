@@ -57,8 +57,6 @@
     let backdrop: HTMLDivElement;
     let correctInput: boolean = true;
 
-
-
     $: if ($resetInputVar) {
         textInput = "";
     }

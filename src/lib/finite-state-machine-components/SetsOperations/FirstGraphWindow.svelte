@@ -103,7 +103,7 @@
         graphObject.nodes = [];
         graphObject.edges = {};
         graphObject.transitions = [];
-        graphObject.startState = "";
+        graphObject.startState = [];
         graphObject.finishState = [];
         graphObject.followingID = 0;
         first_configuration_store.reset();
@@ -200,7 +200,7 @@
         // input alphabet
         const alphabet = new Set();
         graphObject.transitions.forEach((transition) => {
-            if (transition.input !== "E") {
+            if (transition.input !== "ε") {
                 alphabet.add(transition.input);
             }
         });
@@ -216,7 +216,7 @@
             });
         });
 
-        let startStateLabel = graphObject.nodes.find((node : GraphNodeMeta) => node.id === graphObject.startState).label;
+        let startStateLabel = graphObject.startState.map((node : string) => graphObject.nodes.find((n : GraphNodeMeta) => n.id === node).label);
         let finishStatesLabel = graphObject.finishState.map((node : string) => graphObject.nodes.find((n : GraphNodeMeta) => n.id === node).label);
 
         // start state
@@ -259,7 +259,7 @@
                 // input alphabet
                 const alphabet = new Set();
                 graphObject.transitions.forEach((transition) => {
-                    if (transition.input !== "E") {
+                    if (transition.input !== "ε") {
                         alphabet.add(transition.input);
                     }
                 });
@@ -521,7 +521,7 @@
             n.type = "DFA";
             n.transitions = exampleTransition;
             n.nodes = exampleNodes;
-            n.startState = "0";
+            n.startState = ["0"];
             n.finishState = ["1"];
             n.input_alphabet = ["a", "b"];
             n.hideConvertTable = true;

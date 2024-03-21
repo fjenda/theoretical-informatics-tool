@@ -30,41 +30,6 @@
     </div>
 </div>
 
-<!--{#if $graph_store.type === "DFA"}-->
-<!--    <div class="layout">-->
-<!--        <div class="start-state-box">-->
-<!--            <slot name="start-state" />-->
-<!--        </div>-->
-<!--        <div class="final-states-box">-->
-<!--            <slot name="multi-select"  />-->
-<!--        </div>-->
-<!--        <div class="transitions-box">-->
-<!--            <slot name="transitions" />-->
-<!--        </div>-->
-<!--    </div>-->
-<!--{:else if $graph_store.type === "NFA"}-->
-<!--    <div class="layout">-->
-<!--        <div class="start-state-box">-->
-<!--            <slot  name="multi-select-start"/>-->
-<!--        </div>-->
-<!--        <div class="final-states-box">-->
-<!--            <slot  name="multi-select"/>-->
-<!--        </div>-->
-<!--        <div class="transitions-box">-->
-<!--            <slot name="transitions" />-->
-<!--        </div>-->
-<!--    </div>-->
-<!--{:else}-->
-<!--    <div class="layout">-->
-<!--        <div class="start-state-box">-->
-<!--            <slot name="start-state" />-->
-<!--        </div>-->
-<!--        <div class="transitions-box">-->
-<!--            <slot name="transitions" />-->
-<!--        </div>-->
-<!--    </div>-->
-<!--{/if}-->
-
 <slot name="buttons"/>
 
 <style>

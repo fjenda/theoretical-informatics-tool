@@ -12,8 +12,6 @@
     let backdrop: HTMLDivElement;
     let correctInput: boolean = true;
 
-
-
     $: if ($resetInputVar) {
         textInput = "";
     }
@@ -186,32 +184,44 @@
     }
 
     function validateTransitionDFA(transition) {
-        let regex = /^d\([A-Za-z]+[0-9]+,[^E]\)=[A-Za-z]+[0-9]+;$/;
+        let regex = /^d\([A-Za-z]+[0-9]+,[^ε]\)=[A-Za-z]+[0-9]+;$/;
         return regex.test(transition);
     }
 
     function applyHighlightsDFA(text) {
         return text
             .replace(/\n$/g, '\n\n')
-            .replace(/(d\([A-Za-z]+[0-9]+,[^E]\)=[A-Za-z]+[0-9]+;)/g, function(match, validTransition, other) {
+            .replace(/(d\([A-Za-z]+[0-9]+,[^ε]\)=[A-Za-z]+[0-9]+;)|(.*)/g, function(match, validTransition, other) {
                 if (validTransition) {
-                    return match;  // If it matches the pattern, leave it unchanged
+                    return match;  // If it's a valid transition, leave it unchanged
                 } else {
-                    return '<mark>' + match + '</mark>';  // If it doesn't match, wrap the entire line in <mark> tags
+                    return '<mark>' + match + '</mark>';  // If it's not a valid transition, wrap it in <mark> tags
                 }
             });
     }
 
     function applyHighlights(text) {
-        return text
-            .replace(/\n$/g, '\n\n')
-            .replace(/(d\([A-Za-z]+[0-9]+,[A-Za-z0-9]\)=[A-Za-z]+[0-9];)|(.*)/g, function(match, pattern, other) {
-                if (pattern) {
-                    return match;  // If it matches the pattern, leave it unchanged
-                } else {
-                    return '<mark>' + match + '</mark>';  // If it doesn't match, wrap the entire line in <mark> tags
-                }
-            });
+        if ($first_graph_store.type == "DFA") {
+            return text
+                .replace(/\n$/g, '\n\n')
+                .replace(/(d\([A-Za-z]+[0-9]+,([A-Za-z0-9])\)=[A-Za-z]+[0-9]+;)|(.*)/g, function (match, validTransition, other) {
+                    if (validTransition) {
+                        return match;  // If it's a valid transition, leave it unchanged
+                    } else {
+                        return '<mark>' + match + '</mark>';  // If it's not a valid transition, wrap it in <mark> tags
+                    }
+                });
+        } else if ($first_graph_store.type == "NFA") {
+            return text
+                .replace(/\n$/g, '\n\n')
+                .replace(/(d\([A-Za-z]+[0-9]+,(ε|[A-Za-z0-9])\)=[A-Za-z]+[0-9]+;)|(.*)/g, function (match, validTransition, other) {
+                    if (validTransition) {
+                        return match;  // If it's a valid transition, leave it unchanged
+                    } else {
+                        return '<mark>' + match + '</mark>';  // If it's not a valid transition, wrap it in <mark> tags
+                    }
+                });
+        }
     }
 
     function handleScroll() {

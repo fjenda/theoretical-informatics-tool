@@ -160,10 +160,23 @@
 
         if (graphObject.type === "DFA") {
             let tmpNode: GraphNodeMeta;
-            graphObject.nodes.forEach((node: GraphNodeMeta) => {
-                if (graphObject.startState.includes(node.id)) {
-                    tmpNode = node;
-                }
+            // graphObject.nodes.forEach((node: GraphNodeMeta) => {
+            //     if (Array.isArray(graphObject.startState))
+            //         if (graphObject.startState.includes(node.id)) {
+            //             tmpNode = node;
+            //         }
+            //     else
+            //         if (graphObject.startState == node.id) {
+            //             tmpNode = node;
+            //         }
+            // });
+
+            //finin  graphObject.nodes node eith id as startstate and store it ot the tmpNode
+            tmpNode = graphObject.nodes.find((node: GraphNodeMeta) => {
+                if (Array.isArray(graphObject.startState))
+                    return graphObject.startState.includes(node.id);
+                else
+                    return graphObject.startState == node.id;
             });
 
             if (!tmpNode) {
@@ -340,9 +353,7 @@
             });
         });
 
-        console.log("start state: ", graphObject.startState);
-        console.log("finish state: ", graphObject.finishState);
-        // let startStateLabel = graphObject.nodes.find((node : GraphNodeMeta) => node.id === graphObject.startState);
+
         let startStateLabel = graphObject.startState.map((node : string) => graphObject.nodes.find((n : GraphNodeMeta) => n.id === node).label);
         let finishStatesLabel = graphObject.finishState.map((node : string) => graphObject.nodes.find((n : GraphNodeMeta) => n.id === node).label);
 
@@ -386,7 +397,7 @@
                 // input alphabet
                 const alphabet = new Set();
                 graphObject.transitions.forEach((transition) => {
-                    if (transition.input !== "E") {
+                    if (transition.input !== "ε") {
                         alphabet.add(transition.input);
                     }
                 });
@@ -740,11 +751,8 @@
         }
         $graph_store.hideConvertTable = true;
         deleteGraph();
-        console.log($graph_store);
-        console.log(graphObject);
+
         Object.assign(graphObject, $graph_store);
-        console.log($graph_store);
-        console.log(graphObject);
         graphObject.generateGraphFromTransitions();
 
 
