@@ -23,7 +23,7 @@
 
         if (type === "startState") {
             first_graph_store.update((n) => {
-                n.startState =  selectedOptionsID;
+                n.startState =  [selectedOptionsID];
                 return n;
             });
         }
