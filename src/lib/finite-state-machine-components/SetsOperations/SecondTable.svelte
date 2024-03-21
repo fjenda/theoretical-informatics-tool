@@ -1,5 +1,91 @@
 <script lang="ts">
+    import {second_graph_store} from "../../../stores/graphInitStore";
+    import {input_error_store} from "../../../stores/inputErrorStore";
 
+    let cols: string[] = [];
+    let transitions = [];
+    let inputSymbols = [];
+    let generated = false;
+    let tableData = [];
+    let nodesMeta = [];
+
+    $: if ($second_graph_store.generated == true || $second_graph_store.currentStatus) {
+        tableData = [];
+        // get traversal
+        transitions = $second_graph_store.transitions;
+        nodesMeta = $second_graph_store.nodes;
+
+        console.log("input_alphabet", $second_graph_store.input_alphabet);
+        console.log("transitions", transitions);
+
+        let alphabet = $second_graph_store.input_alphabet;
+        if (alphabet.includes('ε')) {
+            alphabet.splice(alphabet.indexOf('ε'), 1);
+            alphabet.push('ε');
+        }
+
+
+        if (typeof $second_graph_store.input_alphabet !== 'undefined'){
+            cols = [...alphabet];
+        }
+
+        if (typeof transitions !== 'undefined' && generated === false) {
+            let nodes = Array.from(new Set(nodesMeta.map(t => t.label)));
+            inputSymbols = Array.from(new Set(transitions.map(t => t.input)));
+            if (inputSymbols.includes('ε')) {
+                inputSymbols.splice(inputSymbols.indexOf('ε'), 1);
+                inputSymbols.push('ε');
+            }
+
+            // Generate the table data
+            nodes.forEach(node => {
+                let rowData = {node};
+                inputSymbols.forEach(inputSymbol => {
+                    const matchingTransitions = transitions.filter(t => t.stateLabel === node && t.input === inputSymbol);
+                    const targetStates = matchingTransitions.map(t => t.stateAfterLabel).join(', ');
+                    rowData[inputSymbol] = targetStates || '';
+                });
+
+
+                let node_id = $second_graph_store.nodes.filter(n => n.label === node)[0].id;
+
+                if ($second_graph_store.startState.includes(node_id)) {
+                    rowData.node = '-> ' +  rowData.node;
+                }
+
+                if ($second_graph_store.finishState.includes(node_id)) {
+                    rowData.node = '<- ' + rowData.node;
+                }
+
+
+                tableData.push(rowData);
+                console.log("tableData", tableData);
+            });
+
+            //if in table data is node and empty stiong fill it with -
+            tableData.forEach(row => {
+                inputSymbols.forEach(inputSymbol => {
+                    if (row[inputSymbol] === '') {
+                        row[inputSymbol] = '-';
+                    }
+                });
+            });
+        }
+
+        $second_graph_store.generated = false;
+    }
+
+    $: if ($input_error_store.table) {
+        // do something when this store value changes
+
+        // tableData = [];
+        // empty traversal
+        transitions = [];
+
+        // set to false
+        $input_error_store.table = false;
+
+    }
 
 </script>
 
@@ -8,16 +94,43 @@
         <div class="tableHead">
             <div class="tableRow">
                 <div class="tableHeadCell">Nodes</div>
-                <div class="tableHeadCell">a</div>
-                <div class="tableHeadCell">b</div>
+                {#if typeof cols !== 'undefined' && cols.length > 0}
+                    {#each cols as col}
+                        <div class="tableHeadCell">{col}</div>
+                    {/each}
+                {/if}
             </div>
         </div>
         <div class="tableBody">
-            <div class="tableRow">
-                <div class="tableCell">1</div>
-                <div class="tableCell">2</div>
-                <div class="tableCell">3</div>
-            </div>
+            {#each tableData as row}
+                {#if $second_graph_store.currentStatus !== undefined &&
+                $second_graph_store.traversal[$second_graph_store.currentStep + 1 ] !== undefined}
+                    {#if (row.node == '-> ' + $second_graph_store.traversal[$second_graph_store.currentStep +1 ].stateLabel ||
+                        row.node == '<- ' + $second_graph_store.traversal[$second_graph_store.currentStep +1 ].stateLabel ||
+                        row.node == $second_graph_store.traversal[$second_graph_store.currentStep +1 ].stateLabel)}
+                        <div class="tableRow active">
+                            <div class="tableCell">{row.node}</div>
+                            {#each inputSymbols as symbol}
+                                <div class="tableCell">{row[symbol]}</div>
+                            {/each}
+                        </div>
+                    {:else}
+                        <div class="tableRow">
+                            <div class="tableCell">{row.node}</div>
+                            {#each inputSymbols as symbol}
+                                <div class="tableCell">{row[symbol]}</div>
+                            {/each}
+                        </div>
+                    {/if}
+                {:else}
+                    <div class="tableRow">
+                        <div class="tableCell">{row.node}</div>
+                        {#each inputSymbols as symbol}
+                            <div class="tableCell">{row[symbol]}</div>
+                        {/each}
+                    </div>
+                {/if}
+            {/each}
         </div>
     </div>
 </div>
@@ -145,4 +258,3 @@
   }
 
 </style>
-

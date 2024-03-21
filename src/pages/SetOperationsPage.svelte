@@ -12,27 +12,15 @@
     import OperationButton from "../lib/finite-state-machine-components/SetsOperations/OperationButton.svelte";
     import FirstToolbar from "../lib/finite-state-machine-components/SetsOperations/FirstToolbar.svelte";
     import FirstToolbarButton from "../lib/finite-state-machine-components/SetsOperations/FirstToolbarButton.svelte";
+    import SecondToolbar from "../lib/finite-state-machine-components/SetsOperations/SecondToolbar.svelte";
+    import SecondToolbarButton from "../lib/finite-state-machine-components/SetsOperations/SecondToolbarButton.svelte";
 
     const landingPageUrl = "/Theoretical-informatics-tool";
     const automatonUrl = "/Theoretical-informatics-tool/tool/finite-state-automaton";
 
     let toolbarFunctions : ToolbarFunctions;
-
-    let unionFunction : Function = () => {
-        console.log("Union");
-    };
-
-    let intersectionFunction : Function = () => {
-        console.log("Intersection");
-    };
-
-    let complementFunction : Function = () => {
-        console.log("Complement");
-    };
-
-    // let concatenationFunction : Function = () => {
-    //     console.log("Concatenation");
-    // };
+    let secondToolbarFunctions : ToolbarFunctions;
+    let resutlToolbarFunctions : ToolbarFunctions;
 
 </script>
 
@@ -55,16 +43,26 @@
         </FirstGraphWindow>
         <FirstTable slot="first_table" />
         <OperationsPanel slot="operation_bar">
-            <OperationButton  text="U" func={unionFunction} />
-            <OperationButton  text="∩" func={intersectionFunction} />
-            <OperationButton  text="D" func={complementFunction} />
-<!--            <OperationButton  text="U" func={unionFunction} />-->
+            <OperationButton  text="U" func={resutlToolbarFunctions?.unionFunc} />
+            <OperationButton  text="∩" func={resutlToolbarFunctions?.intersectionFunc} />
+            <OperationButton  text="D" func={resutlToolbarFunctions?.complementFunc} />
+            <OperationButton  text="Z" func={resutlToolbarFunctions?.concatenationFunc} />
         </OperationsPanel>
-        <SecondGraphWindow slot="second-automaton">
-
+        <SecondGraphWindow bind:secondToolbarFunctions={secondToolbarFunctions} slot="second-automaton">
+            <SecondToolbar>
+                <SecondToolbarButton type="generate-automata" text="Generate graph" func={secondToolbarFunctions?.generateGraphFromTransitions} />
+                <SecondToolbarButton type="new-node" text="New node" func={secondToolbarFunctions?.addNode} />
+                <SecondToolbarButton type="new-edge" text="New edge" func={secondToolbarFunctions?.addEdge} />
+                <SecondToolbarButton type="delete-element" text="Delete element" func={secondToolbarFunctions?.toggleDelete}/>
+                <SecondToolbarButton type="save-graph" text="Save graph" func={secondToolbarFunctions?.saveGraph} />
+                <SecondToolbarButton type="load-graph" text="Load graph" func={secondToolbarFunctions?.loadGraph} />
+                <SecondToolbarButton type="delete-graph" text="Delete graph" func={secondToolbarFunctions?.deleteGraph}/>
+                <SecondToolbarButton type="reset-layout" text="Reset layout" func={secondToolbarFunctions?.resetLayout} />
+                <SecondToolbarButton type="show-definition" text="Show definition" func={secondToolbarFunctions?.generateConfiguration} />
+            </SecondToolbar>
         </SecondGraphWindow>
         <SecondTable slot="second-table" />
-        <ResultGrapWindow slot="result-automaton" />
+        <ResultGrapWindow bind:resutlToolbarFunctions={resutlToolbarFunctions}  slot="result-automaton" />
         <ResultTable slot="result-table" />
         <FinGraphControlPanel  slot="tool-bar"></FinGraphControlPanel>
     </SetOperationsLayout>

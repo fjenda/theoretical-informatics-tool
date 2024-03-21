@@ -1,7 +1,7 @@
 <script lang="ts">
     import {FiniteStateAutomaton} from "../FiniteStateAutomaton";
     import {onMount} from "svelte";
-    import {first_graph_store, graph_store, resetInputVar} from "../../../stores/graphInitStore";
+    import {first_graph_store, resetInputVar} from "../../../stores/graphInitStore";
     import cytoscape from "cytoscape";
     import {input_error_store} from "../../../stores/inputErrorStore";
     import {first_configuration_store} from "../../../stores/graphInitStore.js";
@@ -157,7 +157,7 @@
                     if (!graphData.nodes || !graphData.edges || graphData.transitions.length === 0 || !graphData.startState || !graphData.finishState || !graphData.type) {
                         return;
                     }
-                    graph_store.update((n) => {
+                    first_graph_store.update((n) => {
                         n.edges = graphData.edges;
                         n.finishState = graphData.finishState;
                         n.nodes = graphData.nodes;
@@ -325,7 +325,6 @@
 
     function addNode(node : GraphNodeMeta) {
         try {
-            // console.log('Before add node: ', $graph_store);
             graphObject.addNode(node);
         } catch (e) {
             console.log(e);
@@ -335,7 +334,6 @@
                 n.nodes = graphObject.nodes;
                 return n;
             });
-            // console.log('After add node: ', $graph_store);
             resetLayout();
         }
     }
@@ -376,7 +374,6 @@
         }
         $first_graph_store.hideConvertTable = true;
         deleteGraph();
-        // console.log($graph_store);
         Object.assign(graphObject, $first_graph_store);
 
         graphObject.generateGraphFromTransitions();
@@ -396,7 +393,6 @@
 
 
         graphObject.startState = $first_graph_store.startState;
-
 
 
         return true;

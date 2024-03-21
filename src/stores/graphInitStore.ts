@@ -1,8 +1,8 @@
 import {type Writable, writable} from "svelte/store";
 import {ContextFreeGrammar, GrammarResult} from "../lib/cf-grammar/ContextFreeGrammar";
-import type {PushdownAutomaton} from "../lib/pushdown-automaton-components/PushdownAutomaton";
 import type {GraphObject} from "../types/GraphObject";
 import type {AutomatonConfiguration} from "../types/AutomatonConfiguration";
+import {FiniteStateAutomaton} from "../lib/finite-state-machine-components/FiniteStateAutomaton";
 
 export const grammar_results_store = function() {
     const {set, update, subscribe} : Writable<Partial<GrammarResult[]>> = writable([]);
@@ -67,6 +67,21 @@ export const first_configuration_store = function() {
 }();
 
 export const second_configuration_store = function() {
+    const {set, update, subscribe} : Writable<Partial<AutomatonConfiguration>> = writable({});
+
+    const reset = () => {
+        set({});
+    }
+
+    return {
+        set,
+        update,
+        subscribe,
+        reset,
+    }
+}();
+
+export const result_configuration_store = function() {
     const {set, update, subscribe} : Writable<Partial<AutomatonConfiguration>> = writable({});
 
     const reset = () => {
@@ -168,3 +183,4 @@ export const result_graph_store = function() {
         reset,
     }
 }();
+
