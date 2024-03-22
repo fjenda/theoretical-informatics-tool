@@ -14,6 +14,8 @@
     import FirstToolbarButton from "../lib/finite-state-machine-components/SetsOperations/FirstToolbarButton.svelte";
     import SecondToolbar from "../lib/finite-state-machine-components/SetsOperations/SecondToolbar.svelte";
     import SecondToolbarButton from "../lib/finite-state-machine-components/SetsOperations/SecondToolbarButton.svelte";
+    import FirstTypeView from "../lib/finite-state-machine-components/SetsOperations/FirstTypeView.svelte";
+    import SecondTypeView from "../lib/finite-state-machine-components/SetsOperations/SecondTypeView.svelte";
 
     const landingPageUrl = "/Theoretical-informatics-tool";
     const automatonUrl = "/Theoretical-informatics-tool/tool/finite-state-automaton";
@@ -40,6 +42,7 @@
                 <FirstToolbarButton type="reset-layout" text="Reset layout" func={toolbarFunctions?.resetLayout} />
                 <FirstToolbarButton type="show-definition" text="Show definition" func={toolbarFunctions?.generateConfiguration} />
             </FirstToolbar>
+            <FirstTypeView slot="type"/>
         </FirstGraphWindow>
         <FirstTable slot="first_table" />
         <OperationsPanel slot="operation_bar">
@@ -60,6 +63,7 @@
                 <SecondToolbarButton type="reset-layout" text="Reset layout" func={secondToolbarFunctions?.resetLayout} />
                 <SecondToolbarButton type="show-definition" text="Show definition" func={secondToolbarFunctions?.generateConfiguration} />
             </SecondToolbar>
+            <SecondTypeView slot="type"/>
         </SecondGraphWindow>
         <SecondTable slot="second-table" />
         <ResultGrapWindow bind:resutlToolbarFunctions={resutlToolbarFunctions}  slot="result-automaton" />
