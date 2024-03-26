@@ -36,6 +36,8 @@
     }
 
     function convertToDFA(){
+        // Object.assign(graphObject, $graph_store);
+        console.log("GRAPH CO JDE DO KONVERU: ", graphObject);
         const result = ConvertorToDFA.convertToDFA(graphObject);
         $graph_store.convertDict = ConvertorToDFA.generateConverTable(result.stateRecorder, graphObject);
         let newFa : FiniteStateAutomaton = result.newFa;
