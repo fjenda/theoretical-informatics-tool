@@ -213,14 +213,15 @@ export class SetOperations{
         for(let firstNode of first.nodes){
             let classOfNode = "";
             if (first.startState.includes(firstNode.id)){
-                classOfNode = "finish";
+                classOfNode = "start";
                 newFinishState.push(indexCounter.toString());
             }
 
-            if (first.finishState.includes(firstNode.id)){
-                classOfNode = "start";
+            if (!first.finishState.includes(firstNode.id)){
+                classOfNode = "finish";
                 newStartState.push(indexCounter.toString());
             }
+            
 
             newNodes.push({id: indexCounter.toString(), label: firstNode.label, class: classOfNode});
             indexCounter++;
@@ -372,12 +373,12 @@ export class SetOperations{
         for(let firstNode of toDFAAtomaton.nodes){
             let classOfNode = "";
             if (toDFAAtomaton.startState.includes(firstNode.id)){
-                classOfNode = "finish";
+                classOfNode = "start";
                 newFinishState.push(indexCounter.toString());
             }
 
-            if (toDFAAtomaton.finishState.includes(firstNode.id)){
-                classOfNode = "start";
+            if (!toDFAAtomaton.finishState.includes(firstNode.id)){
+                classOfNode = "finish";
                 newStartState.push(indexCounter.toString());
             }
 

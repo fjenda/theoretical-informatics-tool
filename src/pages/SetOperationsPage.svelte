@@ -16,6 +16,11 @@
     import SecondToolbarButton from "../lib/finite-state-machine-components/SetsOperations/SecondToolbarButton.svelte";
     import FirstTypeView from "../lib/finite-state-machine-components/SetsOperations/FirstTypeView.svelte";
     import SecondTypeView from "../lib/finite-state-machine-components/SetsOperations/SecondTypeView.svelte";
+    import ResultToolbar from "../lib/finite-state-machine-components/SetsOperations/ResultToolbar.svelte";
+    import ResultToolbarButton from "../lib/finite-state-machine-components/SetsOperations/ResultToolbarButton.svelte";
+    import FinTestInput from "../lib/finite-state-machine-components/FinTestInput.svelte";
+    import ResultTestInput from "../lib/finite-state-machine-components/SetsOperations/ResultTestInput.svelte";
+    import Button from "../lib/Button.svelte";
 
     const landingPageUrl = "/Theoretical-informatics-tool";
     const automatonUrl = "/Theoretical-informatics-tool/tool/finite-state-automaton";
@@ -23,6 +28,8 @@
     let toolbarFunctions : ToolbarFunctions;
     let secondToolbarFunctions : ToolbarFunctions;
     let resutlToolbarFunctions : ToolbarFunctions;
+
+    let processTestInputFunction : Function = () => {};
 
 </script>
 
@@ -66,8 +73,24 @@
             <SecondTypeView slot="type"/>
         </SecondGraphWindow>
         <SecondTable slot="second-table" />
-        <ResultGrapWindow bind:resutlToolbarFunctions={resutlToolbarFunctions}  slot="result-automaton" />
+        <ResultGrapWindow bind:resutlToolbarFunctions={resutlToolbarFunctions}  slot="result-automaton">
+            <ResultToolbar>
+                <ResultToolbarButton type="save-graph" text="Save graph" func={resutlToolbarFunctions?.saveGraph}  />
+                <ResultToolbarButton type="reset-layout" text="Reset layout" func={resutlToolbarFunctions?.resetLayout} />
+                <ResultToolbarButton type="show-definition" text="Show definition" func={resutlToolbarFunctions?.generateConfiguration} />
+            </ResultToolbar>
+        </ResultGrapWindow>
         <ResultTable slot="result-table" />
-        <FinGraphControlPanel  slot="tool-bar"></FinGraphControlPanel>
+        <FinGraphControlPanel  slot="tool-bar">
+            <ResultTestInput phText="ex. ABA" bind:processFunction={processTestInputFunction}
+                          testInputFunction={resutlToolbarFunctions?.testInput}
+                          nextFunc={resutlToolbarFunctions?.nextTransition}
+                          previousFunc={resutlToolbarFunctions?.previousTransition}
+                          stopFunc={resutlToolbarFunctions?.resetTestInput}
+            />
+
+            <Button type="test" text="Test" func={processTestInputFunction} />
+            <Button type="back" text="Back" url={landingPageUrl} />
+        </FinGraphControlPanel>
     </SetOperationsLayout>
 </main>

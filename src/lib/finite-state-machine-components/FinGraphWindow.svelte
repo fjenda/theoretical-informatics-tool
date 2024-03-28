@@ -36,8 +36,6 @@
     }
 
     function convertToDFA(){
-        // Object.assign(graphObject, $graph_store);
-        console.log("GRAPH CO JDE DO KONVERU: ", graphObject);
         const result = ConvertorToDFA.convertToDFA(graphObject);
         $graph_store.convertDict = ConvertorToDFA.generateConverTable(result.stateRecorder, graphObject);
         let newFa : FiniteStateAutomaton = result.newFa;
@@ -143,10 +141,6 @@
     }
 
     function testInput(wordCh : string[]){
-        // if (graphObject.type == 'empty'){
-        //     graphObject.type = 'dfa';
-        // }
-
         resetTestInput();
         removeHighlighted();
 
@@ -162,16 +156,6 @@
 
         if (graphObject.type === "DFA") {
             let tmpNode: GraphNodeMeta;
-            // graphObject.nodes.forEach((node: GraphNodeMeta) => {
-            //     if (Array.isArray(graphObject.startState))
-            //         if (graphObject.startState.includes(node.id)) {
-            //             tmpNode = node;
-            //         }
-            //     else
-            //         if (graphObject.startState == node.id) {
-            //             tmpNode = node;
-            //         }
-            // });
 
             //finin  graphObject.nodes node eith id as startstate and store it ot the tmpNode
             tmpNode = graphObject.nodes.find((node: GraphNodeMeta) => {
@@ -231,12 +215,12 @@
             return;
         }
 
-        // console.log(result.currenStatus);
-        // graph_store.update((n) => {
-        //     n.currenStatus = result.currenStatus;
-        //     console.log("updating store", n.currenStatus);
-        //     return n;
-        // });
+        if (result.myIsAccepted !== undefined) {
+            graph_store.update((n) => {
+                n.isAccepted = result.myIsAccepted;
+                return n;
+            });
+        }
 
         let nextNode = result.nextNode;
         let nextEdge = result.nextEdge;
@@ -257,6 +241,7 @@
             // console.log("updating current status", n.currentStatus);
             return n;
         });
+
     }
 
     function previousTransition(){

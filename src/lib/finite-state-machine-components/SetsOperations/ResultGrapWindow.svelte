@@ -13,12 +13,175 @@
 
     let graphObject = new FiniteStateAutomaton([], [], [], [], [], "DFA");
 
+    let highlightedNodesIS : String[] = [];
+
     export const resutlToolbarFunctions = {
         unionFunc,
         intersectionFunc,
         complementFunc,
         concatenationFunc,
+        saveGraph,
+        resetLayout,
+        testInput,
+        nextTransition,
+        previousTransition,
+        resetTestInput,
+        generateConfiguration,
     } as ToolbarFunctions;
+
+    function testInput(wordCh : string[]){
+        resetTestInput();
+        removeHighlighted();
+
+        result_graph_store.update((n) => {
+            n.isAccepted = null;
+            n.word = wordCh;
+            n.status = "testing";
+            return n;
+        });
+
+        graphObject.word = wordCh;
+        graphObject.status = "testing";
+
+        if (graphObject.type === "DFA") {
+            let tmpNode: GraphNodeMeta;
+
+            //finin  graphObject.nodes node eith id as startstate and store it ot the tmpNode
+            tmpNode = graphObject.nodes.find((node: GraphNodeMeta) => {
+                if (Array.isArray(graphObject.startState))
+                    return graphObject.startState.includes(node.id);
+                else
+                    return graphObject.startState == node.id;
+            });
+
+            if (!tmpNode) {
+                return;
+            }
+
+            graphObject.startState = tmpNode.id;
+            graphObject.traversal = graphObject.preprocessGraphInput();
+
+            highlightElement(tmpNode.id);
+            graphObject.currentStatus = {state: tmpNode.id, input: graphObject.word, step: 0};
+            result_graph_store.update((n) => {
+                n.currentStatus = graphObject.currentStatus;
+                n.currentStep = -1;
+                return n;
+            });
+        } else {
+            // console.log("Jsem v NFA větvi");
+            graphObject.startState = $result_graph_store.startState;
+            graphObject.traversal = graphObject.preprocessGraphInputNFA();
+            highlightElement(graphObject.correctStartState);
+            graphObject.currentStatus = {state: graphObject.startState, input: graphObject.word, step: 0};
+            graph_store.update((n) => {
+                n.currentStatus = graphObject.currentStatus;
+                n.currentStep = -1;
+                return n;
+            });
+        }
+
+
+        result_graph_store.update((n) => {
+            n.traversal = graphObject.traversal;
+            return n;
+        });
+
+    }
+
+    function nextTransition(){
+        removeHighlighted();
+
+        let result = graphObject.nextTransition();
+
+        if(!result){
+            return;
+        }
+
+        if (result.myIsAccepted !== undefined) {
+            result_graph_store.update((n) => {
+                n.isAccepted = result.myIsAccepted;
+                return n;
+            });
+        }
+
+        let nextNode = result.nextNode;
+        let nextEdge = result.nextEdge;
+
+        setTimeout(() => {
+            highlightElement(nextNode);
+            highlightElement(nextEdge);
+
+            graphObject.currentStatus.state = graphObject.traversal[graphObject.currentStatus.step].stateAfter;
+            graphObject.currentStatus.step++;
+            // console.log(graphObject.currentStatus);
+
+        }, 250);
+
+        graph_store.update((n) => {
+            n.currentStatus = graphObject.currentStatus;
+            n.currentStep++;
+            // console.log("updating current status", n.currentStatus);
+            return n;
+        });
+    }
+
+    function previousTransition(){
+        removeHighlighted();
+
+        let result = graphObject.previousTransition();
+
+        if (!result) {
+            return;
+        }
+
+        let previousNode = result.previousNode;
+        let previousEdge = result.previousEdge;
+
+        setTimeout(() => {
+            highlightElement(graphObject.traversal[graphObject.currentStatus.step].stateAfter);
+            highlightElement(previousEdge);
+
+            graphObject.currentStatus.state = graphObject.traversal[graphObject.currentStatus.step].state;
+        }, 250);
+
+        graph_store.update((n) => {
+            n.currentStatus = graphObject.currentStatus;
+            n.currentStep--;
+            return n;
+        });
+    }
+
+    function resetTestInput(){
+        removeHighlighted();
+
+        result_graph_store.update((n) => {
+            n.isAccepted = null;
+            n.status = "idle";
+            return n;
+        });
+
+        graphObject.resetTestInput();
+    }
+
+    function removeHighlighted() {
+        graphObject.graph.elements().forEach(graphElement => {
+            if (highlightedNodesIS.includes(graphElement.id())) {
+                graphElement.removeClass("highlight");
+            }
+        });
+
+        highlightedNodesIS = [];
+    }
+
+    function highlightElement(id : string | number) {
+        graphObject.graph.elements().forEach(graphElement => {
+            if (id == graphElement.id()) {
+                highlightedNodesIS.push(graphElement.id());
+                graphElement.addClass("highlight");
+            }
+        });
+    }
 
     function unionFunc() {
         console.log("union");
@@ -80,10 +243,9 @@
             n.hideConvertTable = true;
             return n;
         });
-        // graph_store.reset();
+
         resetInputVar.set(false);
         input_error_store.reset();
-        // graphObject.generateGraphFromTransitions();
 
     }
 
@@ -441,6 +603,33 @@
         const layout = graphObject.graph.makeLayout({ name: "circle" });
         layout.options.eles = graphObject.graph.elements();
         layout.run();
+    }
+
+    function saveGraph() {
+        const simplifiedGraphObject = {
+            edges: graphObject.edges,
+            finishState: graphObject.finishState,
+            nodes: graphObject.nodes,
+            startState: graphObject.startState,
+            transitions: graphObject.transitions,
+            type: graphObject.type,
+        };
+
+        // save graphObject into json
+        let jsonData = JSON.stringify(simplifiedGraphObject, null, 4);
+
+        // let jsonData = graphObject.graph.json(false);
+        // jsonData = JSON.stringify(jsonData, null, 4);
+
+        const blob = new Blob([jsonData], { type: "application/json" });
+        const url = URL.createObjectURL(blob);
+
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "graph.json";
+        a.click();
+
+        URL.revokeObjectURL(url);
     }
 
     function graphConstructor(){
