@@ -44,7 +44,7 @@ export class PushdownAutomaton {
             switch (this.type) {
                 case "both": {  // if PA accepts by empty stack, empty word and finish state
                     if ((index === this.word.length || this.word.length === 0) && stack.length === 0 && (this.finishState).includes(state)) {
-                        console.log("accepted");
+                        // console.log("accepted");
                         this.isAccepted = true;
                         return path; // String is accepted
                     }
@@ -53,7 +53,7 @@ export class PushdownAutomaton {
 
                 case "empty": { // if PA accepts by empty stack and empty word
                     if ((index === this.word.length || this.word.length === 0) && stack.length === 0) {
-                        console.log("accepted");
+                        // console.log("accepted");
                         this.isAccepted = true;
                         return path; // String is accepted
                     }
@@ -62,7 +62,7 @@ export class PushdownAutomaton {
 
                 case "final": { // if PA accepts by empty word and finish state
                     if ((this.finishState).includes(state) && (index === this.word.length || this.word.length === 0)) {
-                        console.log("accepted");
+                        // console.log("accepted");
                         this.isAccepted = true;
                         return path; // String is accepted
                     }
@@ -84,7 +84,7 @@ export class PushdownAutomaton {
                             newStack.splice(0, 0, ...transition.stackAfter);
                         }
 
-                        console.log(`pushing ${transition.stateAfter} with stack ${newStack.join('')}`)
+                        // console.log(`pushing ${transition.stateAfter} with stack ${newStack.join('')}`)
                         queue.push({
                             state: transition.stateAfter,
                             stack: newStack,
@@ -96,12 +96,12 @@ export class PushdownAutomaton {
             }
         }
 
-        console.log("declined");
+        // console.log("declined");
         this.isAccepted = false;
         if (closestDeclinedPath) {
             return closestDeclinedPath;
         }
-        return null; // String is not accepted
+        return null; // string is not accepted
     }
 
     addNode(node: GraphNodeMeta) {
@@ -200,7 +200,7 @@ export class PushdownAutomaton {
         }
 
         if (!this.traversal[this.currentStatus.step]) {
-            console.log(this.isAccepted);
+            // console.log(this.isAccepted);
             graph_store.update((n) => {
                 n.isAccepted = this.isAccepted;
                 return n;

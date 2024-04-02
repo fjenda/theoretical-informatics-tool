@@ -66,7 +66,7 @@ export class ContextFreeGrammar {
     }
 
     toString() {
-        console.log(this);
+        // console.log(this);
         // copy the rules to avoid modifying the original rules
         const logRules = this.rules.map(rule => new CFGRule(rule.leftSide, rule.rightSide));
 
@@ -92,16 +92,10 @@ export class ContextFreeGrammar {
                 });
             }
         });
-
-//         return `G = (Π, Σ, S, P)
-// Π = {${this.nonTerminals.join(', ')}},
-// Σ = {${this.terminals.join(', ')}},
-// S = ${this.startSymbol},
-// P = {\n    ${logRules.map(rule => rule.toString()).join('\n    ')}\n}`;
-        return `Π = {${this.nonTerminals.join(', ')}},
-Σ = {${this.terminals.join(', ')}},
-S = ${this.startSymbol},
-P = {\n    ${logRules.map(rule => rule.toString()).join('\n    ')}\n}`;
+        return `Π: {${this.nonTerminals.join(', ')}},
+Σ: {${this.terminals.join(', ')}},
+S: ${this.startSymbol},
+P: {\n    ${logRules.map(rule => rule.toString()).join('\n    ')}\n}`;
     }
 
     validateInputs(inputs: string[][]) {

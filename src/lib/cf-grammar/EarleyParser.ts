@@ -179,14 +179,14 @@ export class EarleyParser {
             }
         }
         // print the result
-        this.states.forEach((state, index) => {
-            console.log(`\nState ${index}`);
-            console.log(state.toString());
-        });
+        // this.states.forEach((state, index) => {
+        //     console.log(`\nState ${index}`);
+        //     console.log(state.toString());
+        // });
 
         // check if we read the whole input
         if (this.states.length < input.length + 1) {
-            console.log('\nThe input is not valid');
+            // console.log('\nThe input is not valid');
             return { accepted: false, length: -1, derivation: [] };
         }
 
@@ -267,10 +267,10 @@ export class EarleyParser {
                 if (tree) {
                     console.log(`\nParser tree ${index}`);
                     tree.print();
-                    console.log(`\n${tree.findAllLeaves()} === ${input}`);
-                    console.log(
-                        `\n${tree.findAllLeaves() === input ? "The input is valid" : "The input is not valid"}`,
-                    );
+                    // console.log(`\n${tree.findAllLeaves()} === ${input}`);
+                    // console.log(
+                    //     `\n${tree.findAllLeaves() === input ? "The input is valid" : "The input is not valid"}`,
+                    // );
                     acc = tree.findAllLeaves() === input;
                 }
             });
@@ -326,7 +326,7 @@ export class EarleyParser {
             }
         }
 
-        console.log(tree);
+        // console.log(tree);
         return tree;
     }
 
@@ -341,7 +341,7 @@ export class EarleyParser {
             if (this.nullables.includes(rule.lhs)) {
                 let newItem = new EarleyItem(state.get(itemIndex).rule, state.get(itemIndex).dot + 1, state.get(itemIndex).start, ItemAction.COMPLETE);
                 state.push(newItem);
-                console.log(`\nPredicting nullable ${state.items[state.items.length - 1].toString()}`);
+                // console.log(`\nPredicting nullable ${state.items[state.items.length - 1].toString()}`);
             }
         });
 
@@ -539,13 +539,13 @@ class ParserTree {
                 }
             }
         }
-        console.log(nt);
+        // console.log(nt);
 
         return derivation;
     }
 
     parseChar(input: string, rule: Rule) {
-        console.log(rule.toString());
+        // console.log(rule.toString());
         for (let char of input) {
             if (char === rule.lhs) {
                 // replace the char with the rule lhs

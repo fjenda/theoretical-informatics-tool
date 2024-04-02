@@ -50,7 +50,7 @@
             }
         }
         labels_backup = labels_backup.filter((label) => label !== undefined);
-        console.log(labels_backup);
+        // console.log(labels_backup);
 
         graph_store.update((n) => {
             n.isAccepted = null;
@@ -72,15 +72,15 @@
         graphObject.traversal = graphObject.process();
         graph_store.update((n) => {
             n.traversal = graphObject.traversal;
-            console.log("updating store", n.traversal);
+            // console.log("updating store", n.traversal);
             return n;
         });
 
-        console.log($graph_store.traversal);
+        // console.log($graph_store.traversal);
 
         highlightElement(graphObject.startState);
         graphObject.currentStatus = {state: graphObject.startState, input: graphObject.word, stack: graphObject.stack[graphObject.stack.length - 1], step: 0};
-        console.log(graphObject.currentStatus);
+        // console.log(graphObject.currentStatus);
     }
 
     function nextTransition() {
@@ -106,7 +106,7 @@
         let label = rule.input + "," + rule.stack + ";" + rule.stackAfter.join("");
         graphObject.graph.elements().forEach(graphElement => {
             if (graphElement.id() === nextEdge && graphElement.isEdge()) {
-                console.log("updating label", label);
+                // console.log("updating label", label);
                 graphElement.data("label", label);
             }
         });
@@ -152,7 +152,7 @@
 
         graphObject.currentStatus.state = previousNode;
         graphObject.currentStatus.stack = graphObject.stack[graphObject.stack.length - 1];
-        console.log(graphObject.currentStatus);
+        // console.log(graphObject.currentStatus);
 
         setTimeout(() => {
             highlightElement(previousNode);
@@ -192,7 +192,7 @@
     }
 
     function resetLabels() {
-        console.log(labels_backup);
+        // console.log(labels_backup);
 
         let i = 0;
         graphObject.graph.elements().forEach(graphElement => {
@@ -235,9 +235,13 @@
             if (transition.stack !== "ε") {
                 stackAlphabet.add(transition.stack);
             }
-            if (transition.stackAfter !== "ε") {
-                stackAlphabet.add(transition.stackAfter[0]);
+
+            for (let c of transition.stackAfter) {
+                if (c !== "ε") {
+                    stackAlphabet.add(c);
+                }
             }
+
         });
         configuration.stack_alphabet = Array.from(stackAlphabet);
 
@@ -266,7 +270,7 @@
         configuration.type = graphObject.type;
 
         Object.assign($configuration_store, configuration);
-        console.log($configuration_store);
+        // console.log($configuration_store);
     }
 
     function updateConfiguration(mode : string) {
@@ -306,9 +310,11 @@
                     if (transition.stack !== "ε") {
                         stackAlphabet.add(transition.stack);
                     }
-                    if (transition.stackAfter[0] !== "ε") {
-                        // console.log(transition);
-                        stackAlphabet.add(transition.stackAfter[0]);
+
+                    for (let c of transition.stackAfter) {
+                        if (c !== "ε") {
+                            stackAlphabet.add(c);
+                        }
                     }
                 });
                 configuration.stack_alphabet = Array.from(stackAlphabet);
@@ -400,12 +406,12 @@
         }
 
         deleteGraph();
-        console.log($graph_store);
+        // console.log($graph_store);
         Object.assign(graphObject, $graph_store);
 
         graphObject.generateGraphFromTransitions();
 
-        console.log(graphObject);
+        // console.log(graphObject);
 
         createGraph(false);
         // graph_store.reset();
@@ -426,16 +432,31 @@
         }
     }
 
-    function addEdgeFromButton(edge : GraphEdgeMeta) {
+    function addEdgeFromButton(edge : GraphEdgeMeta, labelArr : string[] = []) {
+        let first : string, second : string, third : string[];
+
+        if (labelArr.length > 0) {
+            first = labelArr[0];
+            second = labelArr[1];
+            third = labelArr[2].split(" ");
+        } else {
+            first = edge.label.split(",")[0];
+            second = edge.label.split(",")[1].split(";")[0];
+            third = edge.label.split(",")[1].split(";")[1].split(" ");
+        }
         if (graphObject.transitions.filter((transition : TransitionMeta) => {
-            return transition.state === edge.source && transition.input === edge.label.split(",")[0] && transition.stack === edge.label.split(/;,/)[1] && transition.stateAfter === edge.target && transition.stackAfter === edge.label.split(/;,/)[2];
+            return transition.state === edge.source &&
+                   transition.input === first &&
+                   transition.stack === second &&
+                   transition.stateAfter === edge.target &&
+                   transition.stackAfter === third;
         }).length === 0) {
             graphObject.transitions.push({
                 state: edge.source,
-                input: edge.label.split(",")[0],
-                stack: edge.label.split(/[;,]/)[1],
+                input: first,
+                stack: second,
                 stateAfter: edge.target,
-                stackAfter: edge.label.split(/[;,]/)[2]
+                stackAfter: third
             });
         }
 
@@ -490,7 +511,7 @@
                     let finishNodes = graphObject.finishState.length;
                     //let finishNodes = graphObject.nodes.slice().filter((node : GraphNodeMeta) => node.class.includes("finish")).length;
                     if (finishNodes === 1) {
-                        console.log("cannot remove a finish class");
+                        // console.log("cannot remove a finish class");
                         return;
                     } else {
                         // remove node from finishState

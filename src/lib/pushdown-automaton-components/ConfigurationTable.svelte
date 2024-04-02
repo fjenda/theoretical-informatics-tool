@@ -88,7 +88,7 @@
                 } else if (traversal[i].stackAfter[0] !== "ε") { // push (to the front) and dont push the last symbol in the stack
                     stack = traversal[i].stackAfter.concat(stackBackup.slice(1));
                 }
-                console.log(`${traversal[i].stackAfter[0]} -> ${stack}`);
+                // console.log(`${traversal[i].stackAfter[0]} -> ${stack}`);
 
 
                 // if stack is empty
@@ -118,7 +118,7 @@
         }
 
 
-        console.log(tableData);
+        // console.log(tableData);
         // reset vars
         resetVars();
     }

@@ -144,7 +144,7 @@
 
         let allTrue: boolean = true;
         for (let row of rows) {
-            console.log(row);
+            // console.log(row);
             if (validateTransition(row)) {
                 parseRow(row);
             } else {

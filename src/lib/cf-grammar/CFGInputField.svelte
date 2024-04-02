@@ -14,7 +14,7 @@
             }
         });
 
-        console.log(parsed);
+        // console.log(parsed);
 
         user_grammar_store.update((n) => {
             n.validateInputs(parsed);

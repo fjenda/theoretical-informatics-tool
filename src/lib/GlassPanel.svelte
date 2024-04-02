@@ -18,7 +18,7 @@
 <style>
     h2 {
         padding-top: 1.5vh;
-        font-size: 1.6rem;
+        font-size: 1.8rem;
         text-align: center;
         margin-bottom: 0;
     }
@@ -79,5 +79,10 @@
 
     .script-box {
         margin: 0 2rem;
+    }
+
+    p {
+        text-align: justify;
+        line-height: 1.5rem;
     }
 </style>

@@ -215,7 +215,7 @@
   }
 
   .rule {
-    width: 25%;
+    width: 35%;
   }
 
   :global(body.dark-mode) .divTableCell {

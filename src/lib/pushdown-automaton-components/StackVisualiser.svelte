@@ -9,7 +9,7 @@
         else
             stackElements = [];
 
-        console.log(stackElements);
+        // console.log(stackElements);
     }
 
 

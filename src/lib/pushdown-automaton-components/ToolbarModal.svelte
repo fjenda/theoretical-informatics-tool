@@ -13,6 +13,7 @@
     export let func : Function;
     let dialog;
     let label : string, source : string, target : string;
+    let label_1 : string, label_2 : string, label_3 : string;
     let isFinishState : boolean = false;
     let isStartState : boolean = false;
     let config : string = "";
@@ -50,8 +51,10 @@
                     stackAlphabet.add(transition.stack);
                 }
 
-                if (transition.stackAfter !== "ε") {
-                    stackAlphabet.add(transition.stackAfter[0]);
+                for (let c of transition.stackAfter) {
+                    if (c !== "ε") {
+                        stackAlphabet.add(c);
+                    }
                 }
 
             });
@@ -83,6 +86,7 @@
 
     function resetInput() {
         label = "", source = "", target = "";
+        label_1 = "", label_2 = "", label_3 = "";
         isFinishState = false;
         isStartState = false;
         return true;
@@ -94,23 +98,21 @@
             return true;
         }
 
-        if (!label?.trim()) {
-            console.log("bad input");
+        if (type == "new-node" && !label?.trim()) {
+            // console.log("bad input");
             return false;
         }
 
         if (type == "new-edge") {
-            if (!source?.trim() || !target?.trim()) {
-                console.log("bad input");
+            if (!source?.trim() || !target?.trim() || !label_2?.trim()) {
+                // console.log("bad input");
                 return false;
             }
         }
 
-        const modifiedLabel = label.trim();
-
         switch (type) {
             case "new-node": {
-                console.log("new-node - " + modifiedLabel);
+                // console.log("new-node - " + modifiedLabel);
                 if (isStartState && isFinishState) {
                     func({id: label, label: label, class: "finish start"});
                 } else if (isStartState)
@@ -125,10 +127,11 @@
             }
 
             case "new-edge": {
-                const modifiedSource = source.trim();
-                const modifiedTarget = target.trim();
-                console.log("new-edge - " + modifiedLabel + " " + modifiedSource + " -> " + modifiedTarget);
-                func({id: `${source}-${target}`, label: label, source: source, target: target});
+                if (!label_1) label_1 = "ε";
+                if (!label_3) label_3 = "ε";
+                const label_comb = `${label_1},${label_2};${label_3}`;
+                const label_arr = [label_1, label_2, label_3];
+                func({id: `${source}-${target}`, label: label_comb, source: source, target: target}, label_arr);
                 return true;
             }
         }
@@ -145,7 +148,7 @@
 <!--        <hr />-->
         <slot />
 
-        {#if type === "show-definition" | type === "cfg-definition"}
+        {#if type === "show-definition" || type === "cfg-definition"}
             <textarea id="transitions"
                       class="transitions-input"
                       cols="35" rows="20"
@@ -180,11 +183,8 @@
             </AutomatonGeneratorLayout>
         {:else}
             <div class="input-box">
-                {#if ["new-node", "new-edge"].includes(type)}
-                    <input bind:value={label} maxlength="8" placeholder="Label">
-                {/if}
-
                 {#if type === "new-node"}
+                    <input bind:value={label} maxlength="8" placeholder="Label">
                     {#if !$configuration_store.start_state || $configuration_store.start_state.length === 0}
                         <div class="checkbox-box">
                             <label>
@@ -200,6 +200,9 @@
                         </label>
                     </div>
                 {:else if type === "new-edge"}
+                    <input id="label-1" bind:value={label_1} maxlength="8" placeholder="ε">
+                    <input id="label-2" bind:value={label_2} maxlength="8" placeholder="Stack">
+                    <input id="label-3" bind:value={label_3} maxlength="8" placeholder="ε">
                     <input id="source-input" bind:value={source} maxlength="8" placeholder="Source">
                     <input id="target-input" bind:value={target} maxlength="8" placeholder="Target">
                 {/if}

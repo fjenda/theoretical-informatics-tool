@@ -40,8 +40,8 @@
         });
         selectedOptionsId = findIDs();
         selectedOptions = Array.from(event.target.selectedOptions, option => option.label);
-        console.log(selectedOptionsId);
-        console.log(selectedOptions);
+        // console.log(selectedOptionsId);
+        // console.log(selectedOptions);
         graph_store.update(n => {
             n.finishState = selectedOptionsId;
             return n;

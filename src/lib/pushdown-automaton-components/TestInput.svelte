@@ -30,7 +30,7 @@
             }
         });
 
-        console.log($table_index_store);
+        // console.log($table_index_store);
 
         nextFunc();
     }
@@ -49,7 +49,7 @@
 
     function stopTesting() {
         showArrows = false;
-        console.log("stop");
+        // console.log("stop");
 
         table_index_store.set(-1);
 
