@@ -21,11 +21,23 @@
         <div class="first-automaton">
             <slot name="first-automaton"/>
         </div>
+        <div class="first_table">
+            <slot name="first_table"/>
+        </div>
+        <div class="operation_bar">
+            <slot name="operation_bar"/>
+        </div>
         <div class="second-automaton">
-            <slot name="first-automaton"/>
+            <slot name="second-automaton"/>
+        </div>
+        <div class="second-table">
+            <slot name="second-table"/>
         </div>
         <div class="result-automaton">
-            <slot name="first-automaton"/>
+            <slot name="result-automaton"/>
+        </div>
+        <div class="result-table">
+            <slot name="result-table"/>
         </div>
         <div class="tool-bar">
             <slot name="tool-bar"/>
@@ -40,46 +52,85 @@
     font-size: 2.5rem;
   }
 
+  .wrap {
+    overflow-y: auto; /* Add vertical scroll if content exceeds viewport height */
+    //max-height: calc(100vh - 60px); /* Adjust as needed depending on your header size */
+  }
+
   .layout {
     width: 100vw;
-    height: calc(100vh - 7.5rem);
+    height: calc(100vh - 8rem);
     margin-top: 1rem;
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    grid-template-rows: repeat(2, 1fr);
+    grid-template-columns: repeat(7, 1fr);
+    grid-template-rows: repeat(3, 1fr);
     grid-column-gap: 0px;
     grid-row-gap: 0px;
   }
 
-  @media screen and (max-width: 1000px) and (min-width: 768px) {
-    .layout {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      grid-template-rows: repeat(3, 1fr);
-
-      height: auto;
-      //overflow: hidden auto;
-    }
+  .first-automaton {
+    width: 100%;
+    height: 24vw;
+    display: flex;
+    justify-content: center;
+    grid-area: 1 / 1 / 2 / 4;
   }
 
-  .first-automaton{
-    height: 8vw;
-    grid-area: 1 / 1 / 2 / 2;
+  .first_table {
+    width: 100%;
+    height: 20vw;
+    display: flex;
+    justify-content: center;
+    grid-area: 2 / 1 / 3 / 4;
   }
 
-  .second-automaton{
-    height: 8vw;
-    grid-area: 2 / 1 / 3 / 2;
-  }
-
-  .result-automaton{
-    height: 8vw;
-    grid-area: 1 / 2 / 3 / 4;
-  }
-
-  .tool-bar{
+  .operation_bar {
+    width: 100%;
+    //width: 5vw;
+    height: 24vw;
+    display: flex;
+    justify-content: center;
+    align-items: center;
     grid-area: 1 / 4 / 3 / 5;
   }
+
+  .second-automaton {
+    width: 100%;
+    height: 24vw;
+    display: flex;
+    justify-content: center;
+    grid-area: 1 / 5 / 2 / 8;
+  }
+
+  .second-table {
+    width: 100%;
+    height: 20vw;
+    display: flex;
+    justify-content: center;
+    grid-area: 2 / 5 / 3 / 8;
+  }
+
+  .result-automaton {
+    width: 100%;
+    height: 40vw;
+    display: flex;
+    justify-content: center;
+    grid-area: 3 / 3 / 4 / 6;
+  }
+
+  .result-table {
+    display: flex;
+    justify-content: center;
+    grid-area: 3 / 6 / 4 / 8;
+  }
+
+  .tool-bar {
+    width: 20vw;
+    display: flex;
+    justify-content: center;
+    grid-area: 3 / 1 / 4 / 3;
+  }
+
   .header {
     margin: 0 auto;
 

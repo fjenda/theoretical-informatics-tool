@@ -1,38 +1,38 @@
 <script lang="ts">
-import FinToolbarModal from "./FinToolbarModal.svelte";
-import {onMount} from "svelte";
-import {tooltip} from "../tooltipUtils";
-import {graph_store, resetInputVar} from "../../stores/graphInitStore";
+    import {onMount} from "svelte";
+    import {tooltip} from "../../tooltipUtils";
+    import {resetInputVar, result_graph_store} from "../../../stores/graphInitStore";
+    import ResultToolbarModal from "./ResultToolbarModal.svelte";
 
 
 
-export let type : ToolbarButtonType;
-export let text : string = "";
-export let func : Function = () => {};
-let btn : HTMLButtonElement;
-let btnState : string = "normal";
-let showModal = false;
+    export let type : ToolbarButtonType;
+    export let text : string = "";
+    export let func : Function = () => {};
+    let btn : HTMLButtonElement;
+    let btnState : string = "normal";
+    let showModal = false;
 
 
-function toggleButton() {
-    if (btnState === "normal") {
-        btnState = "active";
-    } else {
-        btnState = "normal";
+    function toggleButton() {
+        if (btnState === "normal") {
+            btnState = "active";
+        } else {
+            btnState = "normal";
+        }
     }
-}
 
-onMount(() => {
-    if (type === "delete-element") {
-        btn.addEventListener("click", toggleButton);
-    }
-})
+    onMount(() => {
+        if (type === "delete-element") {
+            btn.addEventListener("click", toggleButton);
+        }
+    })
 
 </script>
 
 {#if ["new-node", "new-edge", "generate-automata", "show-definition"].includes(type)}
     {#if type === "generate-automata"}
-        <button on:click={() => {showModal = true; resetInputVar.set(true); graph_store.reset(); $graph_store.hideConvertTable = true; }}>
+        <button on:click={() => {showModal = true; resetInputVar.set(true); result_graph_store.reset(); }}>
             {text}
         </button>
     {:else}
@@ -41,7 +41,7 @@ onMount(() => {
         </button>
     {/if}
 
-    <FinToolbarModal bind:showModal type={type} func={func}>
+    <ResultToolbarModal bind:showModal type={type} func={func}>
         <h2 class="header" slot="header">
             {type.split("-").map((word) => word.charAt(0).toUpperCase() + word.slice(1)).join(" ")}
 
@@ -65,8 +65,9 @@ onMount(() => {
                                                 "more then one Start state"}>
                 ?</span>
             {/if}
+
         </h2>
-    </FinToolbarModal>
+    </ResultToolbarModal>
 
 {:else if type === "delete-element"}
     <button class={btnState} bind:this={btn} on:click={() => func()}>
@@ -91,6 +92,7 @@ onMount(() => {
         border: 0.05rem solid #4A3F64;
         color: #f4f9ff;
     }
+
 
     .active {
         outline: 0.1rem solid red;
@@ -120,7 +122,6 @@ onMount(() => {
         justify-content: center;
         align-items: center;
     }
-
 </style>
 
 

@@ -1,14 +1,18 @@
 <script lang="ts">
-    import type {ToolbarButtonType} from "../../types/ToolbarButtonType";
-    import FinAutomatonGeneratorLayout from "./FinAutomatonGeneratorLayout.svelte";
-    import ToggleSwitch from "./ToggleSwitch.svelte";
-    import FinStateComboBox from "./FinStateComboBox.svelte";
-    import StateMultiSelect from "../StateMultiSelect.svelte";
-
-    import FinTransitionFuncInput from "./FinTransitionFuncInput.svelte";
-    import {configuration_store, graph_store, resetInputVar} from "../../stores/graphInitStore";
-    import {input_error_store} from "../../stores/inputErrorStore";
-    import StartStateMultiSelect from "../StartStateMultiSelect.svelte";
+    import type {ToolbarButtonType} from "../../../types/ToolbarButtonType";
+    import {
+        configuration_store,
+        first_configuration_store,
+        first_graph_store,
+        resetInputVar
+    } from "../../../stores/graphInitStore.js";
+    import FirstAutomatonGeneratorLayout from "./FirstAutomatonGeneratorLayout.svelte";
+    import FirstToggleSwitch from "./FirstToggleSwitch.svelte";
+    import FirstStateComboBox from "./FirstStateComboBox.svelte";
+    import FirstStartStateMultiSelect from "./FirstStartStateMultiSelect.svelte";
+    import FirstStateMultiSelect from "./FirstStateMultiSelect.svelte";
+    import FirstTransitionFuncInput from "./FirstTransitionFuncInput.svelte";
+    import {input_error_store} from "../../../stores/inputErrorStore";
 
     let currentState = false;
     let startNode  : string;
@@ -29,7 +33,7 @@
     $: if (showModal && type === "show-definition") {
         func();
 
-        if ($configuration_store.nodes?.length === 0 || !$configuration_store.nodes) {
+        if ($first_configuration_store.nodes?.length === 0 || !$first_configuration_store.nodes) {
             config = "No configuration to show";
         } else {
             generateConfiguration();
@@ -39,11 +43,11 @@
     function generateConfiguration() {
         config = "";
         // states from nodes
-        config += `Q: {${$configuration_store.nodes.join(", ")}}\n`;
+        config += `Q: {${$first_configuration_store.nodes.join(", ")}}\n`;
 
         // input alphabet and stack alphabet from transitions
         const alphabet = new Set();
-        $configuration_store.transitions.forEach((transition) => {
+        $first_configuration_store.transitions.forEach((transition) => {
             if (transition.input !== "ε") {
                 alphabet.add(transition.input);
             }
@@ -53,16 +57,16 @@
 
         // transitions
         config += "δ: {\n";
-        $configuration_store.transitions.forEach((transition) => {
+        $first_configuration_store.transitions.forEach((transition) => {
             config += `    (${transition.state}, ${transition.input}) → (${transition.stateAfter})\n`;
         });
         config += "}\n";
 
         // start state
-        config += `S: {${$configuration_store.start_state.join(", ")}}\n`;
+        config += `S: {${$first_configuration_store.start_state.join(", ")}}\n`;
 
         // final states
-        config += `F: {${$configuration_store.final_states.join(", ")}}\n`;
+        config += `F: {${$first_configuration_store.final_states.join(", ")}}\n`;
     }
 
     function resetInput() {
@@ -93,18 +97,18 @@
         switch (type) {
             case "new-node": {
                 console.log("new-node - " + modifiedLabel);
-                let folowingID = $graph_store.followingID;
+                let folowingID = $first_graph_store.followingID;
                 console.log('new node string: ' + folowingID.toString());
                 func({ id: folowingID.toString(), label: label});
-                $graph_store.followingID++;
+                $first_graph_store.followingID++;
                 return true;
             }
 
             case "new-edge": {
                 const modifiedSource = source.trim();
                 const modifiedTarget = target.trim();
-                let sourceID = $graph_store.nodes.find(node => node.label === modifiedSource)?.id;
-                let targetID = $graph_store.nodes.find(node => node.label === modifiedTarget)?.id;
+                let sourceID = $first_graph_store.nodes.find(node => node.label === modifiedSource)?.id;
+                let targetID = $first_graph_store.nodes.find(node => node.label === modifiedTarget)?.id;
                 console.log("new-edge - " + modifiedLabel + " " + sourceID + " -> " + targetID);
                 func({id: `${sourceID}-${targetID}`, label: label, source: sourceID, target: targetID});
                 return true;
@@ -115,9 +119,9 @@
 </script>
 
 <dialog
-    bind:this={dialog}
-    on:close={() => (showModal = false)}
-    on:click|self={() => dialog.close()}
+        bind:this={dialog}
+        on:close={() => (showModal = false)}
+        on:click|self={() => dialog.close()}
 >
     <div on:click|stopPropagation>
         <slot name="header" />
@@ -125,25 +129,25 @@
 
         {#if type === "show-definition"}
             <textarea id="transitions"
-                           class="transitions-input"
-                           cols="30" rows="20"
-                           readonly = {true}
-                           value={config}
-                           placeholder="Transitions"></textarea>
+                      class="transitions-input"
+                      cols="30" rows="20"
+                      readonly = {true}
+                      value={config}
+                      placeholder="Transitions"></textarea>
 
             <hr />
-            <button class="single-button" on:click={() => dialog.close()}>Cancel</button>
+            <button on:click={() => dialog.close()}>Cancel</button>
 
         {:else if type === "generate-automata"}
-            <FinAutomatonGeneratorLayout >
-                <ToggleSwitch slot="type-switch" />
+            <FirstAutomatonGeneratorLayout >
+                <FirstToggleSwitch slot="type-switch" />
 
-                <FinStateComboBox key={125} slot="start-state" />
+                <FirstStateComboBox key={125} slot="start-state" />
 
-                <StartStateMultiSelect key={126} slot="multi-select-start" />
-                <StateMultiSelect key={127} slot="multi-select" />
+                <FirstStartStateMultiSelect key={126} slot="multi-select-start" />
+                <FirstStateMultiSelect key={127} slot="multi-select" />
 
-                <FinTransitionFuncInput slot="transitions" />
+                <FirstTransitionFuncInput slot="transitions" />
 
                 <div class="button-wrapper" slot="buttons">
                     <button on:click={() => {
@@ -156,7 +160,7 @@
                     dialog.close()
                 }}>Apply</button>
                 </div>
-            </FinAutomatonGeneratorLayout>
+            </FirstAutomatonGeneratorLayout>
         {:else}
             <div class="input-box">
                 {#if ["new-node", "new-edge"].includes(type)}
@@ -164,7 +168,7 @@
                 {/if}
 
                 {#if type === "new-node"}
-                    {#if !$configuration_store.start_state || $configuration_store.start_state.length === 0}
+                    {#if !$first_configuration_store.start_state || $first_configuration_store.start_state.length === 0}
                         <div class="checkbox-box">
                             <label>
                                 <input id="start-state-checkbox" type="checkbox" bind:checked={isStartState} />

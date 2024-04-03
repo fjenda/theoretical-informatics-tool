@@ -36,9 +36,6 @@
     }
 
     function convertToDFA(){
-        console.log("graph object P5sdfsdmfoksdfosdKDPSADM: ", graphObject);
-        console.log("graphStore PRED PREVODEM: ", $graph_store);
-
         const result = ConvertorToDFA.convertToDFA(graphObject);
         $graph_store.convertDict = ConvertorToDFA.generateConverTable(result.stateRecorder, graphObject);
         let newFa : FiniteStateAutomaton = result.newFa;
@@ -62,9 +59,6 @@
         graphObject.type = newFa.type;
 
         graphObject.generateGraphFromTransitions();
-        console.log("Tady je nový graph object: ", graphObject);
-
-        console.log("Tady je store: ", $graph_store);
 
         createGraph(false);
         graph_store.update((n) => {
@@ -94,6 +88,8 @@
 
         let newFa : FiniteStateAutomaton = regex.regexProcessFunc();
         console.log("resutl", newFa);
+
+        // regex.reduceAutomaton(newFa);
 
         let alphabet = new Set();
         newFa.transitions.forEach((transition) => {
@@ -145,10 +141,6 @@
     }
 
     function testInput(wordCh : string[]){
-        // if (graphObject.type == 'empty'){
-        //     graphObject.type = 'dfa';
-        // }
-
         resetTestInput();
         removeHighlighted();
 
@@ -164,23 +156,27 @@
 
         if (graphObject.type === "DFA") {
             let tmpNode: GraphNodeMeta;
-            graphObject.nodes.forEach((node: GraphNodeMeta) => {
-                if (node.id === graphObject.startState) {
-                    tmpNode = node;
-                }
+
+            //finin  graphObject.nodes node eith id as startstate and store it ot the tmpNode
+            tmpNode = graphObject.nodes.find((node: GraphNodeMeta) => {
+                if (Array.isArray(graphObject.startState))
+                    return graphObject.startState.includes(node.id);
+                else
+                    return graphObject.startState == node.id;
             });
 
             if (!tmpNode) {
                 return;
             }
 
-            graphObject.startState = tmpNode.id;
+            graphObject.startState = [tmpNode.id];
             graphObject.traversal = graphObject.preprocessGraphInput();
 
             highlightElement(tmpNode.id);
             graphObject.currentStatus = {state: tmpNode.id, input: graphObject.word, step: 0};
             graph_store.update((n) => {
                 n.currentStatus = graphObject.currentStatus;
+                n.currentStep = -1;
                 // console.log("updating current status", n.currentStatus);
                 return n;
             });
@@ -192,6 +188,7 @@
             graphObject.currentStatus = {state: graphObject.startState, input: graphObject.word, step: 0};
             graph_store.update((n) => {
                 n.currentStatus = graphObject.currentStatus;
+                n.currentStep = -1;
                 // console.log("updating current status", n.currentStatus);
                 return n;
             });
@@ -218,13 +215,16 @@
             return;
         }
 
-        // console.log(result.currenStatus);
-        // graph_store.update((n) => {
-        //     n.currenStatus = result.currenStatus;
-        //     console.log("updating store", n.currenStatus);
-        //     return n;
-        // });
+        if (result.myIsAccepted !== undefined) {
+            graph_store.update((n) => {
+                n.isAccepted = result.myIsAccepted;
+                return n;
+            });
+        }
 
+        if (result.nextNode == undefined || result.nextEdge == undefined){
+            return;
+        }
         let nextNode = result.nextNode;
         let nextEdge = result.nextEdge;
 
@@ -240,9 +240,11 @@
 
         graph_store.update((n) => {
             n.currentStatus = graphObject.currentStatus;
+            n.currentStep++;
             // console.log("updating current status", n.currentStatus);
             return n;
         });
+
     }
 
     function previousTransition(){
@@ -267,6 +269,7 @@
 
         graph_store.update((n) => {
             n.currentStatus = graphObject.currentStatus;
+            n.currentStep--;
             // console.log("updating current status", n.currentStatus);
             return n;
         });
@@ -324,7 +327,7 @@
         // input alphabet
         const alphabet = new Set();
         graphObject.transitions.forEach((transition) => {
-            if (transition.input !== "E") {
+            if (transition.input !== "ε") {
                 alphabet.add(transition.input);
             }
         });
@@ -340,7 +343,8 @@
             });
         });
 
-        let startStateLabel = graphObject.nodes.find((node : GraphNodeMeta) => node.id === graphObject.startState).label;
+
+        let startStateLabel = graphObject.startState.map((node : string) => graphObject.nodes.find((n : GraphNodeMeta) => n.id === node).label);
         let finishStatesLabel = graphObject.finishState.map((node : string) => graphObject.nodes.find((n : GraphNodeMeta) => n.id === node).label);
 
         // start state
@@ -383,7 +387,7 @@
                 // input alphabet
                 const alphabet = new Set();
                 graphObject.transitions.forEach((transition) => {
-                    if (transition.input !== "E") {
+                    if (transition.input !== "ε") {
                         alphabet.add(transition.input);
                     }
                 });
@@ -615,7 +619,7 @@
         graphObject.nodes = [];
         graphObject.edges = {};
         graphObject.transitions = [];
-        graphObject.startState = "";
+        graphObject.startState = [];
         graphObject.finishState = [];
         graphObject.followingID = 0;
         configuration_store.reset();
@@ -737,9 +741,8 @@
         }
         $graph_store.hideConvertTable = true;
         deleteGraph();
-        // console.log($graph_store);
-        Object.assign(graphObject, $graph_store);
 
+        Object.assign(graphObject, $graph_store);
         graphObject.generateGraphFromTransitions();
 
 
@@ -747,6 +750,7 @@
 
         createGraph(false);
         graph_store.update((n) => {
+            n.input_alphabet = graphObject.input_alphabet;
             n.generated = true;
             return n;
         });
@@ -799,16 +803,18 @@
             n.type = "DFA";
             n.transitions = exampleTransition;
             n.nodes = exampleNodes;
-            n.startState = "0";
+            n.startState = ["0"];
             n.finishState = ["1"];
             n.input_alphabet = ["a", "b"];
             n.hideConvertTable = true;
             return n;
         });
         $graph_store.followingID = 2;
+
+        console.log("Here", graphObject)
+
         generateGraphFromTransitions();
         console.log($graph_store);
-        // createGraph();
     });
 
 </script>

@@ -10,6 +10,8 @@ export class ConvertorToDFA  {
         let statesForInput : string = "";
         let stateResult : string[] = [];
         let newConvertorTab : ConvertorTab[] = [];
+        let startState = false;
+        let finishState = false;
 
         if (alphabet.includes("ε")) {
             alphabet = alphabet.filter(item => item !== "ε");
@@ -19,10 +21,10 @@ export class ConvertorToDFA  {
             for(let c of alphabet){
                 for(let id of parseKeys){
                     for (let i = 0; i < parseKeys.length; i++){
-                        if (!nfaAutomaton.transitions.some(transition => transition.state == id.toString())) {
+                        if (!nfaAutomaton.transitions.some(transition => transition.state.toString() == id.toString())) {
                             continue;
                         }
-                        let endStates: number[] = nfaAutomaton.transitions.filter(transition => transition.input === c && transition.state == id.toString()).map(transition => Number(transition.stateAfter));
+                        let endStates: number[] = nfaAutomaton.transitions.filter(transition => transition.input === c && transition.state.toString() == id.toString()).map(transition => Number(transition.stateAfter));
                         if (endStates.length === 0) {
                             continue;
                         }
@@ -38,16 +40,69 @@ export class ConvertorToDFA  {
                     }
 
                 }
-                stateResult.push("{"+statesForInput+"}");
+                let splitedStates = statesForInput.split(",");
+                let newSplitedStates = "";
+                for(let split of splitedStates){
+                    nfaAutomaton.nodes.forEach(node => {
+                        if(node.id.toString() == split){
+                            if (newSplitedStates){
+                                newSplitedStates += ", " + node.label;
+                            } else {
+                                newSplitedStates = node.label;
+                            }
+                        }
+                    });
+                }
+
+                stateResult.push("{"+newSplitedStates+"}");
                 statesForInput = "";
+                newSplitedStates = "";
             }
-            newConvertorTab.push({key:  "q" + stateRecorder.get(key).toString() + "{"+key+"}", values: stateResult});
+            for(let nodeID of parseKeys){
+
+                if(nfaAutomaton.startState.some(state => String(state) == nodeID)){
+                    startState = true;
+                }
+                if(nfaAutomaton.finishState.some(state => String(state) == nodeID)){
+                    finishState = true;
+                }
+            }
+            let newKey = "";
+            for(let id of parseKeys){
+                nfaAutomaton.nodes.forEach(node => {
+                    if(node.id.toString() == id){
+                        if(newKey){
+                            newKey += ", " + node.label;
+                        } else {
+                            newKey = node.label;
+                        }
+                    }
+                });
+            }
+
+            if(startState && finishState){
+                newConvertorTab.push({key:  "<-->q" + stateRecorder.get(key).toString() + "{"+newKey+"}", values: stateResult});
+                startState = false;
+                finishState = false;
+            } else if(startState){
+                newConvertorTab.push({key:  "->q" + stateRecorder.get(key).toString() + "{"+newKey+"}", values: stateResult});
+                startState = false;
+                finishState = false;
+            } else if(finishState){
+                newConvertorTab.push({key:  "<-q" + stateRecorder.get(key).toString() + "{"+newKey+"}", values: stateResult});
+                finishState = false;
+                startState = false;
+            } else {
+                newConvertorTab.push({key:  "q" + stateRecorder.get(key).toString() + "{"+newKey+"}", values: stateResult});
+            }
+            // newConvertorTab.push({key:  "q" + stateRecorder.get(key).toString() + "{"+key+"}", values: stateResult});
             stateResult = [];
+            newKey = "";
         }
 
         //convert key 99 to Ø and values "" to Ø
         for(let i = 0; i < newConvertorTab.length; i++){
-            if(newConvertorTab[i].key === "q99{99}"){
+            if(newConvertorTab[i].key === "q99{}"){
                 newConvertorTab[i].key = "Ø";
             }
             for(let j = 0; j < newConvertorTab[i].values.length; j++){
@@ -150,10 +205,10 @@ export class ConvertorToDFA  {
 
             for(let c of alphabet) {
                 for (let id of currentStatesId) {
-                    if (!nfaAutomaton.transitions.some(transition => transition.state == id.toString())) {
+                    if (!nfaAutomaton.transitions.some(transition => transition.state.toString() == id.toString())) {
                         continue;
                     }
-                    let endStates: number[] = nfaAutomaton.transitions.filter(transition => transition.input === c && transition.state == id.toString()).map(transition => Number(transition.stateAfter));
+                    let endStates: number[] = nfaAutomaton.transitions.filter(transition => transition.input === c && transition.state.toString() == id.toString()).map(transition => Number(transition.stateAfter));
                     if (endStates.length === 0) {
                         continue;
                     }
@@ -244,18 +299,11 @@ export class ConvertorToDFA  {
             newCurrentStatesId = this.addStateToCurrentStates(newCurrentStatesId, currentStatesId, nfaAutomaton);
         }
 
-        // nfaAutomaton.transitions.forEach(transition => {
-        //     if (currentStatesId.includes(Number(transition.state))) {
-        //         if (transition.input === "ε") {
-        //             newCurrentStatesId = this.addStateToCurrentStates(newCurrentStatesId, currentStatesId, nfaAutomaton);
-        //         }
-        //     }
-        // });
     }
 
     private static haseEpsilonTransition(newCurrentStates: number[], nfaAutomaton: FiniteStateAutomaton) : boolean {
         for (let id of newCurrentStates) {
-            if (nfaAutomaton.transitions.some(transition => transition.input === "ε" && transition.state === id.toString())) {
+            if (nfaAutomaton.transitions.some(transition => transition.input === "ε" && transition.state.toString() == id.toString())) {
                 return true;
             }
         }
@@ -269,7 +317,7 @@ export class ConvertorToDFA  {
 
         for(let id of lastAdded) {
             nfaAutomaton.transitions.forEach(transition => {
-                if (transition.input === "ε" && transition.state == id.toString()) {
+                if (transition.input === "ε" && transition.state.toString() == id.toString()) {
                     epsilons.push(transition);
                 }
 
@@ -301,14 +349,6 @@ export class ConvertorToDFA  {
                 key += ","+ listOfIds[id];
             }
         }
-
-        // for(let id of listOfIds) {
-        //     if (id == 0){
-        //         key += id;
-        //     } else{
-        //         key += ","+ id;
-        //     }
-        // }
 
         return key;
     }

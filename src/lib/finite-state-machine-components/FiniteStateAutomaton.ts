@@ -3,8 +3,7 @@ import type {GraphEdgeDictionary} from "../../types/GraphObject";
 import type {TransitionMeta} from "../../types/TransitionMeta";
 import type {AutomatonState} from "../../types/AutomatonState";
 import type {GraphEdgeMeta} from "../../types/GraphEdgeMeta";
-import {graph_store} from "../../stores/graphInitStore";
-import {TreeNode} from "./regex/TreeNode";
+
 
 export  class FiniteStateAutomaton{
     graph: null;
@@ -19,16 +18,11 @@ export  class FiniteStateAutomaton{
     isAccepted: boolean = false;
     traversal: TransitionMeta[] = [];
     type: string = "DFA";
-    startState?: string[] = ["0"];
+    startState: string[] = ["0"];
     finishState?: string[] = ["F"];
     correctStartState: string = "q0";
     followingID : number = 0;
     input_alphabet: string[] = [];
-
-    // constructor() {
-    //     this.graph = null;
-    //
-    // };
 
     constructor(nodes : GraphNodeMeta[], transitions : TransitionMeta[], startStare : string[], finishState : string[], type : string) {
         this.graph = null;
@@ -174,7 +168,7 @@ export  class FiniteStateAutomaton{
 
     preprocessGraphInput() : TransitionMeta[] | null {
         const queue: { state: string; index: number; path: TransitionMeta[] }[] = [
-            { state: this.startState, index: 0, path: [] },
+            { state: this.startState[0], index: 0, path: [] },
         ];
 
         let closestDeclinedPath: TransitionMeta[] | null = null;
@@ -188,6 +182,9 @@ export  class FiniteStateAutomaton{
             if (isAccepted) {
                 console.log("Accepted");
                 this.isAccepted = true;
+
+
+
                 return path; // String is accepted
             }
             closestDeclinedPath = path;
@@ -247,8 +244,8 @@ export  class FiniteStateAutomaton{
         }
 
         //if node class is start
-        if (node.class?.includes("start")) {
-            this.startState = node.id;
+        if (node.class?.includes("start")  && this.startState.filter((startNode : string) => startNode === node.id).length === 0) {
+            this.startState.push(node.id);
         }
 
 
@@ -318,22 +315,26 @@ export  class FiniteStateAutomaton{
             }
         });
 
+        this.input_alphabet = this.transitions.map(transition => transition.input);
+        //remove duplicates
+        this.input_alphabet = this.input_alphabet.filter((value, index, self) => self.indexOf(value) === index);
+
     }
 
     nextTransition(){
+
         if (this.status !== "testing") {
             return;
         }
 
         if (!this.traversal[this.currentStatus.step]) {
             console.log(this.isAccepted);
-            graph_store.update((n) => {
-                n.isAccepted = this.isAccepted;
-                return n;
-            });
             this.status = "idle";
-            return;
+            let myIsAccepted = this.isAccepted;
+            return { myIsAccepted};
         }
+
+
         let  currenStatus = this.currentStatus;
         let nextNode = this.traversal[this.currentStatus.step].stateAfter;
         let nextEdge = this.traversal[this.currentStatus.step].state + "-" + nextNode;

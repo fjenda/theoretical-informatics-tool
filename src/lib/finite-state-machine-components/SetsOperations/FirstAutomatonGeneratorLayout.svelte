@@ -1,19 +1,19 @@
 <script lang="ts">
 
-    import {first_graph_store, graph_store} from "../../stores/graphInitStore";
+    import {first_graph_store} from "../../../stores/graphInitStore";
 </script>
 
 <slot name="type-switch"/>
 <p class="epsilon">ε - copy if needed</p>
 <div class="layout">
-    {#if $graph_store.type === "DFA"}
+    {#if $first_graph_store.type === "DFA"}
         <div class="start-state-box">
             <slot name="start-state" />
         </div>
         <div class="final-states-box">
             <slot name="multi-select"  />
         </div>
-    {:else if $graph_store.type === "NFA"}
+    {:else if $first_graph_store.type === "NFA"}
         <div class="start-state-box">
             <slot  name="multi-select-start"/>
         </div>
