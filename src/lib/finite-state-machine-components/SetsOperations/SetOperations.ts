@@ -5,6 +5,30 @@ import {ConvertorToDFA} from "../ConvertorToDFA";
 
 export class SetOperations{
 
+    static union = (first : FiniteStateAutomaton, second : FiniteStateAutomaton) : FiniteStateAutomaton => {
+        return null;
+    }
+
+    static intersection = (first : FiniteStateAutomaton, second : FiniteStateAutomaton) : FiniteStateAutomaton => {
+        return null;
+    }
+
+    static concatenation = (first : FiniteStateAutomaton, second : FiniteStateAutomaton) : FiniteStateAutomaton => {
+        return null;
+    }
+
+    static complement = (first : FiniteStateAutomaton) : FiniteStateAutomaton => {
+        return null;
+    }
+
+    static difference = (first : FiniteStateAutomaton, second : FiniteStateAutomaton) : FiniteStateAutomaton => {
+        return null;
+    }
+
+    static iteration = (first : FiniteStateAutomaton) : FiniteStateAutomaton => {
+        return null;
+    }
+
     static dfaUnion = (first : FiniteStateAutomaton, second : FiniteStateAutomaton) : FiniteStateAutomaton => {
         let newNodes : GraphNodeMeta[] = [];
         let newTransitions: TransitionMeta[] = [];

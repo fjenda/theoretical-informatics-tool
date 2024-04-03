@@ -544,9 +544,9 @@
 <style lang="scss">
   .window {
     width: 90%;
-    min-width: 35rem;
+    //min-width: 35rem;
     height: 90%;
-    min-height: 28rem;
+    //min-height: 28rem;
     //margin: 2.5% auto;
 
     border-radius: 0.5rem;

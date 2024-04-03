@@ -54,12 +54,12 @@
         </FirstGraphWindow>
         <FirstTable slot="first_table" />
         <OperationsPanel slot="operation_bar">
-            <OperationButton  text="U" func={resutlToolbarFunctions?.unionFunc} />
-            <OperationButton  text="∩" func={resutlToolbarFunctions?.intersectionFunc} />
-            <OperationButton  text="D" func={resutlToolbarFunctions?.complementFunc} />
-            <OperationButton  text="Z" func={resutlToolbarFunctions?.concatenationFunc} />
-            <OperationButton  text="R" func={resutlToolbarFunctions?.differenceFunc} />
-            <OperationButton  text="I" func={resutlToolbarFunctions?.iterationFunc} />
+            <OperationButton  text="Union" func={resutlToolbarFunctions?.unionFunc} />
+            <OperationButton  text="Intersection" func={resutlToolbarFunctions?.intersectionFunc} />
+            <OperationButton  text="Complement" func={resutlToolbarFunctions?.complementFunc} />
+            <OperationButton  text="Concatenation" func={resutlToolbarFunctions?.concatenationFunc} />
+            <OperationButton  text="Difference" func={resutlToolbarFunctions?.differenceFunc} />
+            <OperationButton  text="Iteration" func={resutlToolbarFunctions?.iterationFunc} />
         </OperationsPanel>
         <SecondGraphWindow bind:secondToolbarFunctions={secondToolbarFunctions} slot="second-automaton">
             <SecondToolbar>

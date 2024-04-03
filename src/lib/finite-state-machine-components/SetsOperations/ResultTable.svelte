@@ -11,9 +11,7 @@ let tableData = [];
 let nodesMeta = [];
 
 $: if ($result_graph_store.generated == true || $result_graph_store.currentStatus) {
-    // console.log("HEREHERHER");
-    // console.log("Current status change: ", result_graph_store.currentStatus);
-    // do something when this store value changes
+
     tableData = [];
     // get traversal
     transitions = $result_graph_store.transitions;
@@ -142,8 +140,9 @@ $: if ($input_error_store.table) {
 <style lang="scss">
 
   .wrapper{
+    //padding-top: 1rem;
     width: 24vw;
-    height: 34.2vh;
+    height: 90%;
 
     min-height: 15.5rem;
     border-radius: 0.5rem;

@@ -58,7 +58,7 @@
   }
 
   .layout {
-    width: 100vw;
+    //width: 100vw;
     height: calc(100vh - 8rem);
     margin-top: 1rem;
     display: grid;
@@ -73,6 +73,7 @@
     height: 24vw;
     display: flex;
     justify-content: center;
+    align-content: center;
     grid-area: 1 / 1 / 2 / 4;
   }
 
@@ -81,16 +82,15 @@
     height: 20vw;
     display: flex;
     justify-content: center;
+    align-content: center;
     grid-area: 2 / 1 / 3 / 4;
   }
 
   .operation_bar {
     width: 100%;
-    //width: 5vw;
-    height: 24vw;
     display: flex;
     justify-content: center;
-    align-items: center;
+    align-items: flex-start;
     grid-area: 1 / 4 / 3 / 5;
   }
 
@@ -99,6 +99,7 @@
     height: 24vw;
     display: flex;
     justify-content: center;
+    align-content: center;
     grid-area: 1 / 5 / 2 / 8;
   }
 
@@ -107,6 +108,7 @@
     height: 20vw;
     display: flex;
     justify-content: center;
+    align-content: center;
     grid-area: 2 / 5 / 3 / 8;
   }
 
@@ -114,20 +116,25 @@
     width: 100%;
     height: 40vw;
     display: flex;
+    flex-wrap: wrap;
     justify-content: center;
+    align-content: center;
     grid-area: 3 / 3 / 4 / 6;
   }
 
   .result-table {
     display: flex;
+    flex-wrap: wrap;
     justify-content: center;
+    align-content: center;
     grid-area: 3 / 6 / 4 / 8;
   }
 
   .tool-bar {
-    width: 20vw;
     display: flex;
+    flex-wrap: wrap;
     justify-content: center;
+    align-content: center;
     grid-area: 3 / 1 / 4 / 3;
   }
 

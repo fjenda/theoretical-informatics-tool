@@ -46,7 +46,7 @@
         letter-spacing: .016rem;
         /*line-height: normal;*/
         max-width: 100%;
-        min-width: 3rem;
+        min-width: 12rem;
         overflow: visible;
         padding: 0.125rem 1.5rem;
         position: relative;

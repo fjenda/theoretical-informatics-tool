@@ -138,7 +138,7 @@
 <style lang="scss">
 
   .wrapper{
-    width: 24vw;
+    width: 90%;
     height: 34.2vh;
 
     min-height: 15.5rem;
