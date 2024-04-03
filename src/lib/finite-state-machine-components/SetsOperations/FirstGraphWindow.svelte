@@ -483,7 +483,9 @@
 
     let exampleNodes = [
         { id: "0", label: "q0", class: "start"},
-        { id: "1", label: "q1", class: "finish" },
+        { id: "1", label: "q1", class: "" },
+        { id: "2", label: "q2", class: "" },
+        { id: "3", label: "q3", class: "finish" },
     ];
 
     let exampleTransition = [
@@ -491,22 +493,57 @@
             state: "0",
             stateLabel: "q0",
             input: "a",
-            stateAfter: "0",
-            stateAfterLabel: "q0"
+            stateAfter: "1",
+            stateAfterLabel: "q1"
         },
         {
             state: "0",
             stateLabel: "q0",
             input: "b",
-            stateAfter: "1",
-            stateAfterLabel: "q1"
+            stateAfter: "0",
+            stateAfterLabel: "q0"
         },
         {
             state: "1",
             stateLabel: "q1",
             input: "b",
+            stateAfter: "2",
+            stateAfterLabel: "q2"
+        },
+        {
+            state: "1",
+            stateLabel: "q1",
+            input: "a",
+            stateAfter: "1",
+            stateAfterLabel: "q1"
+        },
+        {
+            state: "2",
+            stateLabel: "q2",
+            input: "b",
             stateAfter: "0",
             stateAfterLabel: "q0"
+        },
+        {
+            state: "2",
+            stateLabel: "q2",
+            input: "a",
+            stateAfter: "3",
+            stateAfterLabel: "q3"
+        },
+        {
+            state: "3",
+            stateLabel: "q3",
+            input: "a",
+            stateAfter: "3",
+            stateAfterLabel: "q3"
+        },
+        {
+            state: "3",
+            stateLabel: "q3",
+            input: "b",
+            stateAfter: "3",
+            stateAfterLabel: "q3"
         }
     ];
 
@@ -518,7 +555,7 @@
             n.transitions = exampleTransition;
             n.nodes = exampleNodes;
             n.startState = ["0"];
-            n.finishState = ["1"];
+            n.finishState = ["3"];
             n.input_alphabet = ["a", "b"];
             n.hideConvertTable = true;
             return n;

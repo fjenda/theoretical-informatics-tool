@@ -492,22 +492,29 @@
         {
             state: "0",
             stateLabel: "A0",
-            input: "a",
+            input: "b",
             stateAfter: "0",
             stateAfterLabel: "A0"
         },
         {
             state: "0",
             stateLabel: "A0",
-            input: "b",
+            input: "a",
             stateAfter: "1",
             stateAfterLabel: "A1"
         },
         {
             state: "1",
             stateLabel: "A1",
-            input: "b",
+            input: "a",
             stateAfter: "0",
+            stateAfterLabel: "A0"
+        },
+        {
+            state: "1",
+            stateLabel: "A1",
+            input: "b",
+            stateAfter: "1",
             stateAfterLabel: "A0"
         }
     ];
@@ -520,7 +527,7 @@
             n.transitions = exampleTransition;
             n.nodes = exampleNodes;
             n.startState = ["0"];
-            n.finishState = ["1"];
+            n.finishState = ["0"];
             n.input_alphabet = ["a", "b"];
             n.hideConvertTable = true;
             return n;
