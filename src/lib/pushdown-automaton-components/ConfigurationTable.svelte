@@ -203,7 +203,7 @@
     height: 37.75vh;
 
     min-height: 15.5rem;
-    border-radius: 0.5rem;
+    border-radius: 0.5rem !important;
 
     box-shadow: rgba(0, 0, 0, .2) 0 3px 5px -1px, rgba(0, 0, 0, .14) 0 6px 10px 0, rgba(0, 0, 0, .12) 0 1px 18px 0;
     box-sizing: border-box;
@@ -241,91 +241,6 @@
     border-radius: 0.5rem;
   }
 
-  //table {
-  //  overflow: visible auto;
-  //}
-  //
-  //.styled-table {
-  //  height: 100%;
-  //  width: 100%;
-  //
-  //  z-index: 100;
-  //
-  //  position: relative;
-  //
-  //  //min-width: 9.5rem;
-  //  //min-height: 15.5rem;
-  //
-  //  border-spacing: 0;
-  //
-  //  font-size: 0.9em;
-  //  font-family: sans-serif;
-  //
-  //  background-color: #f7f7f8;
-  //
-  //  table-layout: auto;
-  //
-  //  border-collapse: separate;
-  //
-  //
-  //  thead tr {
-  //    background-color: #9CC6FB;
-  //    color: #393939;
-  //
-  //    position: sticky;
-  //    top: 0;
-  //
-  //    z-index: 1;
-  //  }
-  //
-  //  th, td {
-  //    padding: 0.5rem;
-  //  }
-  //
-  //  tbody tr {
-  //    background-color: #f7f7f8;
-  //    color: #101820;
-  //    text-align: center;
-  //  }
-  //
-  //  tr:nth-child(even) {
-  //    background-color: #f2f2f2;
-  //  }
-  //}
-  //
-  //:global(body.dark-mode) .styled-table {
-  //  background-color: #25252d;
-  //  color: #ffffff;
-  //
-  //  thead tr {
-  //    background-color: #4A3F64;
-  //    color: #ffffff;
-  //  }
-  //
-  //  tbody tr {
-  //    background-color: #25252d;
-  //    color: #ffffff;
-  //  }
-  //
-  //  tr:nth-child(even) {
-  //    background-color: #1f1f25;
-  //  }
-  //}
-  //
-  //@media screen and (max-width: 1023px) and (min-width: 768px) {
-  //  .wrapper {
-  //    margin: 0.5rem auto;
-  //  }
-  //}
-  //
-  //@media screen and (max-width: 768px) {
-  //  .wrapper {
-  //    width: 95%;
-  //    height: 95%;
-  //    margin: 0.5rem auto;
-  //  }
-  //}
-
   :global(.tooltip) {
     white-space: nowrap;
     position: relative;
@@ -355,22 +270,10 @@
     color: #F4F8FF;
   }
 
-  //:global(.tooltip:not(:focus) #tooltip::before) {
-  //  content: '';
-  //  position: absolute;
-  //  top: 100%;
-  //  left: 50%;
-  //  transform: translateX(-50%);
-  //  width: 0.6em;
-  //  height: 0.25em;
-  //  background: inherit;
-  //  clip-path: polygon(0% 0%, 100% 0%, 50% 100%);
-  //}
-
   .divTable {
     display: table;
     width: 100%;
-    height: 100%;
+    height: 37.75vh;
 
     background-color: #f4f9ff;
     color: #393939;
@@ -434,16 +337,6 @@
     background-color: #4A3F64;
     color: #f4f9ff;
   }
-
-  //.divTableCell {
-  //  background-color: #f7f7f8;
-  //  color: #101820;
-  //}
-  //
-  //:global(body.dark-mode) .divTableCell {
-  //  background-color: #25252d;
-  //  color: #f4f9ff;
-  //}
 
   .divTableRow:nth-child(even) {
     background-color: #f2f2f2;

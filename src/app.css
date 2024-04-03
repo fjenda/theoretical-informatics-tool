@@ -37,3 +37,7 @@ html, body {
     transform: translateY(-3.75rem);
   }
 }
+
+.simplebar-mask {
+  border-radius: 0.5rem !important;
+}

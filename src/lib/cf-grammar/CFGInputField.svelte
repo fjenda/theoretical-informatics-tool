@@ -27,7 +27,7 @@
           bind:value={input}
           on:input={() => parseInput()}
           rows="5"
-          placeholder="{'1+1\n3+1\n1+4\n4+3\n(one test string per line)'}" />
+          placeholder="{'1+1\n3+1\n1+4\n4+3\n(one test string per line)'}"/>
 
 <style>
     #cfg-input {

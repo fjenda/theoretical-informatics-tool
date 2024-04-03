@@ -1,6 +1,12 @@
 <script lang="ts">
     import {grammar_results_store} from "../../stores/graphInitStore";
 
+    // SimpleBar
+    import 'simplebar'
+    import 'simplebar/dist/simplebar.css'
+    import ResizeObserver from "resize-observer-polyfill";
+    window.ResizeObserver = ResizeObserver;
+
     let tableData;
     let showDerivation: boolean = false;
     let shownDerivation: {rule: string, result: string}[];
@@ -33,7 +39,7 @@
                 <p class="in">"{shownInput}"</p>
             </div>
 
-            <div class="wrapper-smaller">
+            <div class="wrapper-smaller" data-simplebar>
                 <div class="divTable">
                     <div class="divTableHeading">
                         <div class="divTableRow">
@@ -55,13 +61,13 @@
             </div>
         </div>
     {:else}
-        <div class="divTable">
+        <div class="divTable" data-simplebar>
             <div class="divTableHeading">
                 <div class="divTableRow">
 <!--                    <div class="divTableHead">#</div>-->
-                    <div class="divTableHead">String</div>
-                    <div class="divTableHead">Accepted</div>
-                    <div class="divTableHead">Derivation</div>
+                    <div class="divTableHead input">String</div>
+                    <div class="divTableHead acc">Accepted</div>
+                    <div class="divTableHead der">Derivation</div>
                 </div>
             </div>
             <div class="divTableBody">
@@ -112,7 +118,7 @@
 
     //margin: 0 auto;
 
-    overflow: visible scroll;
+    //overflow: visible scroll;
   }
 
   @media screen and (max-width: 1000px) and (min-width: 768px) {
@@ -134,10 +140,12 @@
   .divTable {
     display: table;
     width: 100%;
-    height: 100%;
+    height: 37.75vh;
 
     background-color: #f4f9ff;
     color: #393939;
+
+    border-radius: 0.5rem;
   }
 
   :global(body.dark-mode) .divTable {
@@ -255,7 +263,8 @@
     background-color: #f7f7f8;
     color: #101820;
 
-    overflow: hidden auto;
+    border-radius: 0.5rem;
+    //overflow: hidden;
   }
 
   :global(body.dark-mode) .derivation-box {

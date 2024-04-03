@@ -5,6 +5,12 @@
     import {input_error_store} from "../../stores/inputErrorStore";
     import {PushdownAutomaton} from "./PushdownAutomaton";
 
+    // SimpleBar
+    import 'simplebar'
+    import 'simplebar/dist/simplebar.css'
+    import ResizeObserver from "resize-observer-polyfill";
+    window.ResizeObserver = ResizeObserver;
+
     let graphObject = new PushdownAutomaton();
 
     let highlightedElementsId : string[] = [];
@@ -651,8 +657,8 @@
         graphObject.graph = cytoscape({
 
             container: graphObject.div,
-            wheelSensitivity: 2,
-            minZoom: 0.5,
+            wheelSensitivity: 0.1,
+            minZoom: 0.45,
             maxZoom: 3,
 
             style: [
@@ -814,7 +820,7 @@
         <div class="type-wrapper">
             <slot name="type" />
         </div>
-        <div class="stack-wrapper" bind:this={stack_wrapper}>
+        <div class="stack-wrapper" bind:this={stack_wrapper} data-simplebar>
             <slot name="stack" />
         </div>
     </div>
@@ -872,9 +878,9 @@
         /*pointer-events: ;*/
 
         max-height: 30vh;
-        overflow-y: scroll;
+        /*overflow-y: scroll;*/
 
-        padding: 0 1rem;
+        padding: 0 2rem;
         /*outline: 0.125rem solid #000000;*/
     }
 </style>

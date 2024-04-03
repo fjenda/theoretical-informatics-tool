@@ -3,6 +3,12 @@
     import {CFGRule} from "./ContextFreeGrammar";
     import {afterUpdate} from "svelte";
 
+    // SimpleBar
+    import 'simplebar'
+    import 'simplebar/dist/simplebar.css'
+    import ResizeObserver from "resize-observer-polyfill";
+    window.ResizeObserver = ResizeObserver;
+
     $: if ($user_grammar_store.rules) {
         user_grammar_store.update(n => {
             n.updateTerminalsAndNonTerminals();
@@ -129,7 +135,7 @@
     };
 </script>
 
-<div class="grammar-wrapper" bind:this={wrapper}>
+<div class="grammar-wrapper" bind:this={wrapper} data-simplebar>
     {#each $user_grammar_store.rules as row, i}
         <div class="grammar-row">
             {#if i !== 0}
@@ -207,8 +213,8 @@
         width: 90%;
         height: 90%;
         gap: 0.35rem;
-        overflow-y: scroll;
-        margin-top: 2rem;
+        /*overflow-y: scroll;*/
+        margin-top: 3rem;
     }
 
     .grammar-row {
