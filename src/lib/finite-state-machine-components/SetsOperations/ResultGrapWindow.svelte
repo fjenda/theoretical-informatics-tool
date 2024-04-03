@@ -20,6 +20,8 @@
         intersectionFunc,
         complementFunc,
         concatenationFunc,
+        differenceFunc,
+        iterationFunc,
         saveGraph,
         resetLayout,
         testInput,
@@ -58,7 +60,7 @@
                 return;
             }
 
-            graphObject.startState = tmpNode.id;
+            graphObject.startState = [tmpNode.id];
             graphObject.traversal = graphObject.preprocessGraphInput();
 
             highlightElement(tmpNode.id);
@@ -105,6 +107,9 @@
             });
         }
 
+        if (result.nextNode == undefined || result.nextEdge == undefined){
+            return;
+        }
         let nextNode = result.nextNode;
         let nextEdge = result.nextEdge;
 
@@ -325,8 +330,12 @@
             firstAutomatonAlphabet.push(transition.input);
         });
 
+        //remove duplicates
+        firstAutomatonAlphabet = firstAutomatonAlphabet.filter((item, index) => firstAutomatonAlphabet.indexOf(item) === index);
+
         //remove epsilon from alphabet
         firstAutomatonAlphabet = firstAutomatonAlphabet.filter((item) => item !== "ε");
+
 
         firstAutomaton.input_alphabet = firstAutomatonAlphabet;
 
@@ -435,6 +444,13 @@
         resetInputVar.set(false);
         input_error_store.reset();
 
+
+    }
+
+    function differenceFunc(){
+        // curacku
+    }
+    function iterationFunc(){
 
     }
 

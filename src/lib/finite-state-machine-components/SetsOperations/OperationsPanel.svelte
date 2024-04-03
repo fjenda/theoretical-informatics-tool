@@ -27,9 +27,9 @@
 
         display: flex;
         flex-direction: column;
-        justify-content: start;
+        justify-content: center;
         align-items: center;
-        gap: 0.5rem;
+        gap: 1rem;
     }
 
     :global(body.dark-mode) .control-panel {

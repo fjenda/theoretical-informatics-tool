@@ -21,6 +21,7 @@
     import FinTestInput from "../lib/finite-state-machine-components/FinTestInput.svelte";
     import ResultTestInput from "../lib/finite-state-machine-components/SetsOperations/ResultTestInput.svelte";
     import Button from "../lib/Button.svelte";
+    import ResultTypeView from "../lib/finite-state-machine-components/SetsOperations/ResultTypeView.svelte";
 
     const landingPageUrl = "/Theoretical-informatics-tool";
     const automatonUrl = "/Theoretical-informatics-tool/tool/finite-state-automaton";
@@ -57,6 +58,8 @@
             <OperationButton  text="∩" func={resutlToolbarFunctions?.intersectionFunc} />
             <OperationButton  text="D" func={resutlToolbarFunctions?.complementFunc} />
             <OperationButton  text="Z" func={resutlToolbarFunctions?.concatenationFunc} />
+            <OperationButton  text="R" func={resutlToolbarFunctions?.differenceFunc} />
+            <OperationButton  text="I" func={resutlToolbarFunctions?.iterationFunc} />
         </OperationsPanel>
         <SecondGraphWindow bind:secondToolbarFunctions={secondToolbarFunctions} slot="second-automaton">
             <SecondToolbar>
@@ -79,6 +82,7 @@
                 <ResultToolbarButton type="reset-layout" text="Reset layout" func={resutlToolbarFunctions?.resetLayout} />
                 <ResultToolbarButton type="show-definition" text="Show definition" func={resutlToolbarFunctions?.generateConfiguration} />
             </ResultToolbar>
+            <ResultTypeView slot="type"/>
         </ResultGrapWindow>
         <ResultTable slot="result-table" />
         <FinGraphControlPanel  slot="tool-bar">

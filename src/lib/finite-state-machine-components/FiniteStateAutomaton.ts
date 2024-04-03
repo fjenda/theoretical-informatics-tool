@@ -168,7 +168,7 @@ export  class FiniteStateAutomaton{
 
     preprocessGraphInput() : TransitionMeta[] | null {
         const queue: { state: string; index: number; path: TransitionMeta[] }[] = [
-            { state: this.startState, index: 0, path: [] },
+            { state: this.startState[0], index: 0, path: [] },
         ];
 
         let closestDeclinedPath: TransitionMeta[] | null = null;
@@ -314,6 +314,10 @@ export  class FiniteStateAutomaton{
                 this.nodes.push({id: node.id, label: node.label});
             }
         });
+
+        this.input_alphabet = this.transitions.map(transition => transition.input);
+        //remove duplicates
+        this.input_alphabet = this.input_alphabet.filter((value, index, self) => self.indexOf(value) === index);
 
     }
 

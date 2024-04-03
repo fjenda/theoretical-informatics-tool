@@ -169,7 +169,7 @@
                 return;
             }
 
-            graphObject.startState = tmpNode.id;
+            graphObject.startState = [tmpNode.id];
             graphObject.traversal = graphObject.preprocessGraphInput();
 
             highlightElement(tmpNode.id);
@@ -222,6 +222,9 @@
             });
         }
 
+        if (result.nextNode == undefined || result.nextEdge == undefined){
+            return;
+        }
         let nextNode = result.nextNode;
         let nextEdge = result.nextEdge;
 
@@ -747,6 +750,7 @@
 
         createGraph(false);
         graph_store.update((n) => {
+            n.input_alphabet = graphObject.input_alphabet;
             n.generated = true;
             return n;
         });
