@@ -11,7 +11,7 @@
     import StackVisualiser from "../lib/pushdown-automaton-components/StackVisualiser.svelte";
     import TypeView from "../lib/pushdown-automaton-components/TypeView.svelte";
     import ConfigurationTable from "../lib/pushdown-automaton-components/ConfigurationTable.svelte";
-    import {graph_store} from "../stores/graphInitStore";
+    import {pda_graph_store} from "../stores/graphInitStore";
 
     const landingPageUrl = "/Theoretical-informatics-tool"
     let toolbarFunctions : ToolbarFunctions;
@@ -31,7 +31,7 @@
                        previousFunc={toolbarFunctions?.previousTransition}
                        stopFunc={toolbarFunctions?.resetTestInput}
             />
-            <Button type="test" text="Test" class={$graph_store.status === undefined ? "" : $graph_store.status === "idle" ? "btn-animation-slide-down" : "btn-animation-slide-up"} func={processTestInputFunction} />
+            <Button type="test" text="Test" class={$pda_graph_store.status === undefined ? "" : $pda_graph_store.status === "idle" ? "btn-animation-slide-down" : "btn-animation-slide-up"} func={processTestInputFunction} />
             <Button type="back" text="Back" url={landingPageUrl} />
         </GraphControlPanel>
         <GraphWindow bind:toolbarFunctions={toolbarFunctions} slot="window">
@@ -46,7 +46,7 @@
                 <ToolbarButton type="reset-layout" text="Reset layout" func={toolbarFunctions?.resetLayout} />
                 <ToolbarButton type="show-definition" text="Show definition" func={toolbarFunctions?.generateConfiguration} />
             </GraphToolbar>
-            <TypeView slot="type"/>
+            <TypeView slot="type" type={$pda_graph_store.type}/>
             <StackVisualiser slot="stack"/>
         </GraphWindow>
         <ConfigurationTable slot="table"/>

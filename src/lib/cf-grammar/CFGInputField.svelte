@@ -3,19 +3,22 @@
 
     let input: string = "";
 
+    // Function that parses the input inside the text area
     function parseInput() {
+        // split by new line and split the strings
         let parsed = input
             .split('\n')
             .map((line: string) => line.split(''));
 
+        // check for empty strings
         parsed.forEach((line: string[], index) => {
             if (line.length < 1) {
                 parsed[index] = [""];
             }
         });
 
-        // console.log(parsed);
 
+        // calling a function to check the inputs
         user_grammar_store.update((n) => {
             n.validateInputs(parsed);
             return n;
@@ -23,6 +26,7 @@
     }
 </script>
 
+<!-- Text area for the input strings -->
 <textarea id="cfg-input"
           bind:value={input}
           on:input={() => parseInput()}

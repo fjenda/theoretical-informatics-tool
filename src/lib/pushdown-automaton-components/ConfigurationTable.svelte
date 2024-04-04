@@ -1,5 +1,6 @@
 <script lang="ts">
-    import {graph_store, table_index_store} from "../../stores/graphInitStore";
+    import {pda_graph_store, table_index_store} from "../../stores/graphInitStore";
+    import type {TransitionType} from "../../types/pda-cfg/TransitionType";
     import {input_error_store} from "../../stores/inputErrorStore";
     import {tooltip} from "../tooltipUtils";
 
@@ -10,7 +11,7 @@
     window.ResizeObserver = ResizeObserver;
 
     // state, input, stack, ruleNumber, rule, rowNumber
-    let tableData: [string, [string], [string], [number], TransitionMeta, number][] = [];
+    let tableData: [string, [string], [string], [number], TransitionType, number][] = [];
 
     let traversal = [];
 
@@ -24,25 +25,25 @@
         tableData = [];
     }
 
-    $: if ($graph_store.traversal) {
+    $: if ($pda_graph_store.traversal) {
         tableData = [];
 
-        if ($graph_store.traversal.length) {
+        if ($pda_graph_store.traversal.length) {
             // get traversal
-            traversal = $graph_store.traversal;
+            traversal = $pda_graph_store.traversal;
 
             // get word
-            wordBackup = $graph_store.word.join("");
+            wordBackup = $pda_graph_store.word.join("");
 
             // find the first rule that will be used from traversal
-            let firstRuleIndex = $graph_store.transitions.findIndex((transition) => {
+            let firstRuleIndex = $pda_graph_store.transitions.findIndex((transition) => {
                 return transition === traversal[0];
             });
 
             // check if rule exists
             let firstRule;
             if (firstRuleIndex !== -1) {
-                firstRule = $graph_store.transitions[firstRuleIndex];
+                firstRule = $pda_graph_store.transitions[firstRuleIndex];
                 firstRuleIndex++;
             }
 
@@ -55,18 +56,18 @@
 
 
             // push the initial configuration into tableData
-            tableData.push([$graph_store.startState, word, $graph_store.stackBottom, firstRuleIndex ? firstRuleIndex : "#", firstRule ? firstRule : "", 0]);
+            tableData.push([$pda_graph_store.startState, word, $pda_graph_store.stackBottom, firstRuleIndex ? firstRuleIndex : "#", firstRule ? firstRule : "", 0]);
 
             for (let i = 0; i < traversal.length; i++) {
                 // rule about to be used
                 let nextRuleIndex, nextRule;
                 if (i !== traversal.length - 1) {
-                    nextRuleIndex = $graph_store.transitions.findIndex((transition) => {
+                    nextRuleIndex = $pda_graph_store.transitions.findIndex((transition) => {
                         return transition === traversal[i + 1];
                     });
 
                     if (nextRuleIndex !== -1)
-                        nextRule = $graph_store.transitions[nextRuleIndex];
+                        nextRule = $pda_graph_store.transitions[nextRuleIndex];
 
                     nextRuleIndex++;
                 }
@@ -112,14 +113,14 @@
                 tableData.push([traversal[i].stateAfter, word, stack.join(""), nextRuleIndex ? nextRuleIndex : "#", nextRule ? nextRule : "", i + 1]);
             }
         } else {
-            if ($graph_store.word) {
-                if ($graph_store.word.length > 10) {
-                    word = $graph_store.word.slice(0, 7) + "...";
+            if ($pda_graph_store.word) {
+                if ($pda_graph_store.word.length > 10) {
+                    word = $pda_graph_store.word.slice(0, 7) + "...";
                 } else {
-                    word = $graph_store.word.join("");
+                    word = $pda_graph_store.word.join("");
                 }
                 // push the initial configuration into tableData
-                tableData.push([$graph_store.startState, $graph_store.word.join(""), $graph_store.stackBottom, "#", "", 0]);
+                tableData.push([$pda_graph_store.startState, $pda_graph_store.word.join(""), $pda_graph_store.stackBottom, "#", "", 0]);
             }
         }
 
@@ -213,7 +214,7 @@
     //overflow: visible scroll;
   }
 
-  @media screen and (max-width: 1000px) and (min-width: 768px) {
+  @media screen and (max-width: 1200px) and (min-width: 768px) {
     .wrapper {
       margin: 0.5rem auto;
       width: 45vw;

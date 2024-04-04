@@ -36,6 +36,7 @@
     "flowbite-svelte-icons": "^0.3.6",
     "resize-observer-polyfill": "^1.5.1",
     "simplebar": "^6.2.5",
-    "svelte-routing": "^2.0.0"
+    "svelte-routing": "^2.0.0",
+    "svelte-watch-resize": "^1.0.3"
   }
 }

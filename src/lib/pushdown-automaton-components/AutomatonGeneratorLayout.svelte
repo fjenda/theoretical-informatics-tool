@@ -1,7 +1,3 @@
-<script lang="ts">
-    import {tooltip} from "../tooltipUtils";
-</script>
-
 <slot name="type-switch"/>
 <p class="epsilon">ε - copy if needed</p>
 

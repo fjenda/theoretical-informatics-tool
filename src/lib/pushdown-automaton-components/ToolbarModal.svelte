@@ -1,12 +1,21 @@
 <script lang="ts">
     import TransitionFunctionInput from "./TransitionFunctionInput.svelte";
     import ThreeWaySwitch from "./ThreeWaySwitch.svelte";
+    import MultiSelectState from "./MultiSelectState.svelte";
 
-    import {graph_store, resetInputVar, configuration_store, user_grammar_store} from "../../stores/graphInitStore";
+    import {
+        pda_graph_store,
+        resetInputVar,
+        pda_configuration_store,
+        user_grammar_store,
+        pda_backup_store
+    } from "../../stores/graphInitStore";
     import AutomatonGeneratorLayout from "./AutomatonGeneratorLayout.svelte";
     import {input_error_store} from "../../stores/inputErrorStore";
-    import StateComboBox from "../StateComboBox.svelte";
+    import StateComboBox from "./StateComboBox.svelte";
     import StateMultiSelect from "../StateMultiSelect.svelte";
+    import type {ToolbarButtonType} from "../../types/ToolbarButtonType";
+    import {MultiSelect} from "flowbite-svelte";
 
     export let showModal : boolean;
     export let type : ToolbarButtonType;
@@ -17,14 +26,13 @@
     let isFinishState : boolean = false;
     let isStartState : boolean = false;
     let config : string = "";
-    let processTransitionsFunction : Function = () => {};
 
     $: if (dialog && showModal) dialog.showModal();
 
     $: if (showModal && (type === "show-definition" || type === "cfg-definition")) {
         func();
 
-        if (type === "show-definition" && ($configuration_store.nodes?.length === 0 || !$configuration_store.nodes)) {
+        if (type === "show-definition" && ($pda_configuration_store.states?.length === 0 || !$pda_configuration_store.states)) {
             config = "No definition to show";
         } else if (type === "cfg-definition" && ($user_grammar_store.rules.length === 0)) {
             config = "No definition to show";
@@ -37,12 +45,12 @@
         if (type === "show-definition") {
             config = "";
             // states from nodes
-            config += `Q: {${$configuration_store.nodes.join(", ")}}\n`;
+            config += `Q: {${$pda_configuration_store.states.join(", ")}}\n`;
 
             // input alphabet and stack alphabet from transitions
             const alphabet = new Set();
             const stackAlphabet = new Set();
-            $configuration_store.transitions.forEach((transition) => {
+            $pda_configuration_store.transitions.forEach((transition) => {
                 if (transition.input !== "ε") {
                     alphabet.add(transition.input);
                 }
@@ -64,21 +72,21 @@
             // transitions
             let i = 1;
             config += "δ: {\n";
-            $configuration_store.transitions.forEach((transition) => {
+            $pda_configuration_store.transitions.forEach((transition) => {
                 config += `   ${i}. (${transition.state}, ${transition.input}, ${transition.stack}) → (${transition.stateAfter}, ${transition.stackAfter.join("")})\n`;
                 i++;
             });
             config += "}\n";
 
             // start state
-            config += `q0: ${$configuration_store.start_state}\n`;
+            config += `q0: ${$pda_configuration_store.initial_state}\n`;
 
             // stack default
-            config += `Z0: ${$configuration_store.stack_default}\n`;
+            config += `Z0: ${$pda_configuration_store.initial_stack_symbol}\n`;
 
             // final states
-            if ($configuration_store.type !== "empty")
-                config += `F: {${$configuration_store.final_states.join(", ")}}\n`;
+            if ($pda_configuration_store.type !== "empty")
+                config += `F: {${$pda_configuration_store.final_states.join(", ")}}\n`;
         } else if (type === "cfg-definition") {
             config = $user_grammar_store.toString();
         }
@@ -92,7 +100,7 @@
         return true;
     }
 
-    function checkInput(type) {
+    function checkInput(type: ToolbarButtonType) {
         if (!["new-node", "new-edge"].includes(type)) {
             func();
             return true;
@@ -162,10 +170,10 @@
         {:else if type === "generate-graph"}
             <AutomatonGeneratorLayout>
                 <ThreeWaySwitch slot="type-switch" />
-                <StateComboBox slot="start-state"/>
+                <StateComboBox slot="start-state" options={$pda_backup_store.nodes}/>
 
-                {#if $graph_store.type !== "empty"}
-                    <StateMultiSelect />
+                {#if $pda_backup_store.type !== "empty"}
+                    <MultiSelectState />
                 {/if}
                 <TransitionFunctionInput slot="transitions" />
 
@@ -185,7 +193,7 @@
             <div class="input-box">
                 {#if type === "new-node"}
                     <input bind:value={label} maxlength="8" placeholder="Label">
-                    {#if !$configuration_store.start_state || $configuration_store.start_state.length === 0}
+                    {#if !$pda_configuration_store.initial_state || $pda_configuration_store.initial_state.length === 0}
                         <div class="checkbox-box">
                             <label>
                                 <input id="start-state-checkbox" type="checkbox" bind:checked={isStartState} />

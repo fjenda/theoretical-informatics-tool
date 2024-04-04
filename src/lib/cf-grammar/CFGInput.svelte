@@ -1,7 +1,6 @@
-<script lang="ts">
-
-</script>
-
+<!--
+    RHS Window where the input is entered
+-->
 <div class="cfg-input">
     <h1>Test input</h1>
     <slot />
@@ -36,7 +35,7 @@
     background-color: #25252d;
   }
 
-  @media screen and (max-width: 1000px) and (min-width: 768px) {
+  @media screen and (max-width: 1200px) and (min-width: 768px) {
     .cfg-input {
       margin: 0.5rem auto;
     }

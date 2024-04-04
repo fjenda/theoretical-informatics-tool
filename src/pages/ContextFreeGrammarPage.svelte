@@ -8,9 +8,9 @@
     import CFGInputField from "../lib/cf-grammar/CFGInputField.svelte";
     import CFGResultsField from "../lib/cf-grammar/CFGResultsField.svelte";
     import CFGGrammarInput from "../lib/cf-grammar/CFGGrammarInput.svelte";
-    import {Converter} from "../lib/cf-grammar/Converter";
-    import {graph_store, user_grammar_store} from "../stores/graphInitStore";
-    import type {ContextFreeGrammar} from "../lib/cf-grammar/ContextFreeGrammar";
+    import {Converter} from "../lib/cf-grammar/cfg/Converter";
+    import {pda_graph_store, user_grammar_store} from "../stores/graphInitStore";
+    import type {ContextFreeGrammar} from "../lib/cf-grammar/cfg/ContextFreeGrammar";
     import ToolbarButton from "../lib/pushdown-automaton-components/ToolbarButton.svelte";
 
     const landingPageUrl = "/Theoretical-informatics-tool"
@@ -25,7 +25,7 @@
             return n;
         });
 
-        graph_store.update((n) => {
+        pda_graph_store.update((n) => {
             n.type = "cfg";
             return n;
         });
@@ -37,7 +37,7 @@
         converter.setGrammar(grammarCopy);
         converter.convertToPDA();
 
-        console.log($graph_store.transitions);
+        console.log($pda_graph_store.transitions);
     }
 
 </script>
@@ -54,9 +54,6 @@
         <CFGInput slot="cfg-input">
             <CFGInputField />
         </CFGInput>
-<!--        <CFGResults slot="cfg-results">-->
-<!--            <CFGResultsField />-->
-<!--        </CFGResults>-->
         <CFGResultsField slot="cfg-results" />
     </ContextFreeGrammarLayout>
 </main>

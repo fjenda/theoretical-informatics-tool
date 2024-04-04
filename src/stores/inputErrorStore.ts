@@ -2,6 +2,7 @@ import {type Writable, writable} from "svelte/store";
 
 export const input_error_store = function() {
     const {set, update, subscribe} : Writable<Partial<InputError>> = writable({
+        type: true,
         startState: true,
         finishState: true,
         transitions: true,
@@ -10,6 +11,7 @@ export const input_error_store = function() {
 
     const reset = () => {
         set({
+            type: true,
             startState: true,
             finishState: true,
             transitions: true,

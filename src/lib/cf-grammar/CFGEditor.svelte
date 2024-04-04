@@ -1,3 +1,7 @@
+<!--
+    LHS Window where the grammar is drawn
+-->
+
 <script lang="ts">
 
 </script>
@@ -40,7 +44,7 @@
     background-color: #25252d;
   }
 
-  @media screen and (max-width: 1000px) {
+  @media screen and (max-width: 1200px) {
     .cfg-editor {
       margin: 0.5rem auto;
     }

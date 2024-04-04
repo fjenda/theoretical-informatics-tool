@@ -1,9 +1,8 @@
 <script lang="ts">
-
-import {graph_store} from "../../stores/graphInitStore";
+    export let type: string = "";
 </script>
 
-<h2>Type: {$graph_store.type}</h2>
+<h2>Type: {type}</h2>
 
 <style>
     h2 {

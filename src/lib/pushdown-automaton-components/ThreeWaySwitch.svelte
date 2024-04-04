@@ -1,39 +1,46 @@
 <!-- Toggle.svelte -->
 <script lang="ts">
-    import {graph_store} from "../../stores/graphInitStore";
-    let toggleState = "empty";
+    import {pda_backup_store, pda_graph_store} from "../../stores/graphInitStore";
+    import {input_error_store} from "../../stores/inputErrorStore";
+
+    $pda_backup_store.type = "empty";
 
     const toggle = (newState) => {
-        toggleState = newState;
-
-        graph_store.update((n) => {
+        pda_backup_store.update((n) => {
             n.type = newState
             return n;
         });
+
+        input_error_store.update((n) => {
+            n.type = true;
+            return n;
+        });
     };
+
+
 </script>
 
 <div class="toggle-box">
     <div class="toggle-label">Type</div>
-    <div class="toggle-switch">
-        <div
-                class={$graph_store.type === "empty" ? 'selected' : ''}
+    <div class="toggle-switch {$input_error_store.type}">
+        <button
+                class={$pda_backup_store.type === "empty" ? 'selected' : ''}
                 on:click={() => toggle("empty")}
         >
             Empty
-        </div>
-        <div
-                class={$graph_store.type === "both" ? 'selected' : ''}
+        </button>
+        <button
+                class={$pda_backup_store.type === "both" ? 'selected' : ''}
                 on:click={() => toggle("both")}
         >
             Both
-        </div>
-        <div
-                class={$graph_store.type === "final" ? 'selected' : ''}
+        </button>
+        <button
+                class={$pda_backup_store.type === "final" ? 'selected' : ''}
                 on:click={() => toggle("final")}
         >
             Final
-        </div>
+        </button>
     </div>
 </div>
 
@@ -68,12 +75,19 @@
         color: #f4f9ff;
     }
 
-    .toggle-switch div {
+    .toggle-switch button {
         flex: 1;
         text-align: center;
         cursor: pointer;
         padding: 0.25rem;
         transition: border-color 0.3s, color 0.3s;
+
+        border: none;
+        background-color: transparent;
+
+        color: #f4f9ff;
+        font-synthesis: none;
+        font: normal normal 400 medium / 1.5 Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
     }
 
     .selected {
@@ -88,4 +102,10 @@
         outline: 0.15rem solid #9c81da;
         color: #9c81da;
     }
+
+    .false {
+        transition: background-color 0.25s;
+        background-color: #ff6969 !important;
+    }
+
 </style>

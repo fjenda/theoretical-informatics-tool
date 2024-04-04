@@ -1,14 +1,22 @@
+<!--TODO: REMOVE THIS-->
+<!--Test strings-->
+<!--2+3-->
+<!--(4*5)+6-->
+<!--7*(8+9)-->
+<!--1-->
+
+<!--
+LHS Grammar Window for editing the grammar
+-->
+
 <script lang="ts">
     import {user_grammar_store} from "../../stores/graphInitStore";
-    import {CFGRule} from "./ContextFreeGrammar";
+    import {CFGRule} from "./cfg/CFGRule";
     import {afterUpdate} from "svelte";
 
-    // SimpleBar
-    import 'simplebar'
-    import 'simplebar/dist/simplebar.css'
-    import ResizeObserver from "resize-observer-polyfill";
-    window.ResizeObserver = ResizeObserver;
+    let wrapper: HTMLDivElement;
 
+    // Reactive statement that updates the grammar store whenever there's a change in the grammar.
     $: if ($user_grammar_store.rules) {
         user_grammar_store.update(n => {
             n.updateTerminalsAndNonTerminals();
@@ -16,17 +24,11 @@
         });
 
         if (wrapper) scrollToBottom();
-
-        // console.log($user_grammar_store.toString());
     }
 
+    // Initial grammar that's loaded
     // reset the grammar store
     user_grammar_store.reset();
-
-// 2+3
-// (4*5)+6
-// 7*(8+9)
-// 1
 
     // grammar row object
     let row1 = new CFGRule('P', ["P*F", "P/F", "F"]);
@@ -41,8 +43,7 @@
         return n;
     });
 
-    // console.log($user_grammar_store);
-
+    // Function that updates the grammar store rows
     function updateRows() {
         user_grammar_store.update(n => {
             n.setUpdateRules(true);
@@ -50,6 +51,7 @@
         });
     }
 
+    // Function that removes a row from the grammar store
     function removeRow(row: number) {
         user_grammar_store.update(n => {
             n.removeRule(row);
@@ -59,6 +61,7 @@
         updateRows();
     }
 
+    // Function that adds a row to the grammar store
     function addRow(rule: CFGRule) {
         user_grammar_store.update(n => {
             n.addRule(rule);
@@ -68,6 +71,7 @@
         updateRows();
     }
 
+    // Function that splits a text input whenever a pipeline is pressed into two
     function checkIfPipeline(row: number, col: number) {
         // if user types a pipeline, split the input into multiple inputs
         if ($user_grammar_store.rules[row].rightSide[col].includes('|')) {
@@ -92,14 +96,13 @@
             }, 0);
         }
 
-        // updateRows();
         return;
     }
 
-    function checkIfBackspace(row: number, col: number, event) {
+    // Function that removes a text input whenever a backspace is pressed inside an empty input
+    function checkIfBackspace(row: number, col: number, event: KeyboardEvent) {
         // if user pressed backspace and the input is empty, remove the input
-        if (event.keyCode === 8 && $user_grammar_store.rules[row].rightSide[col].length === 0) {
-            event.preventDefault(); // Prevent browser default backspace behavior
+        if (event.key === "Backspace" && $user_grammar_store.rules[row].rightSide[col].length === 0) {
             // if it's not the first input, remove the input and move focus to the previous one
             if (col > 0) {
                 user_grammar_store.update(n => {
@@ -117,31 +120,29 @@
                     index += col - 1;
 
                     inputs[index].focus();
-                    // inputs[index].setSelectionRange(0, inputs[index].value.length);
                 }, 0);
             }
         }
         updateRows();
     }
 
-    let wrapper: HTMLDivElement;
+    // Function that does smooth scrolling whenever there are too many rules
+    const scrollToBottom = async () => {
+        wrapper.scroll({ top: wrapper.scrollHeight, behavior: 'smooth' });
+    };
 
     afterUpdate(() => {
         scrollToBottom();
     });
-
-    const scrollToBottom = async () => {
-        wrapper.scroll({ top: wrapper.scrollHeight, behavior: 'smooth' });
-    };
 </script>
 
-<div class="grammar-wrapper" bind:this={wrapper} data-simplebar>
+<div class="grammar-wrapper" bind:this={wrapper}>
     {#each $user_grammar_store.rules as row, i}
         <div class="grammar-row">
-            {#if i !== 0}
+            {#if i !== 0} <!-- Starting rule (no delete button) -->
                 <button class="delete-button" on:click={() => { removeRow(i) } }>X</button>
             {/if}
-            {#if i === 0}
+            {#if i === 0} <!-- Other rules -->
                 <button class="delete-button inactive">X</button>
 
                 <input class="left-side padding-left"
@@ -161,7 +162,7 @@
                        type="text"
                        bind:value={right}
                        on:input={() => { checkIfPipeline(i, j); }}
-                       on:keydown={(event) => { checkIfBackspace(i, j, event) } }
+                       on:keydown|preventDefault={(event) => { checkIfBackspace(i, j, event) } }
                        placeholder="ε" />
                 {#if j < row.rightSide.length - 1}
                     <span>&nbsp;｜&nbsp;</span>

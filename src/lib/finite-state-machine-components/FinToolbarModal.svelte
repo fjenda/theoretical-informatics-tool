@@ -141,7 +141,7 @@
                 <FinStateComboBox key={125} slot="start-state" />
 
                 <StartStateMultiSelect key={126} slot="multi-select-start" />
-                <StateMultiSelect key={127} slot="multi-select" />
+                <StateMultiSelect key={127} slot="multi-select" options={$graph_store.nodes}/>
 
                 <FinTransitionFuncInput slot="transitions" />
 

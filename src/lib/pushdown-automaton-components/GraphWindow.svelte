@@ -1,17 +1,23 @@
 <script lang="ts">
     import cytoscape from "cytoscape";
     import {onMount} from "svelte";
-    import {configuration_store, graph_store, resetInputVar, stack_store} from "../../stores/graphInitStore";
+    import {
+        pda_configuration_store,
+        resetInputVar,
+        stack_store,
+        pda_graph_store, pda_backup_store,
+    } from "../../stores/graphInitStore";
+    import type {PDAConfigurationType} from "../../types/pda-cfg/PDAConfigurationType";
     import {input_error_store} from "../../stores/inputErrorStore";
-    import {PushdownAutomaton} from "./PushdownAutomaton";
+    import {watchResize} from "svelte-watch-resize";
 
     // SimpleBar
     import 'simplebar'
     import 'simplebar/dist/simplebar.css'
     import ResizeObserver from "resize-observer-polyfill";
+    import {createDebounce} from "../utils/debounce";
+    import type {TransitionType} from "../../types/pda-cfg/TransitionType";
     window.ResizeObserver = ResizeObserver;
-
-    let graphObject = new PushdownAutomaton();
 
     let highlightedElementsId : string[] = [];
     let deleteButtonActive : boolean = false;
@@ -37,12 +43,12 @@
         getStack,
     } as ToolbarFunctions;
 
-    $: if ($graph_store.type) {
+    $: if ($pda_graph_store.type) {
         updateConfiguration("type");
     }
 
     function getStack() {
-        return graphObject.stack;
+        return $pda_graph_store.stack;
     }
 
     function testInput(wordCharacters : string[]) {
@@ -50,50 +56,39 @@
         removeHighlighted();
 
         labels_backup = [];
-        for (let element of graphObject.graph.elements()) {
+        for (let element of $pda_graph_store.graph.elements()) {
             if (element.isEdge()) {
                 labels_backup.push(element.data("label"));
             }
         }
         labels_backup = labels_backup.filter((label) => label !== undefined);
-        // console.log(labels_backup);
 
-        graph_store.update((n) => {
+        pda_graph_store.update((n) => {
             n.isAccepted = null;
             n.word = wordCharacters;
             n.status = "testing";
             return n;
         });
 
-        graphObject.status = "testing";
-        graphObject.stack = [$graph_store.stackBottom];
-        graphObject.word = wordCharacters;
-
         stack_store.update(() => {
-            return graphObject.stack;
+            return [$pda_graph_store.stackBottom];
         });
 
-        // console.log($graph_store.traversal);
-
-        graphObject.traversal = graphObject.process();
-        graph_store.update((n) => {
-            n.traversal = graphObject.traversal;
-            // console.log("updating store", n.traversal);
+        pda_graph_store.update((n) => {
+            n.traversal = $pda_graph_store.process();
             return n;
         });
 
-        // console.log($graph_store.traversal);
-
-        highlightElement(graphObject.startState);
-        graphObject.currentStatus = {state: graphObject.startState, input: graphObject.word, stack: graphObject.stack[graphObject.stack.length - 1], step: 0};
-        // console.log(graphObject.currentStatus);
+        highlightElement($pda_graph_store.startState);
+        $pda_graph_store.currentStatus = {state: $pda_graph_store.startState, input: $pda_graph_store.word, stack: $pda_graph_store.stack[$pda_graph_store.stack.length - 1], step: 0};
     }
 
+    const debouncerTransition = createDebounce(250);
     function nextTransition() {
         removeHighlighted();
         resetLabels()
 
-        let ret = graphObject.nextTransition();
+        let ret = $pda_graph_store.nextTransition();
 
         if (!ret) {
             return;
@@ -102,53 +97,52 @@
         let nextNode = ret.nextNode;
         let nextEdge = ret.nextEdge;
 
-        graphObject.currentStatus.state = nextNode;
-        graphObject.currentStatus.stack = graphObject.stack[graphObject.stack.length - 1];
-        graphObject.currentStatus.step++;
+        $pda_graph_store.currentStatus.state = nextNode;
+        $pda_graph_store.currentStatus.stack = $pda_graph_store.stack[$pda_graph_store.stack.length - 1];
+        $pda_graph_store.currentStatus.step++;
 
         // currently used rule
-        let rule = graphObject.traversal[graphObject.currentStatus.step - 1];
+        let rule = $pda_graph_store.traversal[$pda_graph_store.currentStatus.step - 1];
         // label
         let label = rule.input + "," + rule.stack + ";" + rule.stackAfter.join("");
-        graphObject.graph.elements().forEach(graphElement => {
+        $pda_graph_store.graph.elements().forEach(graphElement => {
             if (graphElement.id() === nextEdge && graphElement.isEdge()) {
-                // console.log("updating label", label);
                 graphElement.data("label", label);
             }
         });
 
         stack_store.update(() => {
-            return graphObject.stack;
+            return $pda_graph_store.stack;
         });
 
         scrollToTop();
 
-        setTimeout(() => {
+        debouncerTransition(() => {
             highlightElement(nextNode);
             highlightElement(nextEdge);
-        }, 250);
+        });
     }
 
     function previousTransition() {
         removeHighlighted();
         resetLabels()
 
-        let ret = graphObject.previousTransition();
+        let ret = $pda_graph_store.previousTransition();
 
         if (!ret) {
             return;
         }
 
-        let rule = graphObject.traversal[graphObject.currentStatus.step];
+        let rule = $pda_graph_store.traversal[$pda_graph_store.currentStatus.step];
         let label = rule.input + "," + rule.stack + ";" + rule.stackAfter.join("");
-        graphObject.graph.elements().forEach(graphElement => {
+        $pda_graph_store.graph.elements().forEach(graphElement => {
             if (graphElement.id() === ret.previousEdge && graphElement.isEdge()) {
                 graphElement.data("label", label);
             }
         });
 
         stack_store.update(() => {
-            return graphObject.stack;
+            return $pda_graph_store.stack;
         });
 
         scrollToTop();
@@ -156,30 +150,29 @@
         let previousNode = ret.previousNode;
         let previousEdge = ret.previousEdge;
 
-        graphObject.currentStatus.state = previousNode;
-        graphObject.currentStatus.stack = graphObject.stack[graphObject.stack.length - 1];
-        // console.log(graphObject.currentStatus);
+        $pda_graph_store.currentStatus.state = previousNode;
+        $pda_graph_store.currentStatus.stack = $pda_graph_store.stack[$pda_graph_store.stack.length - 1];
 
-        setTimeout(() => {
+        debouncerTransition(() => {
             highlightElement(previousNode);
             highlightElement(previousEdge);
-        }, 250);
+        });
     }
 
     function resetTestInput() {
         removeHighlighted();
 
-        graph_store.update((n) => {
+        pda_graph_store.update((n) => {
             n.isAccepted = null;
             n.status = "idle";
             return n;
         });
 
-        graphObject.resetTestInput();
+        $pda_graph_store.resetTestInput();
     }
 
     function highlightElement(id : string | number) {
-        graphObject.graph.elements().forEach(graphElement => {
+        $pda_graph_store.graph.elements().forEach(graphElement => {
             if (id == graphElement.id()) {
                 highlightedElementsId.push(graphElement.id());
                 graphElement.addClass("highlight");
@@ -188,7 +181,7 @@
     }
 
     function removeHighlighted() {
-        graphObject.graph.elements().forEach(graphElement => {
+        $pda_graph_store.graph.elements().forEach(graphElement => {
             if (highlightedElementsId.includes(graphElement.id())) {
                 graphElement.removeClass("highlight");
             }
@@ -201,7 +194,7 @@
         // console.log(labels_backup);
 
         let i = 0;
-        graphObject.graph.elements().forEach(graphElement => {
+        $pda_graph_store.graph.elements().forEach(graphElement => {
             if (graphElement.isEdge()) {
                 graphElement.data("label", labels_backup[i]);
                 i++;
@@ -210,34 +203,29 @@
     }
 
     function generateConfiguration() {
-        if (graphObject.nodes.length === 0 || graphObject.transitions.length === 0) {
+        if ($pda_graph_store.nodes.length === 0 || $pda_graph_store.transitions.length === 0) {
             //erase configuration
-            configuration_store.reset();
+            pda_configuration_store.reset();
             return;
         }
 
-        let configuration : AutomatonConfiguration = {};
-
         // states
-        let states = new Set();
-        graphObject.nodes.forEach((node : GraphNodeMeta) => {
+        let states = new Set<string>();
+        $pda_graph_store.nodes.forEach((node : GraphNodeMeta) => {
             states.add(node.id);
         });
-        configuration.nodes = Array.from(states);
-
 
         // input alphabet
-        const alphabet = new Set();
-        graphObject.transitions.forEach((transition) => {
+        const alphabet = new Set<string>();
+        $pda_graph_store.transitions.forEach((transition) => {
             if (transition.input !== "ε") {
                 alphabet.add(transition.input);
             }
         });
-        configuration.input_alphabet = Array.from(alphabet);
 
         // stack alphabet
-        const stackAlphabet = new Set();
-        graphObject.transitions.forEach((transition) => {
+        const stackAlphabet = new Set<string>();
+        $pda_graph_store.transitions.forEach((transition) => {
             if (transition.stack !== "ε") {
                 stackAlphabet.add(transition.stack);
             }
@@ -247,72 +235,52 @@
                     stackAlphabet.add(c);
                 }
             }
-
-        });
-        configuration.stack_alphabet = Array.from(stackAlphabet);
-
-        // transitions
-        graphObject.transitions.forEach((transition) => {
-            configuration.transitions = configuration.transitions ?? [];
-            configuration.transitions.push({
-                state: transition.state,
-                input: transition.input,
-                stack: transition.stack,
-                stateAfter: transition.stateAfter,
-                stackAfter: transition.stackAfter,
-            });
         });
 
-        // start state
-        configuration.start_state = graphObject.startState;
-
-        // stack default
-        configuration.stack_default = graphObject.transitions[0].stack;
-
-        // final states
-        configuration.final_states = graphObject.finishState;
-
-        // type
-        configuration.type = graphObject.type;
-
-        Object.assign($configuration_store, configuration);
-        // console.log($configuration_store);
+        pda_configuration_store.update(n => {
+            n.states = Array.from(states);
+            n.input_alphabet = Array.from(alphabet);
+            n.stack_alphabet = Array.from(stackAlphabet);
+            n.transitions = $pda_graph_store.transitions ?? [];
+            n.initial_state = $pda_graph_store.startState;
+            n.initial_stack_symbol = $pda_graph_store.stackBottom;
+            n.final_states = $pda_graph_store.finalStates;
+            n.type = $pda_graph_store.type;
+            return n;
+        });
     }
 
     function updateConfiguration(mode : string) {
-        let configuration : AutomatonConfiguration = {};
-
         switch (mode) {
             case "node": {
                 // states
-                let states = new Set();
-                graphObject.nodes.forEach((node : GraphNodeMeta) => {
+                let states = new Set<string>();
+                $pda_graph_store.nodes.forEach((node : GraphNodeMeta) => {
                     states.add(node.id);
                 });
-                configuration.nodes = Array.from(states);
 
-                // start state
-                configuration.start_state = graphObject.startState;
-
-                // final states
-                configuration.final_states = graphObject.finishState;
+                pda_configuration_store.update((n) => {
+                    n.states = Array.from(states);
+                    n.initial_state = $pda_graph_store.startState;
+                    n.final_states = $pda_graph_store.finalStates;
+                    return n;
+                });
 
                 break;
             }
 
             case "edge": {
                 // input alphabet
-                const alphabet = new Set();
-                graphObject.transitions.forEach((transition) => {
+                const alphabet = new Set<string>();
+                $pda_graph_store.transitions.forEach((transition) => {
                     if (transition.input !== "ε") {
                         alphabet.add(transition.input);
                     }
                 });
-                configuration.input_alphabet = Array.from(alphabet);
 
                 // stack alphabet
-                const stackAlphabet = new Set();
-                graphObject.transitions.forEach((transition) => {
+                const stackAlphabet = new Set<string>();
+                $pda_graph_store.transitions.forEach((transition) => {
                     if (transition.stack !== "ε") {
                         stackAlphabet.add(transition.stack);
                     }
@@ -323,48 +291,41 @@
                         }
                     }
                 });
-                configuration.stack_alphabet = Array.from(stackAlphabet);
 
-                // transitions
-                graphObject.transitions.forEach((transition) => {
-                    configuration.transitions = configuration.transitions ?? [];
-                    configuration.transitions.push({
-                        state: transition.state,
-                        input: transition.input,
-                        stack: transition.stack,
-                        stateAfter: transition.stateAfter,
-                        stackAfter: transition.stackAfter,
-                    });
+
+                pda_configuration_store.update((n) => {
+                    n.input_alphabet = Array.from(alphabet);
+                    n.stack_alphabet = Array.from(stackAlphabet);
+                    n.transitions = $pda_graph_store.transitions ?? [];
+                    return n;
                 });
 
                 break;
             }
 
             case "type": {
-                graphObject.type = $graph_store.type;
-
-                if (graphObject.type === "empty") {
-                    //remove finish class from nodes in graph
-                    graphObject.nodes.forEach((node : GraphNodeMeta) => {
+                if ($pda_graph_store.type === "empty") {
+                    // remove finish class from nodes in graph
+                    $pda_graph_store.nodes.forEach((node : GraphNodeMeta) => {
                         if (node.class === "finish") {
                             node.class = "";
                         }
                     });
 
-                    graphObject.graph?.elements().forEach(graphElement => {
-                        if (graphObject.finishState.includes(graphElement.id()) && !graphElement.isEdge()) {
+                    $pda_graph_store.graph?.elements().forEach(graphElement => {
+                        if ($pda_graph_store.finalStates.includes(graphElement.id()) && !graphElement.isEdge()) {
                             graphElement.removeClass("finish");
                         }
                     });
                 } else {
-                    graphObject.nodes.forEach((node : GraphNodeMeta) => {
-                        if (graphObject.finishState.includes(node.id)) {
+                    $pda_graph_store.nodes.forEach((node : GraphNodeMeta) => {
+                        if ($pda_graph_store.finalStates.includes(node.id)) {
                             node.class = "finish";
                         }
                     });
 
-                    graphObject.graph?.elements().forEach(graphElement => {
-                        if (graphObject.finishState.includes(graphElement.id()) && !graphElement.isEdge()) {
+                    $pda_graph_store.graph?.elements().forEach(graphElement => {
+                        if ($pda_graph_store.finalStates.includes(graphElement.id()) && !graphElement.isEdge()) {
                             graphElement.addClass("finish");
                         }
                     });
@@ -373,30 +334,35 @@
                 break;
             }
         }
-
-        Object.assign($configuration_store, configuration);
     }
 
     function checkGenerationInput() {
         input_error_store.reset();
 
-        if ($graph_store.transitions === undefined || $graph_store.transitions.length === 0) {
+        if ($pda_backup_store.transitions === undefined || $pda_backup_store.transitions.length === 0) {
             input_error_store.update((n) => {
                 n.transitions = false;
                 return n;
             });
         }
 
-        if ($graph_store.startState === undefined) {
+        if ($pda_backup_store.startState === undefined) {
             input_error_store.update((n) => {
                 n.startState = false;
                 return n;
             });
         }
 
-        if ($graph_store.finishState === undefined && $graph_store.type !== "empty") {
+        if ($pda_backup_store.finalStates === undefined && $pda_backup_store.type !== "empty") {
             input_error_store.update((n) => {
                 n.finishState = false;
+                return n;
+            });
+        }
+
+        if ($pda_backup_store.type === undefined) {
+            input_error_store.update((n) => {
+                n.type = false;
                 return n;
             });
         }
@@ -406,21 +372,25 @@
                 $input_error_store.finishState === false);
     }
 
-    function generateGraphFromTransitions() {
+    function generateGraphFromTransitions(deleteBefore : boolean = true) {
         if (!checkGenerationInput()) {
             return false;
         }
 
-        deleteGraph();
-        // console.log($graph_store);
-        Object.assign(graphObject, $graph_store);
+        if (deleteBefore) deleteGraph();
 
-        graphObject.generateGraphFromTransitions();
-
-        // console.log(graphObject);
+        pda_graph_store.update(n => {
+            n.type = $pda_backup_store.type;
+            n.startState = $pda_backup_store.startState;
+            n.finalStates = $pda_backup_store.finalStates;
+            n.transitions = $pda_backup_store.transitions;
+            n.nodes = $pda_backup_store.nodes;
+            pda_backup_store.reset();
+            n.generateGraphFromTransitions();
+            return n;
+        });
 
         createGraph(false);
-        // graph_store.reset();
         resetInputVar.set(false);
         input_error_store.reset();
 
@@ -429,7 +399,10 @@
 
     function addNode(node : GraphNodeMeta) {
         try {
-            graphObject.addNode(node);
+            pda_graph_store.update(n => {
+              n.addNode(node);
+                return n;
+            });
         } catch (e) {
             console.log(e);
         } finally {
@@ -450,14 +423,14 @@
             second = edge.label.split(",")[1].split(";")[0];
             third = edge.label.split(",")[1].split(";")[1].split(" ");
         }
-        if (graphObject.transitions.filter((transition : TransitionMeta) => {
+        if ($pda_graph_store.transitions.filter((transition : TransitionType) => {
             return transition.state === edge.source &&
                    transition.input === first &&
                    transition.stack === second &&
                    transition.stateAfter === edge.target &&
                    transition.stackAfter === third;
         }).length === 0) {
-            graphObject.transitions.push({
+            $pda_graph_store.transitions.push({
                 state: edge.source,
                 input: first,
                 stack: second,
@@ -470,7 +443,10 @@
     }
     function addEdge(edge : GraphEdgeMeta) {
         try {
-            graphObject.addEdge(edge);
+            pda_graph_store.update(n => {
+                n.addEdge(edge);
+                return n;
+            });
         } catch (e) {
             console.log(e);
         } finally {
@@ -485,12 +461,12 @@
         if (deleteButtonActive) {
             deleteGraphElement();
         } else {
-            graphObject.graph.removeAllListeners();
+            $pda_graph_store.graph.removeAllListeners();
         }
     }
 
     function deleteGraphElement() {
-        graphObject.graph.on("click", "*", function() {
+        $pda_graph_store.graph.on("click", "*", function() {
             //if clicked object is edge
             if (this.isEdge()) {
                 let tmpEdge = this.id();
@@ -498,14 +474,14 @@
                 let tmpEdgeTarget = this.target().id();
 
                 // remove edge from edges
-                if (graphObject.edges[tmpEdge].length > 1) {
-                    graphObject.edges[tmpEdge] = graphObject.edges[tmpEdge].filter((edge : GraphEdgeMeta) => edge.id !== tmpEdge);
+                if ($pda_graph_store.edges[tmpEdge].length > 1) {
+                    $pda_graph_store.edges[tmpEdge] = $pda_graph_store.edges[tmpEdge].filter((edge : GraphEdgeMeta) => edge.id !== tmpEdge);
                 } else {
-                    delete graphObject.edges[tmpEdge];
+                    delete $pda_graph_store.edges[tmpEdge];
                 }
 
                 // remove edge from transitions
-                graphObject.transitions = graphObject.transitions.filter((transition : TransitionMeta) => {
+                $pda_graph_store.transitions = $pda_graph_store.transitions.filter((transition : TransitionType) => {
                     return !(transition.state === tmpEdgeSource && transition.stateAfter === tmpEdgeTarget);
                 });
 
@@ -514,56 +490,52 @@
                 // if node has class final
                 if (this.hasClass("finish")) {
                     // get the number of finish nodes
-                    let finishNodes = graphObject.finishState.length;
-                    //let finishNodes = graphObject.nodes.slice().filter((node : GraphNodeMeta) => node.class.includes("finish")).length;
+                    let finishNodes = $pda_graph_store.finalStates.length;
                     if (finishNodes === 1) {
                         // console.log("cannot remove a finish class");
                         return;
                     } else {
                         // remove node from finishState
-                        graphObject.finishState = graphObject.finishState.filter((node : string) => node !== this.id());
+                        $pda_graph_store.finalStates = $pda_graph_store.finalStates.filter((node : string) => node !== this.id());
                     }
                 }
 
-                //if node has class start
+                // if node has class start
                 if (this.hasClass("start")) {
-                    graphObject.startState = "";
+                    $pda_graph_store.startState = "";
                 }
 
                 // remove node from nodes
-                graphObject.nodes = graphObject.nodes.filter((node : GraphNodeMeta) => node.id !== this.id());
+                $pda_graph_store.nodes = $pda_graph_store.nodes.filter((node : GraphNodeMeta) => node.id !== this.id());
 
                 // remove edges from edges
-                for (const edge in graphObject.edges) {
-                    graphObject.edges[edge] = graphObject.edges[edge].filter((edge : GraphEdgeMeta) => edge.source !== this.id() && edge.target !== this.id());
+                for (const edge in $pda_graph_store.edges) {
+                    $pda_graph_store.edges[edge] = $pda_graph_store.edges[edge].filter((edge : GraphEdgeMeta) => edge.source !== this.id() && edge.target !== this.id());
                 }
 
                 // remove transitions from transitions
-                graphObject.transitions = graphObject.transitions.filter((transition : TransitionMeta) => {
+                $pda_graph_store.transitions = $pda_graph_store.transitions.filter((transition : TransitionType) => {
                     return !(transition.state === this.id() || transition.stateAfter === this.id());
                 });
 
                 updateConfiguration("node");
             }
-            graphObject.graph.remove("#" + this.id());
+            $pda_graph_store.graph.remove("#" + this.id());
         });
     }
 
     function saveGraph () {
         const simplifiedGraphObject = {
-            edges: graphObject.edges,
-            finishState: graphObject.finishState,
-            nodes: graphObject.nodes,
-            startState: graphObject.startState,
-            transitions: graphObject.transitions,
-            type: graphObject.type,
+            edges: $pda_graph_store.edges,
+            finishState: $pda_graph_store.finalStates,
+            nodes: $pda_graph_store.nodes,
+            startState: $pda_graph_store.startState,
+            transitions: $pda_graph_store.transitions,
+            type: $pda_graph_store.type,
         };
 
         // save graphObject into json
         let jsonData = JSON.stringify(simplifiedGraphObject, null, 4);
-
-        // let jsonData = graphObject.graph.json(false);
-        // jsonData = JSON.stringify(jsonData, null, 4);
 
         const blob = new Blob([jsonData], { type: "application/json" });
         const url = URL.createObjectURL(blob);
@@ -596,9 +568,9 @@
                     if (!graphData.nodes || !graphData.edges || graphData.transitions.length === 0 || !graphData.startState || !graphData.finishState || !graphData.type) {
                         return;
                     }
-                    graph_store.update((n) => {
+                    pda_graph_store.update((n) => {
                         n.edges = graphData.edges;
-                        n.finishState = graphData.finishState;
+                        n.finalStates = graphData.finishState;
                         n.nodes = graphData.nodes;
                         n.startState = graphData.startState;
                         n.transitions = graphData.transitions;
@@ -619,28 +591,28 @@
     }
 
     function deleteGraph () {
-        graphObject.graph.elements().remove();
-        graphObject.nodes = [];
-        graphObject.edges = {};
-        graphObject.transitions = [];
-        graphObject.startState = "";
-        graphObject.finishState = [];
-        configuration_store.reset();
+        $pda_graph_store.graph.elements().remove();
+        $pda_graph_store.nodes = [];
+        $pda_graph_store.edges = {};
+        $pda_graph_store.transitions = [];
+        $pda_graph_store.startState = "";
+        $pda_graph_store.finalStates = [];
+        pda_configuration_store.reset();
     }
 
     function resetLayout() {
-        const layout = graphObject.graph.makeLayout({ name: "circle" });
-        layout.options.eles = graphObject.graph.elements();
+        const layout = $pda_graph_store.graph.makeLayout({ name: "circle" });
+        layout.options.eles = $pda_graph_store.graph.elements();
         layout.run();
     }
 
     function createGraph(genTransitions : boolean = false) {
-        graphObject.nodes.forEach((node : GraphNodeMeta) => {
+        $pda_graph_store.nodes.forEach((node : GraphNodeMeta) => {
             addNode(node);
         });
 
-        for (const edge in graphObject.edges) {
-            graphObject.edges[edge].forEach((edge : GraphEdgeMeta) => {
+        for (const edge in $pda_graph_store.edges) {
+            $pda_graph_store.edges[edge].forEach((edge : GraphEdgeMeta) => {
                 if (genTransitions) {
                     addEdgeFromButton(edge);
                 } else {
@@ -654,9 +626,9 @@
     }
 
     function graphInit() {
-        graphObject.graph = cytoscape({
+        $pda_graph_store.graph = cytoscape({
 
-            container: graphObject.div,
+            container: $pda_graph_store.div,
             wheelSensitivity: 0.1,
             minZoom: 0.45,
             maxZoom: 3,
@@ -789,34 +761,35 @@
         graphInit();
         // createGraph(false);
 
-        if ($graph_store.type === "cfg") {
-            graph_store.update((n) => {
+        if ($pda_graph_store.type === "cfg") {
+            pda_graph_store.update((n) => {
                 n.type = "empty";
                 return n;
             });
         } else {
-            graph_store.update((n) => {
+            pda_backup_store.update((n) => {
+                n.type = "empty";
+                n.startState = "q0";
+                n.finalStates = ["qF"];
                 n.transitions = tmp_transitions;
                 n.nodes = tmp_nodes;
-                n.startState = "q0";
-                n.finishState = ["qF"];
-                n.stackBottom = "Z";
-                n.type = "empty";
                 return n;
             });
         }
 
-        generateGraphFromTransitions();
+        generateGraphFromTransitions(false);
     });
-</script>
 
-<!-- TODO: fix resizing to reset layout -->
-<svelte:window on:resize={resetLayout} />
+
+    function handleResize() {
+        resetLayout();
+    }
+</script>
 
 <div class="window">
     <slot />
-    <div class="graph-wrapper">
-        <div bind:this={graphObject.div} class="graph" />
+    <div class="graph-wrapper" use:watchResize={handleResize}>
+        <div bind:this={$pda_graph_store.div} class="graph" />
         <div class="type-wrapper">
             <slot name="type" />
         </div>

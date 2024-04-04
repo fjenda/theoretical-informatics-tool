@@ -1,15 +1,35 @@
-import {EarleyParser, Rule} from "./EarleyParser";
-import {grammar_results_store} from "../../stores/graphInitStore";
+/*
+    ContextFreeGrammar.ts
+    Class containing the logic for CFG
+    Author: Jan Fojtík
+*/
+
+import {EarleyParser} from "../earley-parser/EarleyParser";
+import {Rule} from "../earley-parser/Rule";
+import {CFGRule} from "./CFGRule";
+import {GrammarResult} from "./GrammarResult";
+import {grammar_results_store} from "../../../stores/graphInitStore";
 
 export class ContextFreeGrammar {
+    // Starting symbol of the grammar, always set to 'S'
     startSymbol: string = 'S';
+
+    // An array of non-terminals
     nonTerminals: string[];
+
+    // An array of terminals
     terminals: string[];
+
+    // An array of rules with a default value
     rules: CFGRule[] = [new CFGRule('S', ['S+P', 'S-P', 'P'])];
-    // rules: CFGRule[] = [new CFGRule('A', ['', 'B'])];
+
+    // An instance of earley-parser
     parser: EarleyParser = null;
+
+    // A boolean to check if the rules need updating for the parser
     updateRules: boolean = true;
 
+    // Constructor for the CFG
     constructor(nonTerminals: string[], terminals: string[], rules: CFGRule[]) {
         this.nonTerminals = nonTerminals;
         this.terminals = terminals;
@@ -17,10 +37,16 @@ export class ContextFreeGrammar {
         this.parser = new EarleyParser(this.startSymbol, []);
     }
 
+    // Setter for the updateRules variable
     setUpdateRules(update: boolean) {
         this.updateRules = update;
     }
 
+    // Function to convert the rules for the parser
+    // (splitting the right side of the rules into individual symbols and
+    // splitting the rules with multiple right sides into multiple rules)
+    // params: rules: CFGRule[] - an array of rules
+    // returns: an array of the newly constructed rules for the parser
     convertRulesForParser(rules: CFGRule[]) {
         let newRules: Rule[] = [];
         rules.forEach(rule => {
@@ -33,22 +59,32 @@ export class ContextFreeGrammar {
             }
         });
 
+        // set the rules in the parser
         this.parser.setRules(newRules);
         return newRules;
     }
 
+    // Function to add a rule to the rules array
+    // params: rule: CFGRule - the rule to be added
     addRule(rule: CFGRule) {
         this.rules.push(rule);
     }
 
+    // Function to remove a rule from the rules array
+    // params: index: number - the index of the rule to be removed
     removeRule(index: number) {
         this.rules.splice(index, 1);
     }
 
+    // Function to update the non-terminals and terminals arrays
     updateTerminalsAndNonTerminals() {
+        // get the rules for the parser since its easier to get the non-terminals and terminals from there
         let splitRules = this.convertRulesForParser(this.rules);
 
+        // get all the non-terminals from the lhs of the rules
         this.nonTerminals = splitRules.map(rule => rule.lhs);
+
+        // get all the terminals from the rhs of the rules
         this.terminals = splitRules.reduce((acc, rule) => {
             rule.rhs.forEach(symbol => {
                 if (this.nonTerminals.indexOf(symbol) === -1 && acc.indexOf(symbol) === -1) {
@@ -61,12 +97,10 @@ export class ContextFreeGrammar {
         // remove duplicates
         this.nonTerminals = this.nonTerminals.filter((value, index, self) => self.indexOf(value) === index);
         this.terminals = this.terminals.filter((value, index, self) => self.indexOf(value) === index);
-
-        // console.log(this.nonTerminals, this.terminals);
     }
 
+    //  Function that returns a string representation of the grammar
     toString() {
-        // console.log(this);
         // copy the rules to avoid modifying the original rules
         const logRules = this.rules.map(rule => new CFGRule(rule.leftSide, rule.rightSide));
 
@@ -98,59 +132,41 @@ S: ${this.startSymbol},
 P: {\n    ${logRules.map(rule => rule.toString()).join('\n    ')}\n}`;
     }
 
+    // Function to validate the inputs
+    // params: inputs: string[][] - an array of strings to be validated
     validateInputs(inputs: string[][]) {
+        // check if the rules in the parser need to be updated
         if (this.updateRules) {
             this.convertRulesForParser(this.rules);
             this.updateRules = false;
         }
 
+        // create an array to store the results
         let results: GrammarResult[] = [];
+
+        // loop through the inputs and parse them
         for (let input of inputs) {
+            // restart the parser for each input
             this.parser.restart();
 
             let inputStr = input.join('');
             let result: { accepted: boolean; length: number; derivation: { rule: string; result: string }[][] } |
-                        { accepted: boolean ;length: number; derivation: { rule: string; result: string }[] };
+                        { accepted: boolean; length: number; derivation: { rule: string; result: string }[] };
 
+            // parsing of the input
             if (inputStr.length === 0)
                 result = this.parser.parse("");
             else
                 result = this.parser.parse(inputStr);
 
+            // store the result
             results.push(new GrammarResult(input, result.accepted, result.length, result.derivation));
         }
 
+        // store the results in the store
         grammar_results_store.set(results);
     }
 }
 
-export class CFGRule {
-    leftSide: string;
-    rightSide: string[];
 
-    constructor(leftSide: string, rightSide: string[]) {
-        this.leftSide = leftSide;
-        this.rightSide = rightSide.length === 0 ? [] : rightSide;
-    }
 
-    toString() {
-        return `${this.leftSide} -> ${this.rightSide.join(' | ')}`;
-    }
-}
-
-export class GrammarResult {
-    input: string[];
-    accepted: boolean;
-    length: number;
-    derivation: { rule: string; result: string }[] |
-                { rule: string; result: string }[][];
-
-    constructor(input: string[], accepted: boolean, length: number, derivation: { rule: string; result: string }[][] |
-                                                                                { rule: string; result: string }[])
-    {
-        this.input = input;
-        this.accepted = accepted;
-        this.length = length;
-        this.derivation = derivation;
-    }
-}

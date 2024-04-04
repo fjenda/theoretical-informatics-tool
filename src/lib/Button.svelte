@@ -3,7 +3,7 @@
     import  { navigate } from "svelte-routing";
     import {
         grammar_results_store,
-        graph_store,
+        graph_store, pda_graph_store,
         stack_store,
         table_index_store,
         user_grammar_store
@@ -18,24 +18,27 @@
     let resettableButtons: string[] = ["read-more", "tool", "back", "tab"];
 
     function resetStores() {
-        graph_store.update((n) => {
-            n.status = undefined;
-            n.isAccepted = undefined;
-            n.traversal = [];
-            n.word = "";
-            return n;
-        });
+        graph_store.reset();
+        pda_graph_store.reset();
         stack_store.set([]);
         table_index_store.set(-1);
         grammar_results_store.reset();
     }
+
+    function setStoresUndefined() {
+        $graph_store.status = undefined;
+        $graph_store.isAccepted = undefined;
+        $pda_graph_store.status = undefined;
+        $pda_graph_store.isAccepted = undefined;
+    }
+
     $: isDFA = $graph_store.type === 'DFA';
 </script>
 
 {#if type !== ""}
     {#if type === "convert"}
         <div class="{type}-box" {...$$restProps}>
-            <button class="{isDFA ? 'disableBut-17' : 'button-17'}" disabled={isDFA} on:click={() => {navigate(url); $graph_store.status = undefined; $graph_store.isAccepted = undefined; }} on:click={() => func()}>
+            <button class="{isDFA ? 'disableBut-17' : 'button-17'}" disabled={isDFA} on:click={() => {navigate(url);  setStoresUndefined();}} on:click={() => func()}>
                 {text}
             </button>
         </div>

@@ -1,5 +1,5 @@
 <script lang="ts">
-import {resetInputVar, graph_store} from "../../stores/graphInitStore";
+import {resetInputVar, pda_graph_store} from "../../stores/graphInitStore";
 import ToolbarModal from "./ToolbarModal.svelte";
 import {onMount} from "svelte";
 import {tooltip} from "../tooltipUtils";
@@ -29,7 +29,7 @@ onMount(() => {
 </script>
 {#if ["new-node", "new-edge", "generate-graph", "show-definition", "cfg-definition"].includes(type)}
     {#if type === "generate-graph"}
-        <button on:click={() => { showModal = true; resetInputVar.set(true); graph_store.reset(); }}>
+        <button on:click={() => { showModal = true; resetInputVar.set(true); }}>
             {text}
         </button>
     {:else}
@@ -43,16 +43,6 @@ onMount(() => {
             {text}
 
             {#if type === "generate-graph"}
-<!--                TODO: Czech version-->
-<!--                <span class="ttip" use:tooltip={"Pravidla pište ve tvaru\n\n" +-->
-<!--                                                "d(q0,a,Z)=(q0,A Z);\n" +-->
-<!--                                                "d(q1,b,A)=(q2,B A);\n" +-->
-<!--                                                "d(q2,c,B)=(q3,ε);\n" +-->
-<!--                                                "\nPokud nedáte mezeru mezi charaktery,\n" +-->
-<!--                                                "které se mají vložit na zásobník,\n" +-->
-<!--                                                "pravidla se špatně načtou."}>-->
-<!--                ?</span>-->
-
                 <span class="ttip" use:tooltip={"Write the rules in the form\n\n" +
                                                 "d(q0,a,Z)=(q1,A Z);\n" +
                                                 "d(q1,b,A)=(q2,B A);\n" +

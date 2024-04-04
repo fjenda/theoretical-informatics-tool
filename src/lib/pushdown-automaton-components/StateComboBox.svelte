@@ -1,51 +1,57 @@
 <script lang="ts">
-    import {input_error_store} from "../stores/inputErrorStore";
-    import {graph_store, resetInputVar} from "../stores/graphInitStore";
+    import {input_error_store} from "../../stores/inputErrorStore";
+    import {pda_backup_store, resetInputVar} from "../../stores/graphInitStore";
+    import type {GraphNodeMeta} from "../../types/GraphNodeMeta";
 
     export let type = 'startState';
+    export let options: GraphNodeMeta[] = [];
 
     let isOpen = false;
     let selectedOption = "";
-    let selectedOptionsID = "";
-    $: options = $graph_store.nodes?.map(node => node);
 
     $: if ($resetInputVar) {
         selectedOption = "";
     }
 
+    $: if (!options || options.length === 0) {
+        options = [];
+    }
+
     function toggleDropdown() {
+        if (options.length === 0) {
+            return;
+        }
+
         isOpen = !isOpen;
     }
 
-    function selectOption(option) {
-        selectedOptionsID = option.id;
+    function selectOption(option: GraphNodeMeta) {
         selectedOption = option.label;
 
         if (type === "startState") {
-            graph_store.update((n) => {
-                n.startState =  selectedOptionsID;
+            pda_backup_store.update((n) => {
+                n.startState = selectedOption;
                 return n;
             });
         }
-        // console.log($graph_store.startState);
 
         isOpen = false;
     }
 </script>
 
 <div class="combo-box">
-    <div class="selected-option {$input_error_store.startState}" on:click={toggleDropdown}>
+    <button class="selected-option {$input_error_store.startState}" on:click={toggleDropdown}>
         {selectedOption || 'Start state'}
-    </div>
+    </button>
     {#if isOpen}
         <ul class="dropdown active">
             {#each options as option}
-                <li class="option" on:click={() => {
+                <button class="option" on:click={() => {
                                              selectOption(option);
                                              input_error_store.update((n) => {
                                                  n.startState = true;
                                                  return n;
-                                             });}}>{option.label}</li>
+                                             });}}>{option.label}</button>
             {/each}
         </ul>
     {/if}
@@ -116,5 +122,17 @@
         cursor: pointer;
         text-align: center;
         list-style: none;
+    }
+
+    button {
+        width: 100%;
+        height: 100%;
+
+        background: none;
+        border: none;
+
+        color: #f4f9ff;
+        font-synthesis: none;
+        font: normal normal 400 medium / 1.5 Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
     }
 </style>

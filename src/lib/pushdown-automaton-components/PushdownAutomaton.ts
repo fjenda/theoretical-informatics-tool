@@ -1,36 +1,35 @@
 import type {GraphNodeMeta} from "../../types/GraphNodeMeta";
 import type {GraphEdgeDictionary} from "../../types/GraphObject";
-import type {TransitionMeta} from "../../types/TransitionMeta";
 import type {AutomatonState} from "../../types/AutomatonState";
 import type {GraphEdgeMeta} from "../../types/GraphEdgeMeta";
-import {graph_store} from "../../stores/graphInitStore";
+import type {TransitionType} from "../../types/pda-cfg/TransitionType";
 
 export class PushdownAutomaton {
     graph = null;
     div: HTMLDivElement = null;
-    status: string = "idle";
+    status: string;
     nodes: GraphNodeMeta[] = [];
     edges: GraphEdgeDictionary = {};
-    transitions: TransitionMeta[] = [];
+    transitions: TransitionType[] = [];
     stack: string[] = [];
     currentStatus: AutomatonState;
     word: string[] = [];
-    isAccepted: boolean = false;
-    traversal: TransitionMeta[] = [];
+    isAccepted: boolean = null;
+    traversal: TransitionType[] = [];
     type: string = "empty";
     startState: string = "q0";
-    finishState?: string[] = ["qF"];
+    finalStates?: string[] = ["qF"];
     stackBottom: string = "Z";
 
     constructor() { };
 
-    process() : TransitionMeta[] | null {
-        const queue: { state: string; stack: string[]; index: number; path: TransitionMeta[] }[] = [
+    process() : TransitionType[] | null {
+        const queue: { state: string; stack: string[]; index: number; path: TransitionType[] }[] = [
             { state: this.startState, stack: [this.stackBottom], index: 0 , path: []}
         ];
 
         const visitedConfigurations: Set<string> = new Set();
-        let closestDeclinedPath: TransitionMeta[] | null = null;
+        let closestDeclinedPath: TransitionType[] | null = null;
 
         while (queue.length > 0) {
             const { state, stack, index, path } = queue.shift()!;
@@ -43,7 +42,7 @@ export class PushdownAutomaton {
 
             switch (this.type) {
                 case "both": {  // if PA accepts by empty stack, empty word and finish state
-                    if ((index === this.word.length || this.word.length === 0) && stack.length === 0 && (this.finishState).includes(state)) {
+                    if ((index === this.word.length || this.word.length === 0) && stack.length === 0 && (this.finalStates).includes(state)) {
                         // console.log("accepted");
                         this.isAccepted = true;
                         return path; // String is accepted
@@ -61,7 +60,7 @@ export class PushdownAutomaton {
                 }
 
                 case "final": { // if PA accepts by empty word and finish state
-                    if ((this.finishState).includes(state) && (index === this.word.length || this.word.length === 0)) {
+                    if ((this.finalStates).includes(state) && (index === this.word.length || this.word.length === 0)) {
                         // console.log("accepted");
                         this.isAccepted = true;
                         return path; // String is accepted
@@ -120,8 +119,8 @@ export class PushdownAutomaton {
         });
 
         //if node class is finish, and it is not in graphObject.finishState
-        if (node.class?.includes("finish") && this.finishState.filter((finishNode : string) => finishNode === node.id).length === 0) {
-            this.finishState.push(node.id);
+        if (node.class?.includes("finish") && this.finalStates.filter((finishNode : string) => finishNode === node.id).length === 0) {
+            this.finalStates.push(node.id);
         }
 
         //if node class is start
@@ -177,9 +176,9 @@ export class PushdownAutomaton {
         let nodesArray = this.nodes.slice();
         this.nodes = [];
         nodesArray.forEach(node => {
-            if (this.finishState.includes(node.id) && node.id == this.startState && this.type !== "empty") {
+            if (this.finalStates.includes(node.id) && node.id == this.startState && this.type !== "empty") {
                 this.nodes.push({id: node.id, label: node.label, class: "finish start"});
-            } else if (this.finishState.includes(node.id) && this.type !== "empty") {
+            } else if (this.finalStates.includes(node.id) && this.type !== "empty") {
                 this.nodes.push({id: node.id, label: node.label, class: "finish"});
             } else if (node.id === this.startState) {
                 this.nodes.push({id: node.id, label: node.label, class: "start"});
@@ -189,23 +188,13 @@ export class PushdownAutomaton {
         });
     }
 
-    // Probably useless?
-    getStartNode() {
-        return this.nodes.filter((node: GraphNodeMeta) => node.id === this.startState);
-    }
-
     nextTransition() {
         if (this.status !== "testing") {
             return;
         }
 
         if (!this.traversal[this.currentStatus.step]) {
-            // console.log(this.isAccepted);
-            graph_store.update((n) => {
-                n.isAccepted = this.isAccepted;
-                return n;
-            });
-            this.status = "idle";
+            this.status = "null";
             return;
         }
 

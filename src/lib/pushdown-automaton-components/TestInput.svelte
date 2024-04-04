@@ -1,6 +1,7 @@
 <script lang="ts">
-    import { fly } from "svelte/transition";
-    import {graph_store, table_index_store} from "../../stores/graphInitStore";
+    import {fly} from "svelte/transition";
+    import {pda_graph_store, table_index_store} from "../../stores/graphInitStore";
+
     export let testInputFunction : Function = () => {};
     export const processFunction : Function = processTestInput;
     export let nextFunc : Function = () => {};
@@ -23,7 +24,7 @@
 
     function next() {
         table_index_store.update((table_index) => {
-            if (table_index < $graph_store.traversal.length) {
+            if (table_index < $pda_graph_store.traversal.length) {
                 return table_index + 1;
             } else {
                 return table_index;
@@ -56,20 +57,46 @@
         stopFunc();
     }
 
+    function isInputFocused() {
+        const input = document.getElementById("test-input");
+        return input === document.activeElement;
+    }
+
+    function onKeydown(e: KeyboardEvent) {
+        if (e.key === "Enter" && isInputFocused()) {
+            processTestInput();
+            return;
+        }
+
+        if (!showArrows) return;
+
+        if (e.key === "ArrowRight") {
+            next();
+        } else if (e.key === "ArrowLeft") {
+            previous();
+        } else if (e.key === "Escape") {
+            stopTesting();
+        }
+    }
+
 </script>
+
+<svelte:window on:keydown={onKeydown}/>
 
 <div class="input-box">
     <input id="test-input"
            bind:value={input}
-           class="test-input {$graph_store.isAccepted}"
-           placeholder="ex. aa">
+           class="test-input {$pda_graph_store.isAccepted}"
+           placeholder="ex. aa"
+           readonly={showArrows}
+    >
 </div>
 
 {#if showArrows}
     <div class="arrows-box" transition:fly={{ y: -50, duration: 500 }}>
-        <div class="arrow left" on:click={() => previous()}></div>
-        <div class="stop" on:click={() => stopTesting()}></div>
-        <div class="arrow right" on:click={() => next()}></div>
+        <button class="arrow left" on:click={() => previous()}></button>
+        <button class="stop" on:click={() => stopTesting()}></button>
+        <button class="arrow right" on:click={() => next()}></button>
     </div>
 {/if}
 
@@ -107,6 +134,11 @@
         display: flex;
         justify-content: center;
         margin: 1rem 0;
+    }
+
+    .arrows-box > button {
+        background: none;
+        border: none;
     }
 
     .stop {

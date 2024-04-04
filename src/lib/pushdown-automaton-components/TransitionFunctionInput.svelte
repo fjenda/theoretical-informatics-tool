@@ -1,8 +1,9 @@
 <script lang="ts">
-    import {graph_store, resetInputVar} from "../../stores/graphInitStore";
+    import {pda_backup_store, pda_graph_store, resetInputVar} from "../../stores/graphInitStore";
     import {input_error_store} from "../../stores/inputErrorStore";
+    import type {TransitionType} from "../../types/pda-cfg/TransitionType";
 
-    let transitions: TransitionMeta[] = [];
+    let transitions: TransitionType[] = [];
     let textInput: string = "";
     let textArea: HTMLTextAreaElement;
     let backdrop: HTMLDivElement;
@@ -130,7 +131,7 @@
             }
         }
 
-        graph_store.update((n) => {
+        pda_backup_store.update((n) => {
             n.nodes = nodes;
             return n;
         });
@@ -164,9 +165,8 @@
             return n;
         });
 
-        graph_store.update((n) => {
+        pda_backup_store.update((n) => {
             n.transitions = transitions;
-            n.stackBottom = "Z";
             return n;
         });
         storeNodes();
@@ -192,7 +192,7 @@
         backdrop.scrollTop = textArea.scrollTop;
     }
 
-    function transitionEquals(t1: TransitionMeta, t2: TransitionMeta) {
+    function transitionEquals(t1: TransitionType, t2: TransitionType) {
         return t1.state === t2.state &&
             t1.input === t2.input &&
             t1.stack === t2.stack &&

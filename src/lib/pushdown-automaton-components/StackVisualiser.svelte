@@ -1,15 +1,13 @@
 <script lang="ts">
-    import {graph_store, stack_store} from "../../stores/graphInitStore";
+    import {pda_graph_store, stack_store} from "../../stores/graphInitStore";
 
     let stackElements : string[] = [];
 
     $: if ($stack_store) {
-        if ($graph_store.status === "testing")
+        if ($pda_graph_store.status === "testing")
             stackElements = $stack_store.slice().reverse();
         else
             stackElements = [];
-
-        // console.log(stackElements);
     }
 
 

@@ -13,6 +13,7 @@ import TypeView from "../lib/pushdown-automaton-components/TypeView.svelte";
 import GraphControlPanel from "../lib/pushdown-automaton-components/GraphControlPanel.svelte";
 import RegexInput from "../lib/finite-state-machine-components/regex/RegexInput.svelte";
 import FinConvertTable from "../lib/finite-state-machine-components/FinConvertTable.svelte";
+import {graph_store} from "../stores/graphInitStore";
 
 
     const landingPageUrl = "/Theoretical-informatics-tool/"
@@ -55,7 +56,7 @@ import FinConvertTable from "../lib/finite-state-machine-components/FinConvertTa
                     <FinToolbarButton type="reset-layout" text="Reset layout" func={toolbarFunctions?.resetLayout} />
                     <FinToolbarButton type="show-definition" text="Show definition" func={toolbarFunctions?.generateConfiguration} />
                 </FinGraphToolbar>
-                <TypeView slot="type"/>
+                <TypeView slot="type" type={$graph_store.type}/>
             </FinGraphWindow>
             <FinTable slot="table"/>
             <FinConvertTable slot="convert-table"/>
