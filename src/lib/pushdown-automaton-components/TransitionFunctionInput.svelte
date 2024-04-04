@@ -69,7 +69,7 @@
 // aa, aba, abba - patri
 // aab - nepatri
 // ----------------
-// Context-free grammar (Not implemented yet)
+// Context-free grammar
 // d(q,ε,Z)=(q,a b Z b a);
 // d(q,ε,Z)=(q,A);
 // d(q,ε,A)=(q,c A c);
@@ -144,7 +144,7 @@
 
         let allTrue: boolean = true;
         for (let row of rows) {
-            console.log(row);
+            // console.log(row);
             if (validateTransition(row)) {
                 parseRow(row);
             } else {

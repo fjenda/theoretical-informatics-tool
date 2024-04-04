@@ -3,6 +3,9 @@
 </script>
 
 <div class="cfg-editor">
+    <div class="definition-button">
+        <slot name="definition"/>
+    </div>
     <slot name="grammar-input"/>
     <div class="button-wrapper">
         <slot name="back-button"/>
@@ -50,5 +53,11 @@
     align-items: center;
 
     margin: auto 2rem 1rem 2rem;
+  }
+
+  .definition-button {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
   }
 </style>

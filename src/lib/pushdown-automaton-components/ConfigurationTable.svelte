@@ -3,6 +3,12 @@
     import {input_error_store} from "../../stores/inputErrorStore";
     import {tooltip} from "../tooltipUtils";
 
+    // SimpleBar
+    import 'simplebar'
+    import 'simplebar/dist/simplebar.css'
+    import ResizeObserver from "resize-observer-polyfill";
+    window.ResizeObserver = ResizeObserver;
+
     // state, input, stack, ruleNumber, rule, rowNumber
     let tableData: [string, [string], [string], [number], TransitionMeta, number][] = [];
 
@@ -88,7 +94,7 @@
                 } else if (traversal[i].stackAfter[0] !== "ε") { // push (to the front) and dont push the last symbol in the stack
                     stack = traversal[i].stackAfter.concat(stackBackup.slice(1));
                 }
-                console.log(`${traversal[i].stackAfter[0]} -> ${stack}`);
+                // console.log(`${traversal[i].stackAfter[0]} -> ${stack}`);
 
 
                 // if stack is empty
@@ -118,7 +124,7 @@
         }
 
 
-        console.log(tableData);
+        // console.log(tableData);
         // reset vars
         resetVars();
     }
@@ -146,7 +152,7 @@
     }
 </script>
 
-<div class="wrapper">
+<div class="wrapper" data-simplebar>
     <div class="divTable">
         <div class="divTableHeading">
             <div class="divTableRow">
@@ -204,7 +210,7 @@
 
     //margin: 0 auto;
 
-    overflow: visible scroll;
+    //overflow: visible scroll;
   }
 
   @media screen and (max-width: 1000px) and (min-width: 768px) {
@@ -229,6 +235,10 @@
 
   :global(body.dark-mode) .active {
     background-color: #393939 !important;
+  }
+
+  .simplebar-content-wrapper {
+    border-radius: 0.5rem;
   }
 
   //table {

@@ -1,94 +1,74 @@
 <script lang="ts">
-    import TransitionFunctionInput from "./TransitionFunctionInput.svelte";
-    import ThreeWaySwitch from "./ThreeWaySwitch.svelte";
+    import type {ToolbarButtonType} from "../../../types/ToolbarButtonType";
+    import {
+        resetInputVar,
+        result_configuration_store, result_graph_store,
+    } from "../../../stores/graphInitStore.js";
+    import {input_error_store} from "../../../stores/inputErrorStore";
+    import SecondAutomatonGeneratorLayout from "./SecondAutomatonGeneratorLayout.svelte";
+    import SecondToggleSwitch from "./SecondToggleSwitch.svelte";
+    import SecondStateComboBox from "./SecondStateComboBox.svelte";
+    import SecondStartStateMultiSelect from "./SecondStartStateMultiSelect.svelte";
+    import SecondStateMultiSelect from "./SecondStateMultiSelect.svelte";
+    import SecondTransitionFuncInput from "./SecondTransitionFuncInput.svelte";
 
-    import {graph_store, resetInputVar, configuration_store, user_grammar_store} from "../../stores/graphInitStore";
-    import AutomatonGeneratorLayout from "./AutomatonGeneratorLayout.svelte";
-    import {input_error_store} from "../../stores/inputErrorStore";
-    import StateComboBox from "../StateComboBox.svelte";
-    import StateMultiSelect from "../StateMultiSelect.svelte";
+    let currentState = false;
+    let startNode  : string;
+    let endNode : string;
+    let alphabet : string;
 
     export let showModal : boolean;
     export let type : ToolbarButtonType;
     export let func : Function;
     let dialog;
-    let label : string, source : string, target : string;
-    let label_1 : string, label_2 : string, label_3 : string;
     let isFinishState : boolean = false;
     let isStartState : boolean = false;
     let config : string = "";
-    let processTransitionsFunction : Function = () => {};
+    let label : string, source : string, target : string, rules : string;
 
     $: if (dialog && showModal) dialog.showModal();
 
-    $: if (showModal && (type === "show-definition" || type === "cfg-definition")) {
+    $: if (showModal && type === "show-definition") {
         func();
 
-        if (type === "show-definition" && ($configuration_store.nodes?.length === 0 || !$configuration_store.nodes)) {
-            config = "No definition to show";
-        } else if (type === "cfg-definition" && ($user_grammar_store.rules.length === 0)) {
-            config = "No definition to show";
+        if ($result_configuration_store.nodes?.length === 0 || !$result_configuration_store.nodes) {
+            config = "No configuration to show";
         } else {
             generateConfiguration();
         }
     }
 
     function generateConfiguration() {
-        if (type === "show-definition") {
-            config = "";
-            // states from nodes
-            config += `Q: {${$configuration_store.nodes.join(", ")}}\n`;
+        config = "";
+        // states from nodes
+        config += `Q: {${$result_configuration_store.nodes.join(", ")}}\n`;
 
-            // input alphabet and stack alphabet from transitions
-            const alphabet = new Set();
-            const stackAlphabet = new Set();
-            $configuration_store.transitions.forEach((transition) => {
-                if (transition.input !== "ε") {
-                    alphabet.add(transition.input);
-                }
+        // input alphabet and stack alphabet from transitions
+        const alphabet = new Set();
+        $result_configuration_store.transitions.forEach((transition) => {
+            if (transition.input !== "ε") {
+                alphabet.add(transition.input);
+            }
 
-                if (transition.stack !== "ε") {
-                    stackAlphabet.add(transition.stack);
-                }
+        });
+        config += `Σ: {${Array.from(alphabet).join(", ")}}\n`;
 
-                for (let c of transition.stackAfter) {
-                    if (c !== "ε") {
-                        stackAlphabet.add(c);
-                    }
-                }
+        // transitions
+        config += "δ: {\n";
+        $result_configuration_store.transitions.forEach((transition) => {
+            config += `    (${transition.state}, ${transition.input}) → (${transition.stateAfter})\n`;
+        });
+        config += "}\n";
 
-            });
-            config += `Σ: {${Array.from(alphabet).join(", ")}}\n`;
-            config += `Γ: {${Array.from(stackAlphabet).join(", ")}}\n`;
+        // start state
+        config += `S: {${$result_configuration_store.start_state.join(", ")}}\n`;
 
-            // transitions
-            let i = 1;
-            config += "δ: {\n";
-            $configuration_store.transitions.forEach((transition) => {
-                config += `   ${i}. (${transition.state}, ${transition.input}, ${transition.stack}) → (${transition.stateAfter}, ${transition.stackAfter.join("")})\n`;
-                i++;
-            });
-            config += "}\n";
-
-            // start state
-            config += `q0: ${$configuration_store.start_state}\n`;
-
-            // stack default
-            config += `Z0: ${$configuration_store.stack_default}\n`;
-
-            // final states
-            if ($configuration_store.type !== "empty")
-                config += `F: {${$configuration_store.final_states.join(", ")}}\n`;
-        } else if (type === "cfg-definition") {
-            config = $user_grammar_store.toString();
-        }
+        // final states
+        config += `F: {${$result_configuration_store.final_states.join(", ")}}\n`;
     }
 
     function resetInput() {
-        label = "", source = "", target = "";
-        label_1 = "", label_2 = "", label_3 = "";
-        isFinishState = false;
-        isStartState = false;
+        label = "", source = "", target = "", rules = "";
         return true;
     }
 
@@ -98,76 +78,74 @@
             return true;
         }
 
-        if (type == "new-node" && !label?.trim()) {
-            // console.log("bad input");
+        if (!label?.trim()) {
+            console.log("bad input");
             return false;
         }
 
         if (type == "new-edge") {
-            if (!source?.trim() || !target?.trim() || !label_2?.trim()) {
-                // console.log("bad input");
+            if (!source?.trim() || !target?.trim()) {
+                console.log("bad input");
                 return false;
             }
         }
 
+        const modifiedLabel = label.trim();
+
         switch (type) {
             case "new-node": {
-                // console.log("new-node - " + modifiedLabel);
-                if (isStartState && isFinishState) {
-                    func({id: label, label: label, class: "finish start"});
-                } else if (isStartState)
-                    func({id: label, label: label, class: "start"});
-                else if (isFinishState) {
-                    func({id: label, label: label, class: "finish"});
-                } else {
-                    func({id: label, label: label});
-                }
-
+                console.log("new-node - " + modifiedLabel);
+                let folowingID = $result_graph_store.followingID;
+                console.log('new node string: ' + folowingID.toString());
+                func({ id: folowingID.toString(), label: label});
+                $result_graph_store.followingID++;
                 return true;
             }
 
             case "new-edge": {
-                if (!label_1) label_1 = "ε";
-                if (!label_3) label_3 = "ε";
-                const label_comb = `${label_1},${label_2};${label_3}`;
-                const label_arr = [label_1, label_2, label_3];
-                func({id: `${source}-${target}`, label: label_comb, source: source, target: target}, label_arr);
+                const modifiedSource = source.trim();
+                const modifiedTarget = target.trim();
+                let sourceID = $result_graph_store.nodes.find(node => node.label === modifiedSource)?.id;
+                let targetID = $result_graph_store.nodes.find(node => node.label === modifiedTarget)?.id;
+                console.log("new-edge - " + modifiedLabel + " " + sourceID + " -> " + targetID);
+                func({id: `${sourceID}-${targetID}`, label: label, source: sourceID, target: targetID});
                 return true;
             }
         }
     }
+
 </script>
 
 <dialog
-    bind:this={dialog}
-    on:close={() => (showModal = false)}
-    on:click|self={() => dialog.close()}
+        bind:this={dialog}
+        on:close={() => (showModal = false)}
+        on:click|self={() => dialog.close()}
 >
     <div on:click|stopPropagation>
         <slot name="header" />
-<!--        <hr />-->
         <slot />
 
-        {#if type === "show-definition" || type === "cfg-definition"}
+        {#if type === "show-definition"}
             <textarea id="transitions"
                       class="transitions-input"
-                      cols="35" rows="20"
+                      cols="30" rows="20"
                       readonly = {true}
                       value={config}
                       placeholder="Transitions"></textarea>
 
-<!--            <hr />-->
-            <button class="single-button" on:click={() => dialog.close()}>Close</button>
+            <hr />
+            <button on:click={() => dialog.close()}>Cancel</button>
 
-        {:else if type === "generate-graph"}
-            <AutomatonGeneratorLayout>
-                <ThreeWaySwitch slot="type-switch" />
-                <StateComboBox slot="start-state"/>
+        {:else if type === "generate-automata"}
+            <SecondAutomatonGeneratorLayout >
+                <SecondToggleSwitch slot="type-switch" />
 
-                {#if $graph_store.type !== "empty"}
-                    <StateMultiSelect />
-                {/if}
-                <TransitionFunctionInput slot="transitions" />
+                <SecondStateComboBox key={125} slot="start-state" />
+
+                <SecondStartStateMultiSelect key={126} slot="multi-select-start" />
+                <SecondStateMultiSelect key={127} slot="multi-select" />
+
+                <SecondTransitionFuncInput slot="transitions" />
 
                 <div class="button-wrapper" slot="buttons">
                     <button on:click={() => {
@@ -180,12 +158,15 @@
                     dialog.close()
                 }}>Apply</button>
                 </div>
-            </AutomatonGeneratorLayout>
+            </SecondAutomatonGeneratorLayout>
         {:else}
             <div class="input-box">
-                {#if type === "new-node"}
+                {#if ["new-node", "new-edge"].includes(type)}
                     <input bind:value={label} maxlength="8" placeholder="Label">
-                    {#if !$configuration_store.start_state || $configuration_store.start_state.length === 0}
+                {/if}
+
+                {#if type === "new-node"}
+                    {#if !$result_configuration_store.start_state || $result_configuration_store.start_state.length === 0}
                         <div class="checkbox-box">
                             <label>
                                 <input id="start-state-checkbox" type="checkbox" bind:checked={isStartState} />
@@ -200,9 +181,6 @@
                         </label>
                     </div>
                 {:else if type === "new-edge"}
-                    <input id="label-1" bind:value={label_1} maxlength="8" placeholder="ε">
-                    <input id="label-2" bind:value={label_2} maxlength="8" placeholder="Stack">
-                    <input id="label-3" bind:value={label_3} maxlength="8" placeholder="ε">
                     <input id="source-input" bind:value={source} maxlength="8" placeholder="Source">
                     <input id="target-input" bind:value={target} maxlength="8" placeholder="Target">
                 {/if}
@@ -267,6 +245,10 @@
         }
     }
 
+    button {
+        display: block;
+    }
+
     .input-box {
         display: flex;
         flex-direction: column;
@@ -297,13 +279,12 @@
     }
 
     #transitions {
-        /*pointer-events: auto;*/
+        pointer-events: none;
         background: #f7f7f8;
         color: #363636;
         border: none;
         outline: 0.05rem solid #363636;
         padding: 0.2rem;
-        overflow: auto;
     }
 
     :global(body.dark-mode) #transitions {

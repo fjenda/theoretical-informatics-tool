@@ -16,6 +16,12 @@
     import SecondToolbarButton from "../lib/finite-state-machine-components/SetsOperations/SecondToolbarButton.svelte";
     import FirstTypeView from "../lib/finite-state-machine-components/SetsOperations/FirstTypeView.svelte";
     import SecondTypeView from "../lib/finite-state-machine-components/SetsOperations/SecondTypeView.svelte";
+    import ResultToolbar from "../lib/finite-state-machine-components/SetsOperations/ResultToolbar.svelte";
+    import ResultToolbarButton from "../lib/finite-state-machine-components/SetsOperations/ResultToolbarButton.svelte";
+    import FinTestInput from "../lib/finite-state-machine-components/FinTestInput.svelte";
+    import ResultTestInput from "../lib/finite-state-machine-components/SetsOperations/ResultTestInput.svelte";
+    import Button from "../lib/Button.svelte";
+    import ResultTypeView from "../lib/finite-state-machine-components/SetsOperations/ResultTypeView.svelte";
 
     const landingPageUrl = "/Theoretical-informatics-tool";
     const automatonUrl = "/Theoretical-informatics-tool/tool/finite-state-automaton";
@@ -23,6 +29,8 @@
     let toolbarFunctions : ToolbarFunctions;
     let secondToolbarFunctions : ToolbarFunctions;
     let resutlToolbarFunctions : ToolbarFunctions;
+
+    let processTestInputFunction : Function = () => {};
 
 </script>
 
@@ -46,10 +54,12 @@
         </FirstGraphWindow>
         <FirstTable slot="first_table" />
         <OperationsPanel slot="operation_bar">
-            <OperationButton  text="U" func={resutlToolbarFunctions?.unionFunc} />
-            <OperationButton  text="∩" func={resutlToolbarFunctions?.intersectionFunc} />
-            <OperationButton  text="D" func={resutlToolbarFunctions?.complementFunc} />
-            <OperationButton  text="Z" func={resutlToolbarFunctions?.concatenationFunc} />
+            <OperationButton  text="Union" func={resutlToolbarFunctions?.unionFunc} />
+            <OperationButton  text="Intersection" func={resutlToolbarFunctions?.intersectionFunc} />
+            <OperationButton  text="Complement" func={resutlToolbarFunctions?.complementFunc} />
+            <OperationButton  text="Concatenation" func={resutlToolbarFunctions?.concatenationFunc} />
+            <OperationButton  text="Difference" func={resutlToolbarFunctions?.differenceFunc} />
+            <OperationButton  text="Iteration" func={resutlToolbarFunctions?.iterationFunc} />
         </OperationsPanel>
         <SecondGraphWindow bind:secondToolbarFunctions={secondToolbarFunctions} slot="second-automaton">
             <SecondToolbar>
@@ -66,8 +76,25 @@
             <SecondTypeView slot="type"/>
         </SecondGraphWindow>
         <SecondTable slot="second-table" />
-        <ResultGrapWindow bind:resutlToolbarFunctions={resutlToolbarFunctions}  slot="result-automaton" />
+        <ResultGrapWindow bind:resutlToolbarFunctions={resutlToolbarFunctions}  slot="result-automaton">
+            <ResultToolbar>
+                <ResultToolbarButton type="save-graph" text="Save graph" func={resutlToolbarFunctions?.saveGraph}  />
+                <ResultToolbarButton type="reset-layout" text="Reset layout" func={resutlToolbarFunctions?.resetLayout} />
+                <ResultToolbarButton type="show-definition" text="Show definition" func={resutlToolbarFunctions?.generateConfiguration} />
+            </ResultToolbar>
+            <ResultTypeView slot="type"/>
+        </ResultGrapWindow>
         <ResultTable slot="result-table" />
-        <FinGraphControlPanel  slot="tool-bar"></FinGraphControlPanel>
+        <FinGraphControlPanel  slot="tool-bar">
+            <ResultTestInput phText="ex. ABA" bind:processFunction={processTestInputFunction}
+                          testInputFunction={resutlToolbarFunctions?.testInput}
+                          nextFunc={resutlToolbarFunctions?.nextTransition}
+                          previousFunc={resutlToolbarFunctions?.previousTransition}
+                          stopFunc={resutlToolbarFunctions?.resetTestInput}
+            />
+
+            <Button type="test" text="Test" func={processTestInputFunction} />
+            <Button type="back" text="Back" url={landingPageUrl} />
+        </FinGraphControlPanel>
     </SetOperationsLayout>
 </main>

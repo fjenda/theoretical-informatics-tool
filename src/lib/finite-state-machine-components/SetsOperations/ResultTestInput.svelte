@@ -1,72 +1,61 @@
 <script lang="ts">
-    import { fly } from "svelte/transition";
-    import {graph_store, table_index_store} from "../../stores/graphInitStore";
+
+    import {fly} from 'svelte/transition';
+    import {result_graph_store} from "../../../stores/graphInitStore";
+
+    export let phText : string = "";
+
     export let testInputFunction : Function = () => {};
+
     export const processFunction : Function = processTestInput;
+
     export let nextFunc : Function = () => {};
+
     export let previousFunc : Function = () => {};
+
     export let stopFunc : Function = () => {};
 
     let input : string = '';
     let showArrows : boolean = false;
 
-    // $: if (!/^[a-zA-Z0-9]+$/.test(input) && input !== '') {
-    //     alert("Test input can be made of alphanumeric characters only!")
-    //     input = input.substring(0, input.length - 1);
-    // }
+    $: if (!/^[a-zA-Z0-9]+$/.test(input) && input !== '') {
+        alert("Test input can be made of alphanumeric characters only!")
+        input = input.substring(0, input.length - 1);
+    }
+
     function processTestInput() {
-        table_index_store.set(0);
 
         showArrows = true;
         testInputFunction(input.trim().split(""));
+
     }
 
     function next() {
-        table_index_store.update((table_index) => {
-            if (table_index < $graph_store.traversal.length) {
-                return table_index + 1;
-            } else {
-                return table_index;
-            }
-        });
-
-        // console.log($table_index_store);
-
         nextFunc();
+
     }
 
     function previous() {
-        table_index_store.update((table_index) => {
-            if (table_index > 0) {
-                return table_index - 1;
-            } else {
-                return table_index;
-            }
-        });
 
         previousFunc();
     }
 
     function stopTesting() {
         showArrows = false;
-        // console.log("stop");
-
-        table_index_store.set(-1);
 
         stopFunc();
     }
-
 </script>
 
 <div class="input-box">
     <input id="test-input"
            bind:value={input}
-           class="test-input {$graph_store.isAccepted}"
-           placeholder="ex. aa">
+           class="test-input {$result_graph_store.isAccepted}"
+           placeholder={phText}/>
 </div>
 
 {#if showArrows}
-    <div class="arrows-box" transition:fly={{ y: -50, duration: 500 }}>
+    <div class="arrows-box" transition:fly={{ y: 50, duration: 500 }}>
         <div class="arrow left" on:click={() => previous()}></div>
         <div class="stop" on:click={() => stopTesting()}></div>
         <div class="arrow right" on:click={() => next()}></div>
@@ -100,7 +89,7 @@
         min-height: 2.5rem;
 
         border-radius: 0.5rem;
-        border: 0.05rem solid #101820;
+        border: 0.125rem solid #101820;
     }
 
     .arrows-box {
@@ -114,7 +103,6 @@
         height: 1.25rem;
         background-color: #000;
         margin: 0 1rem;
-        cursor: pointer;
     }
 
     :global(body.dark-mode) .stop {
@@ -125,7 +113,6 @@
         width: 1.25rem;
         height: 1.25rem;
         position: relative;
-        cursor: pointer;
     }
 
     :global(body.dark-mode) .left::before {

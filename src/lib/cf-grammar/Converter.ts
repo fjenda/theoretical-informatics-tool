@@ -721,7 +721,7 @@ export class Converter {
         });
 
         rules.forEach(rule => {
-            console.log(rule);
+            // console.log(rule);
         });
 
         return transitions;

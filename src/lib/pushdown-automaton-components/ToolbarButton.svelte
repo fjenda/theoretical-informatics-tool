@@ -27,7 +27,7 @@ onMount(() => {
 
 
 </script>
-{#if ["new-node", "new-edge", "generate-graph", "show-definition"].includes(type)}
+{#if ["new-node", "new-edge", "generate-graph", "show-definition", "cfg-definition"].includes(type)}
     {#if type === "generate-graph"}
         <button on:click={() => { showModal = true; resetInputVar.set(true); graph_store.reset(); }}>
             {text}
@@ -40,7 +40,7 @@ onMount(() => {
 
     <ToolbarModal bind:showModal type={type} func={func}>
         <h2 class="header" slot="header">
-            {type.split("-").map((word) => word.charAt(0).toUpperCase() + word.slice(1)).join(" ")}
+            {text}
 
             {#if type === "generate-graph"}
 <!--                TODO: Czech version-->

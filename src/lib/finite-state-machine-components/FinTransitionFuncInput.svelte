@@ -93,6 +93,22 @@
 <!--d(q2,ε)=q5;-->
 <!--d(q4,ε)=q5;-->
 
+<!--d(q0,a)=q1;-->
+<!--d(q0,b)=q1;-->
+<!--d(q0,ε)=q3;-->
+<!--d(q1,a)=q3;-->
+<!--d(q1,b)=q2;-->
+<!--d(q2,a)=q1;-->
+<!--d(q2,a)=q2;-->
+<!--d(q2,b)=q3;-->
+
+<!--d(q1,b)=q2;-->
+<!--d(q1,a)=q3;-->
+<!--d(q2,b)=q3;-->
+<!--d(q2,a)=q2;-->
+<!--d(q1,ε)=q3;-->
+
+
 <script lang="ts">
 
     import {configuration_store, graph_store, resetInputVar} from "../../stores/graphInitStore";

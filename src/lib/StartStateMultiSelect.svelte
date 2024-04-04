@@ -34,7 +34,7 @@
             n.startState = selectedOptionsId;
             return n;
         });
-        console.log("Start states v boxu" + $graph_store.startState)
+        // console.log("Start states v boxu" + $graph_store.startState)
     }
 </script>
 

@@ -5,6 +5,30 @@ import {ConvertorToDFA} from "../ConvertorToDFA";
 
 export class SetOperations{
 
+    static union = (first : FiniteStateAutomaton, second : FiniteStateAutomaton) : FiniteStateAutomaton => {
+        return null;
+    }
+
+    static intersection = (first : FiniteStateAutomaton, second : FiniteStateAutomaton) : FiniteStateAutomaton => {
+        return null;
+    }
+
+    static concatenation = (first : FiniteStateAutomaton, second : FiniteStateAutomaton) : FiniteStateAutomaton => {
+        return null;
+    }
+
+    static complement = (first : FiniteStateAutomaton) : FiniteStateAutomaton => {
+        return null;
+    }
+
+    static difference = (first : FiniteStateAutomaton, second : FiniteStateAutomaton) : FiniteStateAutomaton => {
+        return null;
+    }
+
+    static iteration = (first : FiniteStateAutomaton) : FiniteStateAutomaton => {
+        return null;
+    }
+
     static dfaUnion = (first : FiniteStateAutomaton, second : FiniteStateAutomaton) : FiniteStateAutomaton => {
         let newNodes : GraphNodeMeta[] = [];
         let newTransitions: TransitionMeta[] = [];
@@ -213,14 +237,15 @@ export class SetOperations{
         for(let firstNode of first.nodes){
             let classOfNode = "";
             if (first.startState.includes(firstNode.id)){
-                classOfNode = "finish";
-                newFinishState.push(indexCounter.toString());
-            }
-
-            if (first.finishState.includes(firstNode.id)){
                 classOfNode = "start";
                 newStartState.push(indexCounter.toString());
             }
+
+            if (!first.finishState.includes(firstNode.id)){
+                classOfNode = "finish";
+                newFinishState.push(indexCounter.toString());
+            }
+            
 
             newNodes.push({id: indexCounter.toString(), label: firstNode.label, class: classOfNode});
             indexCounter++;
@@ -259,6 +284,8 @@ export class SetOperations{
 
         newNodes.push({id: indexCounter.toString(), label: "S", class: "start"});
         indexCounter++;
+
+        newStartState.push("0");
 
         for(let firstNode of first.nodes){
             let classOfNode = "";
@@ -372,13 +399,13 @@ export class SetOperations{
         for(let firstNode of toDFAAtomaton.nodes){
             let classOfNode = "";
             if (toDFAAtomaton.startState.includes(firstNode.id)){
-                classOfNode = "finish";
-                newFinishState.push(indexCounter.toString());
-            }
-
-            if (toDFAAtomaton.finishState.includes(firstNode.id)){
                 classOfNode = "start";
                 newStartState.push(indexCounter.toString());
+            }
+
+            if (!toDFAAtomaton.finishState.includes(firstNode.id)){
+                classOfNode = "finish";
+                newFinishState.push(indexCounter.toString());
             }
 
             newNodes.push({id: indexCounter.toString(), label: firstNode.label, class: classOfNode});

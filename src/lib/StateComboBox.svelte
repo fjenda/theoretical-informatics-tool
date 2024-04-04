@@ -27,7 +27,7 @@
                 return n;
             });
         }
-        console.log($graph_store.startState);
+        // console.log($graph_store.startState);
 
         isOpen = false;
     }
