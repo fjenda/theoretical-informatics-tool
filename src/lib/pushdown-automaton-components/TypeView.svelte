@@ -1,3 +1,10 @@
+<!--
+    TypeView.svelte
+    This is the view that displays the type of the visualized graph
+
+    Author: Jan Fojtík
+-->
+
 <script lang="ts">
     export let type: string = "";
 </script>

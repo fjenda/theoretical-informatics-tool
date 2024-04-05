@@ -1,5 +1,6 @@
 /*
     TreeNode.ts
+    Part of ParserTree
     Class containing the logic for the parser tree node
 
     Author: Jan Fojtík

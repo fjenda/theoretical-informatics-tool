@@ -1,4 +1,4 @@
-<script lang="ts">
+<script>
 
     import {graph_store, resetInputVar} from "../stores/graphInitStore";
     import {input_error_store} from "../stores/inputErrorStore";
@@ -6,9 +6,8 @@
     let selectedOptions = [];
     let selectedOptionsId = [];
     let selectHeight = "10.6rem"; // Výchozí výška
-    export let storeObject;
 
-    $: options = $storeObject.states;
+    $: options = $graph_store.nodes?.map(node => node);
 
     $: if ($resetInputVar) {
         selectedOptions = [];
@@ -39,10 +38,10 @@
             n.finishState = true;
             return n;
         });
-
         selectedOptionsId = findIDs();
         selectedOptions = Array.from(event.target.selectedOptions, option => option.label);
-
+        // console.log(selectedOptionsId);
+        // console.log(selectedOptions);
         graph_store.update(n => {
             n.finishState = selectedOptionsId;
             return n;

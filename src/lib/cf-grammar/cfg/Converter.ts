@@ -6,7 +6,7 @@
 
 import {ContextFreeGrammar} from "./ContextFreeGrammar";
 import {CFGRule} from "./CFGRule";
-import {pda_graph_store} from "../../../stores/graphInitStore";
+import {pda_backup_store, pda_graph_store} from "../../../stores/graphInitStore";
 import type {TransitionType} from "../../../types/pda-cfg/TransitionType";
 
 export class Converter {
@@ -141,8 +141,8 @@ export class Converter {
     }
 
     // Function that checks if the non-terminal is directly recursive
-    // params: nonTerminal: string - the non-terminal to check
-    // returns: boolean - true if the non-terminal is directly recursive, false otherwise
+    // params: nonTerminal: string      - the non-terminal to check
+    // returns: boolean                 - true if the non-terminal is directly recursive, false otherwise
     private isDirectlyRecursive(nonTerminal: string) {
         return this.grammar.rules.some(rule => rule.leftSide === nonTerminal && rule.rightSide[0] === nonTerminal);
     }
@@ -196,7 +196,7 @@ export class Converter {
         });
 
         // update the graph store
-        pda_graph_store.update((n) => {
+        pda_backup_store.update((n) => {
             n.transitions = transitions;
             n.startState = state;
             n.finalStates = [state];

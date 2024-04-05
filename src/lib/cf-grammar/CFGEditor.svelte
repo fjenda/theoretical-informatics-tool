@@ -1,5 +1,6 @@
 <!--
     LHS Window where the grammar is drawn
+    CFGGrammarInput.svelte is the component for the grammar-input slot
 -->
 
 <script lang="ts">

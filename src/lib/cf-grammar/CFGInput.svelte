@@ -1,5 +1,6 @@
 <!--
     RHS Window where the input is entered
+    CFGInputField.svelte is the component for the cfg-input slot
 -->
 <div class="cfg-input">
     <h1>Test input</h1>

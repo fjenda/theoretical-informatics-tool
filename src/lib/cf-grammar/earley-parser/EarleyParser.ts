@@ -29,15 +29,14 @@ export class EarleyParser {
     // States of the chart
     states: State[] = [];
 
-    //
-    reversedStates: State[] = [];
-
+    // Constructor of the EarleyParser
     constructor(startingPoint: string, grammar: Rule[]) {
         this.grammar = grammar;
         this.states[0] = new State();
         this.startingPoint = startingPoint;
     }
 
+    // Function that adds the starting rules of the parser to the first state
     setStartingRules() {
         // add the starting rules to the first state
         const startingRules = this.grammar.filter(rule => rule.lhs === this.startingPoint);
@@ -46,26 +45,30 @@ export class EarleyParser {
         });
     }
 
-    // check if the symbol is non-terminal
+    // Function that checks if the given symbol is a non-terminal
+    // params: symbol: string - symbol to check
     isNonTerminal(symbol: string) {
         return this.grammar.some(rule => rule.lhs === symbol);
     }
 
-    restart() { // restart the parser
+    // Function that restarts the parser
+    // It's called for every test input
+    restart() {
+        // remove all the states and create a new one
         this.states = [];
         this.states[0] = new State();
-        this.reversedStates = [];
     }
 
-    reset() { // reset the parser
+    // Function that resets the parser
+    reset() {
+        // reset the parser to its initial state
         this.grammar = [];
-        // this.nullableRules = [];
         this.nullables = [];
         this.states = [];
         this.states[0] = new State();
     }
 
-    // function to find nullable rules
+    // Function to find nullable rules
     findNullables() {
         // find direct nullables
         this.nullables.push(
@@ -74,6 +77,7 @@ export class EarleyParser {
                 .map((rule) => rule.lhs),
         );
 
+        // while the size of the nullable array changes
         let sizeBefore = 0;
         while (sizeBefore !== this.nullables.length) {
             sizeBefore = this.nullables.length;
@@ -86,12 +90,22 @@ export class EarleyParser {
             });
         }
 
-        // console.log(this.nullables);
         // remove duplicates
         this.nullables = this.nullables.filter((value, index, self) => self.indexOf(value) === index);
     }
 
-    // parse the input
+    // Function that parses the given input
+    // params: input: string - input to parse
+    //
+    // returns: {accepted: boolean, length: number, derivation: {rule: string, result: string}[][]} |
+    //          {accepted: boolean, length: number, derivation: {rule: string, result: string}[]}
+    //      accepted: boolean - if the input is accepted
+    //      length: number - number of derivations
+    //
+    //   if length is 1:
+    //      derivation: {rule: string, result: string}[] - derivation of the input
+    //   if length is > 1:
+    //      derivation: {rule: string, result: string}[][] - derivations of the input
     parse(input: string) {
         // set starter rules
         this.setStartingRules();
@@ -103,16 +117,23 @@ export class EarleyParser {
         for (let i = 0; i < this.states.length; i++) {
             // inner loop
             for (let j = 0; j < this.states[i].size(); j++) {
+                // get the item
                 const item = this.states[i].get(j);
 
+                // if the dot is at the end of the rule
                 if (item.dot === item.rule.rhs.length) {
+                    // complete the item
                     this.complete(this.states[i], i, j);
                 } else {
+                    // get the symbol after the dot
                     const symbol = item.rule.rhs[item.dot];
-                    if (this.isNonTerminal(symbol)) {
+
+                    if (this.isNonTerminal(symbol)) { // if the symbol is a non-terminal
+                        // predict the next non-terminal symbol
                         this.predict(symbol, this.states[i], item.start, i, j);
-                    } else {
+                    } else { // if the symbol is a terminal
                         if (i < input.length) {
+                            // scan the next terminal symbol
                             this.scan(input[i], this.states[i], j, i);
                         }
                     }
@@ -122,7 +143,6 @@ export class EarleyParser {
 
         // check if we read the whole input
         if (this.states.length < input.length + 1) {
-            // console.log('\nThe input is not valid');
             return { accepted: false, length: -1, derivation: [] };
         }
 
@@ -142,9 +162,10 @@ export class EarleyParser {
                 let root: TreeNode = new TreeNode(item.rule.lhs);
                 root.setItem(item);
 
-                return this.createTree(root, input);
+                return this.createTree(root);
             });
 
+            // creates the parser tree(s) and checks if the input is accepted
             let acc: boolean = false
             trees.forEach((tree, index) => {
                 if (tree) {
@@ -154,6 +175,7 @@ export class EarleyParser {
                 }
             });
 
+            // if there are more trees we return all of them
             if (trees.length > 1) {
                 let derivations = trees.map(tree => {
                     if (tree === undefined) return;
@@ -162,14 +184,20 @@ export class EarleyParser {
                 return { accepted: acc, length: derivations.length, derivation: derivations };
             }
 
+            // if there is only one tree we return it
             let derivation: { rule: string; result: string }[] = trees[0].getDerivation(this);
             return { accepted: acc, length: 1, derivation: derivation };
         }
 
+        // if the input is not accepted
         return { accepted: false, length: -1, derivation: [] };
     }
 
-    createTree(root: TreeNode, input: string) {
+    // Function that creates the parser tree from the given root and input
+    // params: root: TreeNode   - root of the tree (the starting rule)
+    //
+    // returns: ParserTree      - parser tree
+    createTree(root: TreeNode) {
         let tree = new ParserTree(root);
         let stack = [root];
 
@@ -178,60 +206,81 @@ export class EarleyParser {
 
             if (!node) continue;
 
+            // check if the node is a leaf
             if (node.item.rule.rhs.length === 0) {
                 let child = new TreeNode("");
                 node.addChild(child);
-            }
+            } else {
+                let stI = 0;
 
-            let stI = 0;
-            for (let rhs of node.item.rule.rhs) {
-                if (!this.isNonTerminal(rhs)) {
-                    let child = new TreeNode(rhs);
+                // check every symbol of the rules rhs
+                for (let rhs of node.item.rule.rhs) {
+
+                    // if the symbol is not a non-terminal we add it to the tree
+                    if (!this.isNonTerminal(rhs)) {
+                        let child = new TreeNode(rhs);
+                        node.addChild(child);
+                        continue;
+                    }
+
+                    // check if there's a symbol
+                    if (node.item.from[stI] === undefined) continue;
+
+                    // get the start and end of the item
+                    let start = node.item.from[stI][0];
+                    let end = node.item.from[stI][1];
+                    let item = this.states[start].items[end];
+
+                    // create the child node, set its item and add it to the tree
+                    let child = new TreeNode(item.rule.lhs);
+                    child.setItem(item);
                     node.addChild(child);
-                    continue;
+                    stack.push(child);
+                    stI++;
                 }
-
-                if (node.item.from[stI] === undefined) continue;
-
-                let start = node.item.from[stI][0];
-                let end = node.item.from[stI][1];
-                let item = this.states[start].items[end];
-
-                let child = new TreeNode(item.rule.lhs);
-                child.setItem(item);
-                node.addChild(child);
-                stack.push(child);
-                stI++;
             }
         }
 
-        // console.log(tree);
+        // return the tree
         return tree;
     }
 
-    // predict the next non-terminal symbol
+    // Function that predicts the next non-terminal symbol
+    // params: symbol: string       - symbol to predict
+    //         state: State         - current state
+    //         start: number        - start index
+    //         stateIndex: number   - index of the state
+    //         itemIndex: number    - index of the item
     predict(symbol: string, state: State, start: number, stateIndex: number, itemIndex: number) {
+        // get the rules that have the symbol on the left side
         const rules = this.grammar.filter((rule) => rule.lhs === symbol);
 
+        // loop through the rules and add them to the state
         rules.forEach((rule) => {
             state.push(new EarleyItem(rule, 0, stateIndex, ItemAction.PREDICT));
 
             // magical completion
+            // happens when the symbol is nullable
             if (this.nullables.includes(rule.lhs)) {
+                // create a new item with the dot moved one position to the right
                 let newItem = new EarleyItem(state.get(itemIndex).rule, state.get(itemIndex).dot + 1, state.get(itemIndex).start, ItemAction.COMPLETE);
                 state.push(newItem);
-                // console.log(`\nPredicting nullable ${state.items[state.items.length - 1].toString()}`);
             }
         });
 
-        // remove duplicates or we will be stuck in an infinite loop
+        // remove duplicates, or we will be stuck in an infinite loop
         state.items = state.items.filter((item, index) => {
             return state.items.findIndex((i) => i.equals(item)) === index;
         });
     }
 
-    // scan the next terminal symbol
+    // Function that scans the next terminal symbol
+    // params: input: string        - input to scan
+    //         state: State         - current state
+    //         index: number        - index of the item
+    //         stateIndex: number   - index of the state
     scan(input: string, state: State, index: number, stateIndex: number) {
+        // check if the input matches the symbol after the dot
         if (input === state.get(index).rule.rhs[state.get(index).dot]) {
             // we copy the item and move the dot one position to the right
             let item = new EarleyItem(
@@ -241,19 +290,28 @@ export class EarleyParser {
                 ItemAction.SCAN,
                 state.get(index).from,
             );
+
+            // push the item into the next state
             this.states[stateIndex + 1] = this.states[stateIndex + 1] || new State();
             this.states[stateIndex + 1].push(item);
         }
     }
 
-    // complete the items
+    // Function that completes the items
+    // params: state: State         - current state
+    //         stateIndex: number   - index of the state
+    //         itemIndex: number    - index of the item
     complete(state: State, stateIndex: number, itemIndex: number) {
+        // get the start state set of the current item
         let stateSet = this.states[state.get(itemIndex).start];
+
+        // get the rules that have the symbol on the right side of the dot
         const rules = stateSet.items.filter(
             (item) => item.rule.rhs[item.dot] === state.get(itemIndex).rule.lhs,
         );
 
 
+        // loop through the rules and add them to the state with the dot moved one position to the right
         rules.forEach((rule) => {
             let f = [...rule.from];
             f.push([stateIndex, itemIndex]);
@@ -269,10 +327,9 @@ export class EarleyParser {
         });
     }
 
+    // Function that sets the grammar rules
+    // params: rules: Rule[] - rules to set
     setRules(rules: Rule[]) {
         this.grammar = rules;
     }
 }
-
-
-

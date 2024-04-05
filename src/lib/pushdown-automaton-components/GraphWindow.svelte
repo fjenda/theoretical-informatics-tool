@@ -1,5 +1,11 @@
 <script lang="ts">
     import cytoscape from "cytoscape";
+    import spread from "cytoscape-spread";
+    spread(cytoscape);
+
+    // import cola from "cytoscape-cola";
+    // cytoscape.use(cola);
+
     import {onMount} from "svelte";
     import {
         pda_configuration_store,
@@ -10,13 +16,13 @@
     import type {PDAConfigurationType} from "../../types/pda-cfg/PDAConfigurationType";
     import {input_error_store} from "../../stores/inputErrorStore";
     import {watchResize} from "svelte-watch-resize";
+    import {createDebounce} from "../utils/debounce";
+    import type {TransitionType} from "../../types/pda-cfg/TransitionType";
 
     // SimpleBar
     import 'simplebar'
     import 'simplebar/dist/simplebar.css'
     import ResizeObserver from "resize-observer-polyfill";
-    import {createDebounce} from "../utils/debounce";
-    import type {TransitionType} from "../../types/pda-cfg/TransitionType";
     window.ResizeObserver = ResizeObserver;
 
     let highlightedElementsId : string[] = [];
@@ -75,7 +81,7 @@
         });
 
         pda_graph_store.update((n) => {
-            n.traversal = $pda_graph_store.process();
+            n.traversal = n.process();
             return n;
         });
 
@@ -313,7 +319,7 @@
                     });
 
                     $pda_graph_store.graph?.elements().forEach(graphElement => {
-                        if ($pda_graph_store.finalStates.includes(graphElement.id()) && !graphElement.isEdge()) {
+                        if ($pda_graph_store.finalStates?.includes(graphElement.id()) && !graphElement.isEdge()) {
                             graphElement.removeClass("finish");
                         }
                     });
@@ -411,6 +417,16 @@
         }
     }
 
+    function areTransitionsEqual(t1 : TransitionType, t2 : TransitionType) {
+        return t1.state === t2.state &&
+            t1.input === t2.input &&
+            t1.stack === t2.stack &&
+            t1.stateAfter === t2.stateAfter &&
+            Array.isArray(t1.stackAfter) && Array.isArray(t2.stackAfter) &&
+            t1.stackAfter.length === t2.stackAfter.length &&
+            t1.stackAfter.every((val, index) => val === t2.stackAfter[index]);
+    }
+
     function addEdgeFromButton(edge : GraphEdgeMeta, labelArr : string[] = []) {
         let first : string, second : string, third : string[];
 
@@ -423,19 +439,19 @@
             second = edge.label.split(",")[1].split(";")[0];
             third = edge.label.split(",")[1].split(";")[1].split(" ");
         }
-        if ($pda_graph_store.transitions.filter((transition : TransitionType) => {
-            return transition.state === edge.source &&
-                   transition.input === first &&
-                   transition.stack === second &&
-                   transition.stateAfter === edge.target &&
-                   transition.stackAfter === third;
-        }).length === 0) {
-            $pda_graph_store.transitions.push({
-                state: edge.source,
-                input: first,
-                stack: second,
-                stateAfter: edge.target,
-                stackAfter: third
+
+        let transition = {
+            state: edge.source,
+            input: first,
+            stack: second,
+            stateAfter: edge.target,
+            stackAfter: third
+        };
+
+        if ($pda_graph_store.transitions.filter(t => areTransitionsEqual(t, transition)).length === 0) {
+            pda_graph_store.update(n => {
+                n.transitions.push(transition);
+                return n;
             });
         }
 
@@ -451,7 +467,6 @@
             console.log(e);
         } finally {
             updateConfiguration("edge");
-            // resetLayout();
         }
     }
 
@@ -534,7 +549,7 @@
             type: $pda_graph_store.type,
         };
 
-        // save graphObject into json
+        // save object into json
         let jsonData = JSON.stringify(simplifiedGraphObject, null, 4);
 
         const blob = new Blob([jsonData], { type: "application/json" });
@@ -601,7 +616,8 @@
     }
 
     function resetLayout() {
-        const layout = $pda_graph_store.graph.makeLayout({ name: "circle" });
+        // const layout = $pda_graph_store.graph.makeLayout({ name: "cola", randomize: true, edgeLength: 200 });
+        const layout = $pda_graph_store.graph.makeLayout({ name: "spread", padding: 50 });
         layout.options.eles = $pda_graph_store.graph.elements();
         layout.run();
     }
@@ -622,6 +638,8 @@
         }
 
         generateConfiguration();
+        const circle = $pda_graph_store.graph.makeLayout({ name: "circle" });
+        circle.run();
         resetLayout();
     }
 
@@ -702,7 +720,7 @@
             ],
 
             layout: {
-                name: "circle",
+                name: "spread",
             }
 
         });
@@ -764,6 +782,7 @@
         if ($pda_graph_store.type === "cfg") {
             pda_graph_store.update((n) => {
                 n.type = "empty";
+                n.stackBottom = $pda_backup_store.stackBottom;
                 return n;
             });
         } else {
