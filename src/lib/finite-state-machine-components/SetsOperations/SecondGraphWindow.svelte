@@ -219,8 +219,8 @@
         let finishStatesLabel = graphObject.finishState.map((node : string) => graphObject.nodes.find((n : GraphNodeMeta) => n.id === node).label);
 
         // start state
-        // configuration.start_state = graphObject.startState;
-        configuration.start_state = startStateLabel;
+        // configuration.initial_state = graphObject.startState;
+        configuration.initial_state = startStateLabel;
 
         // final states
         // configuration.final_states = graphObject.finishState;
@@ -245,7 +245,7 @@
                 configuration.nodes = Array.from(states);
 
                 // start state
-                configuration.start_state = graphObject.startState;
+                configuration.initial_state = graphObject.startState;
 
                 // final states
                 configuration.final_states = graphObject.finishState;
@@ -515,7 +515,7 @@
             stateLabel: "A1",
             input: "b",
             stateAfter: "1",
-            stateAfterLabel: "A0"
+            stateAfterLabel: "A1"
         }
     ];
 

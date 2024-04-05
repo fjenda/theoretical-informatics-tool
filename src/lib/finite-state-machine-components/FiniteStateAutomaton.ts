@@ -277,12 +277,6 @@ export  class FiniteStateAutomaton{
                 data: { id: edge.id, label: edge.label, source: edge.source, target: edge.target }
             });
         }
-
-        // this.transitions.push({
-        //     state: edge.source,
-        //     input: edge.label,
-        //     stateAfter: edge.target,
-        // });
     }
 
     generateGraphFromTransitions(){

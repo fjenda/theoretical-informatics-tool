@@ -47,8 +47,8 @@ import {graph_store} from "../stores/graphInitStore";
             <FinGraphWindow bind:toolbarFunctions={toolbarFunctions} slot="window">
                 <FinGraphToolbar>
                     <FinToolbarButton type="generate-automata" text="Generate graph" func={toolbarFunctions?.generateGraphFromTransitions} />
-                    <FinToolbarButton type="new-node" text="New node" func={toolbarFunctions?.addNode} />
-                    <FinToolbarButton type="new-edge" text="New edge" func={toolbarFunctions?.addEdge} />
+                    <FinToolbarButton type="new-node" text="New node" func={toolbarFunctions?.addNodeFromButton} />
+                    <FinToolbarButton type="new-edge" text="New edge" func={toolbarFunctions?.addEdgeFromButton} />
                     <FinToolbarButton type="delete-element" text="Delete element" func={toolbarFunctions?.toggleDelete}/>
                     <FinToolbarButton type="save-graph" text="Save graph" func={toolbarFunctions?.saveGraph} />
                     <FinToolbarButton type="load-graph" text="Load graph" func={toolbarFunctions?.loadGraph} />

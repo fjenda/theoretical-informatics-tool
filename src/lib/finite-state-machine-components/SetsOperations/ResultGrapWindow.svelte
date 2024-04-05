@@ -2,7 +2,7 @@
     import {FiniteStateAutomaton} from "../FiniteStateAutomaton";
     import {
         configuration_store,
-        first_graph_store, graph_store, resetInputVar,
+        first_graph_store, resetInputVar,
         result_configuration_store, result_graph_store,
         second_graph_store
     } from "../../../stores/graphInitStore";
@@ -76,7 +76,7 @@
             graphObject.traversal = graphObject.preprocessGraphInputNFA();
             highlightElement(graphObject.correctStartState);
             graphObject.currentStatus = {state: graphObject.startState, input: graphObject.word, step: 0};
-            graph_store.update((n) => {
+            result_graph_store.update((n) => {
                 n.currentStatus = graphObject.currentStatus;
                 n.currentStep = -1;
                 return n;
@@ -123,7 +123,7 @@
 
         }, 250);
 
-        graph_store.update((n) => {
+        result_graph_store.update((n) => {
             n.currentStatus = graphObject.currentStatus;
             n.currentStep++;
             // console.log("updating current status", n.currentStatus);
@@ -150,7 +150,7 @@
             graphObject.currentStatus.state = graphObject.traversal[graphObject.currentStatus.step].state;
         }, 250);
 
-        graph_store.update((n) => {
+        result_graph_store.update((n) => {
             n.currentStatus = graphObject.currentStatus;
             n.currentStep--;
             return n;
@@ -712,8 +712,8 @@
         let finishStatesLabel = graphObject.finishState.map((node : string) => graphObject.nodes.find((n : GraphNodeMeta) => n.id === node).label);
 
         // start state
-        // configuration.start_state = graphObject.startState;
-        configuration.start_state = startStateLabel;
+        // configuration.initial_state = graphObject.startState;
+        configuration.initial_state = startStateLabel;
 
         // final states
         // configuration.final_states = graphObject.finishState;
@@ -764,7 +764,7 @@
                 configuration.nodes = Array.from(states);
 
                 // start state
-                configuration.start_state = graphObject.startState;
+                configuration.initial_state = graphObject.startState;
 
                 // final states
                 configuration.final_states = graphObject.finishState;

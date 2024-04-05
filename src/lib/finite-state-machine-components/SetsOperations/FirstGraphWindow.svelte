@@ -1,7 +1,7 @@
 <script lang="ts">
     import {FiniteStateAutomaton} from "../FiniteStateAutomaton";
     import {onMount} from "svelte";
-    import {first_graph_store, resetInputVar} from "../../../stores/graphInitStore";
+    import {first_graph_store, graph_store, resetInputVar} from "../../../stores/graphInitStore";
     import cytoscape from "cytoscape";
     import {input_error_store} from "../../../stores/inputErrorStore";
     import {first_configuration_store} from "../../../stores/graphInitStore.js";
@@ -158,6 +158,16 @@
                     if (!graphData.nodes || !graphData.edges || graphData.transitions.length === 0 || !graphData.startState || !graphData.finishState || !graphData.type) {
                         return;
                     }
+
+
+                    //from fist_graph_store.transitions fill fist_graph_store.input_alphabet
+                    let alphabet = new Set();
+                    graphData.transitions.forEach((transition) => {
+                        if (transition.input !== "ε") {
+                            alphabet.add(transition.input);
+                        }
+                    });
+
                     first_graph_store.update((n) => {
                         n.edges = graphData.edges;
                         n.finishState = graphData.finishState;
@@ -165,8 +175,20 @@
                         n.startState = graphData.startState;
                         n.transitions = graphData.transitions;
                         n.type = graphData.type;
+                        n.input_alphabet = Array.from(alphabet);
                         return n;
                     });
+
+                    //first_graph_store to graphObject
+                    Object.assign(graphObject, $first_graph_store);
+
+                    if(!SetOperations.checkIfDfa(graphObject)){
+                        graphObject.type = "NFA";
+                        graph_store.update((n) => {
+                            n.type = "NFA";
+                            return n;
+                        });
+                    }
 
                     generateGraphFromTransitions();
                     generateConfiguration();
@@ -221,8 +243,8 @@
         let finishStatesLabel = graphObject.finishState.map((node : string) => graphObject.nodes.find((n : GraphNodeMeta) => n.id === node).label);
 
         // start state
-        // configuration.start_state = graphObject.startState;
-        configuration.start_state = startStateLabel;
+        // configuration.initial_state = graphObject.startState;
+        configuration.initial_state = startStateLabel;
 
         // final states
         // configuration.final_states = graphObject.finishState;
@@ -248,7 +270,7 @@
                 configuration.nodes = Array.from(states);
 
                 // start state
-                configuration.start_state = graphObject.startState;
+                configuration.initial_state = graphObject.startState;
 
                 // final states
                 configuration.final_states = graphObject.finishState;

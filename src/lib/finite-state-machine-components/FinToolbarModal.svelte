@@ -59,7 +59,7 @@
         config += "}\n";
 
         // start state
-        config += `S: {${$configuration_store.start_state.join(", ")}}\n`;
+        config += `S: {${$configuration_store.initial_state.join(", ")}}\n`;
 
         // final states
         config += `F: {${$configuration_store.final_states.join(", ")}}\n`;
@@ -92,9 +92,16 @@
 
         switch (type) {
             case "new-node": {
-                console.log("new-node - " + modifiedLabel);
                 let folowingID = $graph_store.followingID;
-                console.log('new node string: ' + folowingID.toString());
+                if (isStartState && isFinishState) {
+                    func({id: folowingID.toString(), label: label, class: "finish start"});
+                } else if (isStartState)
+                    func({id: folowingID.toString(), label: label, class: "start"});
+                else if (isFinishState) {
+                    func({id: folowingID.toString(), label: label, class: "finish"});
+                } else {
+                    func({id: folowingID.toString(), label: label});
+                }
                 func({ id: folowingID.toString(), label: label});
                 $graph_store.followingID++;
                 return true;
@@ -164,7 +171,7 @@
                 {/if}
 
                 {#if type === "new-node"}
-                    {#if !$configuration_store.start_state || $configuration_store.start_state.length === 0}
+                    {#if !$configuration_store.initial_state || $configuration_store.initial_state.length === 0 || $graph_store.type === "NFA"}
                         <div class="checkbox-box">
                             <label>
                                 <input id="start-state-checkbox" type="checkbox" bind:checked={isStartState} />

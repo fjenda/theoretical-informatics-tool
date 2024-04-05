@@ -61,7 +61,7 @@
         config += "}\n";
 
         // start state
-        config += `S: {${$result_configuration_store.start_state.join(", ")}}\n`;
+        config += `S: {${$result_configuration_store.initial_state.join(", ")}}\n`;
 
         // final states
         config += `F: {${$result_configuration_store.final_states.join(", ")}}\n`;
@@ -166,7 +166,7 @@
                 {/if}
 
                 {#if type === "new-node"}
-                    {#if !$result_configuration_store.start_state || $result_configuration_store.start_state.length === 0}
+                    {#if !$result_configuration_store.initial_state || $result_configuration_store.initial_state.length === 0}
                         <div class="checkbox-box">
                             <label>
                                 <input id="start-state-checkbox" type="checkbox" bind:checked={isStartState} />

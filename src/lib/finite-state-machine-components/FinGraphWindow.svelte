@@ -15,7 +15,9 @@
 
     export const toolbarFunctions = {
         addNode,
+        addNodeFromButton,
         addEdge,
+        addEdgeFromButton,
         toggleDelete,
         saveGraph,
         loadGraph,
@@ -349,8 +351,8 @@
         let finishStatesLabel = graphObject.finishState.map((node : string) => graphObject.nodes.find((n : GraphNodeMeta) => n.id === node).label);
 
         // start state
-        // configuration.start_state = graphObject.startState;
-        configuration.start_state = startStateLabel;
+        // configuration.initial_state = graphObject.startState;
+        configuration.initial_state = startStateLabel;
 
         // final states
         // configuration.final_states = graphObject.finishState;
@@ -376,7 +378,7 @@
                 configuration.nodes = Array.from(states);
 
                 // start state
-                configuration.start_state = graphObject.startState;
+                configuration.initial_state = graphObject.startState;
 
                 // final states
                 configuration.final_states = graphObject.finishState;
@@ -448,7 +450,6 @@
 
     function addNode(node : GraphNodeMeta) {
         try {
-            // console.log('Before add node: ', $graph_store);
             graphObject.addNode(node);
         } catch (e) {
             console.log(e);
@@ -463,6 +464,27 @@
         }
     }
 
+    function addNodeFromButton(node : GraphNodeMeta) {
+        try {
+
+            if (graphObject.nodes.some((n : GraphNodeMeta) => n.label === node.label)) {
+                throw new Error("Node with same label already exists");
+            }
+
+            graphObject.addNode(node);
+
+        } catch (e) {
+            console.log(e);
+        } finally {
+            updateConfiguration("node");
+            graph_store.update((n) => {
+                n.nodes = graphObject.nodes;
+                return n;
+            });
+            resetLayout();
+        }
+    }
+
     function addEdge(edge : GraphEdgeMeta) {
         try {
             graphObject.addEdge(edge);
@@ -471,6 +493,53 @@
         } finally {
             updateConfiguration("edge");
             // resetLayout();
+        }
+    }
+
+    function addEdgeFromButton(edge : GraphEdgeMeta) {
+        try {
+            graphObject.addEdge(edge);
+            console.log("HERE EDGE: ", graphObject.edges)
+            console.log("HERE Stare tran: ", graphObject.transitions)
+
+            //run tgrought graphObject.eges and if there is edge wich is not in transitions add it
+            for (const edge in graphObject.edges) {
+                graphObject.edges[edge].forEach((edge : GraphEdgeMeta) => {
+                    let tmpTransition = {
+                        state: edge.source,
+                        stateLabel: graphObject.nodes.find((node : GraphNodeMeta) => node.id === edge.source).label,
+                        input: edge.label,
+                        stateAfter: edge.target,
+                        stateAfterLabel: graphObject.nodes.find((node : GraphNodeMeta) => node.id === edge.target).label
+                    };
+                    if (!graphObject.transitions.some((transition : TransitionMeta) => {
+                        return transition.state === tmpTransition.state && transition.input === tmpTransition.input && transition.stateAfter === tmpTransition.stateAfter;
+                    })) {
+                        graphObject.transitions.push(tmpTransition);
+                    }
+                });
+            }
+
+            if(!SetOperations.checkIfDfa(graphObject)){
+                graphObject.type = "NFA";
+                graph_store.update((n) => {
+                    n.type = "NFA";
+                    return n;
+                });
+            }
+
+            graph_store.update((n) => {
+                n.transitions = graphObject.transitions;
+                n.generated = true;
+                return n;
+            });
+
+
+        } catch (e) {
+            console.log(e);
+        } finally {
+            updateConfiguration("edge");
+            resetLayout();
         }
     }
 
