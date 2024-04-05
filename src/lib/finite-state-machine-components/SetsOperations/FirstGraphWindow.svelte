@@ -5,6 +5,7 @@
     import cytoscape from "cytoscape";
     import {input_error_store} from "../../../stores/inputErrorStore";
     import {first_configuration_store} from "../../../stores/graphInitStore.js";
+    import {SetOperations} from "./SetOperations";
 
     let graphObject = new FiniteStateAutomaton([], [], [], [], [], "DFA");
     let deleteButtonActive : boolean = false;
@@ -376,6 +377,14 @@
         deleteGraph();
         Object.assign(graphObject, $first_graph_store);
 
+        if(!SetOperations.checkIfDfa(graphObject)){
+            graphObject.type = "NFA";
+            first_graph_store.update((n) => {
+                n.type = "NFA";
+                return n;
+            });
+        }
+
         graphObject.generateGraphFromTransitions();
 
 
@@ -575,6 +584,9 @@
         <div class="type-wrapper">
             <slot name="type" />
         </div>
+        <div class="name-wrapper">
+            <h2>A₁</h2>
+        </div>
     </div>
 </div>
 
@@ -615,6 +627,13 @@
     position: absolute;
     top: 0;
     left: 1rem;
+    pointer-events: none;
+  }
+
+  .name-wrapper {
+    position: absolute;
+    top: 0;
+    right: 1rem;
     pointer-events: none;
   }
 

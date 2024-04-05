@@ -1,6 +1,6 @@
 <script lang="ts">
 
-    import {resetInputVar, second_graph_store} from "../../../stores/graphInitStore";
+    import {first_graph_store, resetInputVar, second_graph_store} from "../../../stores/graphInitStore";
     import type {TransitionMeta} from "../../../types/TransitionMeta";
     import type {GraphNodeMeta} from "../../../types/GraphNodeMeta";
     import {input_error_store} from "../../../stores/inputErrorStore";
@@ -126,9 +126,31 @@
         console.log("Nodes: ", nodes);
     }
 
+    function isNewLabel(row: string) {
+        let rowSplit = row.split(/[=,\n)(;]/);
+
+        for (let i = rowSplit.length - 1; i > 0; i--) {
+            if (!rowSplit[i]?.trim()) {
+                rowSplit.splice(i, 1);
+            }
+        }
+        if (rowSplit[0] == "") {
+            rowSplit.splice(0, 1);
+        }
+        rowSplit.splice(0, 1);
+
+        let node = $first_graph_store.nodes.find(node => node.label === rowSplit[0]);
+        let nodeAfter = $first_graph_store.nodes.find(node => node.label === rowSplit[2]);
+
+        if (node == undefined && nodeAfter == undefined) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
     function processTransitions() {
         transitions = [];
-        console.log("Here start transitions: ", transitions);
 
         let rows = textInput.split("\n").filter(Boolean);
 
@@ -136,7 +158,7 @@
             applyHighlightsDFA(textInput);
 
             for (let row of rows) {
-                if (validateTransitionDFA(row)) {
+                if (validateTransitionDFA(row) && isNewLabel(row)){
                     parseRow(row);
                     correctInput = true;
                 } else {
@@ -147,7 +169,7 @@
             applyHighlights(textInput);
 
             for (let row of rows) {
-                if (validateTransition(row)) {
+                if (validateTransition(row) && isNewLabel(row)) {
                     parseRow(row);
                     correctInput = true;
                 } else {
