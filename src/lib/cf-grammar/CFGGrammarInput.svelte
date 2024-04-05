@@ -214,7 +214,7 @@ LHS Grammar Window for editing the grammar
         width: 90%;
         height: 90%;
         gap: 0.35rem;
-        /*overflow-y: scroll;*/
+        overflow-y: auto;
         margin-top: 3rem;
     }
 
@@ -224,7 +224,7 @@ LHS Grammar Window for editing the grammar
 
     .add-button {
         width: 30%;
-        height: 10%;
+        height: 2.5rem;
     }
 
     .add-button:hover {

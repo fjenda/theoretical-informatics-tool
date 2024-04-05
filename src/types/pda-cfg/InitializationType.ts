@@ -7,4 +7,5 @@ export type InitializationType = {
     startState: string,
     finalStates: string[],
     transitions: TransitionType[],
+    stackBottom: string,
 }

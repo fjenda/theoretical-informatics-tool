@@ -137,7 +137,7 @@
             case "new-edge": {
                 if (!label_1) label_1 = "ε";
                 if (!label_3) label_3 = "ε";
-                const label_comb = `${label_1},${label_2};${label_3}`;
+                const label_comb = `${label_1},${label_2};${label_3.split(" ").join("")}`;
                 const label_arr = [label_1, label_2, label_3];
                 func({id: `${source}-${target}`, label: label_comb, source: source, target: target}, label_arr);
                 return true;

@@ -47,10 +47,9 @@ onMount(() => {
                                                 "d(q0,a,Z)=(q1,A Z);\n" +
                                                 "d(q1,b,A)=(q2,B A);\n" +
                                                 "d(q2,c,B)=(q3,ε);\n" +
-                                                "\nIf you don't put a space\n" +
-                                                "between the characters\nto be put on the stack,\n" +
-                                                "the rules will not load properly.\n\n" +
-                                                "The initial stack symbol\nwill always be Z."}>
+                                                "\nIf you don't put a space between the characters\n" +
+                                                "to be put on the stack, the rules won't load properly.\n\n" +
+                                                "The initial stack symbol is always be Z."}>
                 ?</span>
             {/if}
         </h2>
@@ -97,17 +96,23 @@ onMount(() => {
 
     .ttip {
         font-size: 1rem;
+        font-weight: 500;
         cursor: pointer;
         position: absolute;
         top: 1rem;
         right: 1.5rem;
         white-space: break-spaces;
+        text-align: center;
     }
 
     .header {
         display: flex;
         justify-content: center;
         align-items: center;
+    }
+
+    .header :global(#tooltip) {
+        transform: translate(-110%, -22.5%);
     }
 </style>
 

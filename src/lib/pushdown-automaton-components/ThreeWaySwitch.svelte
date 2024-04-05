@@ -5,7 +5,7 @@
 
     $pda_backup_store.type = "empty";
 
-    const toggle = (newState) => {
+    const toggle = (newState: string) => {
         pda_backup_store.update((n) => {
             n.type = newState
             return n;
@@ -107,5 +107,4 @@
         transition: background-color 0.25s;
         background-color: #ff6969 !important;
     }
-
 </style>

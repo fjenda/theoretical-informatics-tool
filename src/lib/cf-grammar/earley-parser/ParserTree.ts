@@ -1,6 +1,7 @@
 /*
     ParserTree.ts
     Class containing the logic for the parser tree
+    This class is used after the Earley Recognizer is completed to create a tree from the Earley Items
 
     Author: Jan Fojtík
 */

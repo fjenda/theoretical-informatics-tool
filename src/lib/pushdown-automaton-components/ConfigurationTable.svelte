@@ -198,7 +198,6 @@
 </div>
 
 <style lang="scss">
-
   .wrapper {
     width: 30vw;
     height: 37.75vh;
@@ -250,25 +249,8 @@
     border-bottom: 1px solid currentColor;
   }
 
-  :global(#tooltip) {
-    z-index: 999;
-    position: absolute;
-    bottom: inherit;
-    left: inherit;
-    transform: translate(-110%, -22.5%);
-    padding: 0.2rem 0.35rem;
-    background: #F4F8FF;
-    color: #333333;
-    font-size: 1rem;
-    border-radius: 0.25rem;
-    filter: drop-shadow(0 1px 2px hsla(0, 0%, 0%, 0.2));
-    width: max-content;
-  }
-
-  :global(body.dark-mode #tooltip) {
-    background: #333333;
-    outline: 0.125rem solid #4A3F64;
-    color: #F4F8FF;
+  .divTableCell :global(#tooltip) {
+    transform: translate(-110%, -5%);
   }
 
   .divTable {

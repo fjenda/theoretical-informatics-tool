@@ -45,8 +45,8 @@ export class ContextFreeGrammar {
     // Function to convert the rules for the parser
     // (splitting the right side of the rules into individual symbols and
     // splitting the rules with multiple right sides into multiple rules)
-    // params: rules: CFGRule[] - an array of rules
-    // returns: an array of the newly constructed rules for the parser
+    // params: rules: CFGRule[]     - an array of rules
+    // returns: Rule[]              - an array of the newly constructed rules for the parser
     convertRulesForParser(rules: CFGRule[]) {
         let newRules: Rule[] = [];
         rules.forEach(rule => {
