@@ -547,6 +547,9 @@
         <div class="type-wrapper">
             <slot name="type" />
         </div>
+        <div class="name-wrapper">
+            <h2>A₂</h2>
+        </div>
     </div>
 </div>
 
@@ -587,6 +590,13 @@
     position: absolute;
     top: 0;
     left: 1rem;
+    pointer-events: none;
+  }
+
+  .name-wrapper {
+    position: absolute;
+    top: 0;
+    right: 1rem;
     pointer-events: none;
   }
 

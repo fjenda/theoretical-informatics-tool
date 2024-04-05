@@ -232,6 +232,14 @@
         graphObject.finishState = newFa.finishState;
         graphObject.type = newFa.type;
 
+        if(!SetOperations.checkIfDfa(graphObject)){
+            graphObject.type = "NFA";
+            result_graph_store.update((n) => {
+                n.type = "NFA";
+                return n;
+            });
+        }
+
 
         console.log("newFa: ", graphObject);
         graphObject.generateGraphFromTransitions();
@@ -275,7 +283,13 @@
         console.log("first automaton: ", firstAutomaton);
         console.log("second automaton: ",secondAutomaton);
         deleteGraph();
-        let newFa : FiniteStateAutomaton = SetOperations.dfaIntersection(firstAutomaton, secondAutomaton);
+        let newFa : FiniteStateAutomaton;
+        if (firstAutomaton.type === "NFA" || secondAutomaton.type === "NFA") {
+            newFa = SetOperations.nfaIntersection(firstAutomaton, secondAutomaton);
+
+        } else if (firstAutomaton.type === "DFA" && secondAutomaton.type === "DFA") {
+            newFa  = SetOperations.dfaIntersection(firstAutomaton, secondAutomaton);
+        }
 
         let alphabet = new Set();
         newFa.transitions.forEach((transition) => {
@@ -364,6 +378,15 @@
         graphObject.finishState = newFa.finishState;
         graphObject.type = newFa.type;
 
+
+        if(!SetOperations.checkIfDfa(graphObject)){
+            graphObject.type = "NFA";
+            result_graph_store.update((n) => {
+                n.type = "NFA";
+                return n;
+            });
+        }
+
         console.log("newFa: ", graphObject);
         graphObject.generateGraphFromTransitions();
 
@@ -408,7 +431,13 @@
         console.log("second automaton: ",secondAutomaton);
 
         deleteGraph();
-        let newFa : FiniteStateAutomaton = SetOperations.dfaConcatenation(firstAutomaton, secondAutomaton);
+        let newFa : FiniteStateAutomaton;
+        if (firstAutomaton.type === "NFA" || secondAutomaton.type === "NFA") {
+            newFa = SetOperations.nfaConcatenation(firstAutomaton, secondAutomaton);
+
+        } else if (firstAutomaton.type === "DFA" && secondAutomaton.type === "DFA") {
+            newFa  = SetOperations.dfaConcatenation(firstAutomaton, secondAutomaton);
+        }
 
         let alphabet = new Set();
         newFa.transitions.forEach((transition) => {
@@ -424,6 +453,14 @@
         graphObject.startState = newFa.startState;
         graphObject.finishState = newFa.finishState;
         graphObject.type = newFa.type;
+
+        if(!SetOperations.checkIfDfa(graphObject)){
+            graphObject.type = "NFA";
+            result_graph_store.update((n) => {
+                n.type = "NFA";
+                return n;
+            });
+        }
 
         console.log("newFa: ", graphObject);
         graphObject.generateGraphFromTransitions();
@@ -448,10 +485,160 @@
     }
 
     function differenceFunc(){
-        // curacku
+        console.log("difference");
+        let firstAutomaton = new FiniteStateAutomaton(
+            $first_graph_store.nodes,
+            $first_graph_store.transitions,
+            $first_graph_store.startState,
+            $first_graph_store.finishState,
+            $first_graph_store.type
+        )
+
+        let secondAutomaton = new FiniteStateAutomaton(
+            $second_graph_store.nodes,
+            $second_graph_store.transitions,
+            $second_graph_store.startState,
+            $second_graph_store.finishState,
+            $second_graph_store.type
+        )
+
+        let firstAutomatonAlphabet = [];
+        firstAutomaton.transitions.forEach((transition) => {
+            firstAutomatonAlphabet.push(transition.input);
+        });
+
+        //remove duplicates
+        firstAutomatonAlphabet = firstAutomatonAlphabet.filter((item, index) => firstAutomatonAlphabet.indexOf(item) === index);
+
+        //remove epsilon from alphabet
+        firstAutomatonAlphabet = firstAutomatonAlphabet.filter((item) => item !== "ε");
+
+
+        firstAutomaton.input_alphabet = firstAutomatonAlphabet;
+
+        let secondAutomatonAlphabet = [];
+        secondAutomaton.transitions.forEach((transition) => {
+            secondAutomatonAlphabet.push(transition.input);
+        });
+
+        //remove duplicates
+        secondAutomatonAlphabet = secondAutomatonAlphabet.filter((item, index) => secondAutomatonAlphabet.indexOf(item) === index);
+
+        //remove epsilon from alphabet
+        secondAutomatonAlphabet = secondAutomatonAlphabet.filter((item) => item !== "ε");
+
+        secondAutomaton.input_alphabet = secondAutomatonAlphabet;
+
+        console.log("first automaton: ", firstAutomaton);
+        console.log("second automaton: ",secondAutomaton);
+        deleteGraph();
+        let newFa : FiniteStateAutomaton;
+        if (firstAutomaton.type === "NFA" || secondAutomaton.type === "NFA") {
+            newFa = SetOperations.nfaDifference(firstAutomaton, secondAutomaton);
+
+        } else if (firstAutomaton.type === "DFA" && secondAutomaton.type === "DFA") {
+            newFa  = SetOperations.dfaDifference(firstAutomaton, secondAutomaton);
+        }
+
+        let alphabet = new Set();
+        newFa.transitions.forEach((transition) => {
+            alphabet.add(transition.input);
+        });
+
+        let alphabetArr = Array.from(alphabet);
+        let alphabetArrNoDuplicates = alphabetArr.filter((item, index) => alphabetArr.indexOf(item) === index);
+
+        graphObject.input_alphabet = alphabetArrNoDuplicates;
+        graphObject.transitions = newFa.transitions;
+        graphObject.nodes = newFa.nodes;
+        graphObject.startState = newFa.startState;
+        graphObject.finishState = newFa.finishState;
+        graphObject.type = newFa.type;
+
+        if(!SetOperations.checkIfDfa(graphObject)){
+            graphObject.type = "NFA";
+            result_graph_store.update((n) => {
+                n.type = "NFA";
+                return n;
+            });
+        }
+
+        console.log("newFa: ", graphObject);
+        graphObject.generateGraphFromTransitions();
+
+        createGraph(false);
+        result_graph_store.update((n) => {
+            n.input_alphabet = graphObject.input_alphabet;
+            n.transitions = graphObject.transitions;
+            n.nodes = graphObject.nodes;
+            n.startState = graphObject.startState;
+            n.finishState = graphObject.finishState;
+            n.type = graphObject.type;
+            n.generated = true;
+            n.hideConvertTable = true;
+            return n;
+        });
+
+        resetInputVar.set(false);
+        input_error_store.reset();
     }
     function iterationFunc(){
+        console.log("iteration");
+        let firstAutomaton = new FiniteStateAutomaton(
+            $first_graph_store.nodes,
+            $first_graph_store.transitions,
+            $first_graph_store.startState,
+            $first_graph_store.finishState,
+            $first_graph_store.type
+        )
 
+        console.log("first automaton: ", firstAutomaton);
+        deleteGraph();
+        let newFa : FiniteStateAutomaton;
+        newFa = SetOperations.dfaIteration(firstAutomaton);
+
+
+        let alphabet = new Set();
+        newFa.transitions.forEach((transition) => {
+            alphabet.add(transition.input);
+        });
+
+        let alphabetArr = Array.from(alphabet);
+        let alphabetArrNoDuplicates = alphabetArr.filter((item, index) => alphabetArr.indexOf(item) === index);
+
+        graphObject.input_alphabet = alphabetArrNoDuplicates;
+        graphObject.transitions = newFa.transitions;
+        graphObject.nodes = newFa.nodes;
+        graphObject.startState = newFa.startState;
+        graphObject.finishState = newFa.finishState;
+        graphObject.type = newFa.type;
+
+        if(!SetOperations.checkIfDfa(graphObject)){
+            graphObject.type = "NFA";
+            result_graph_store.update((n) => {
+                n.type = "NFA";
+                return n;
+            });
+        }
+
+        console.log("newFa: ", graphObject);
+        graphObject.generateGraphFromTransitions();
+
+        createGraph(false);
+        result_graph_store.update((n) => {
+            n.input_alphabet = graphObject.input_alphabet;
+            n.transitions = graphObject.transitions;
+            n.nodes = graphObject.nodes;
+            n.startState = graphObject.startState;
+            n.finishState = graphObject.finishState;
+            n.type = graphObject.type;
+            n.generated = true;
+            n.hideConvertTable = true;
+            return n;
+        });
+
+        resetInputVar.set(false);
+        input_error_store.reset();
     }
 
     function deleteGraph () {

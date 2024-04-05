@@ -1,12 +1,58 @@
 <script lang="ts">
+    import {tooltip} from "../../tooltipUtils";
 
 </script>
 
 <div class="control-panel">
+    <div class="tooltip-wrapper">
+        <h2>
+        <span class="ttip" use:tooltip={"The following 2 automata are used for set operations.\n" +
+                                        "A₁ on the left, A₂ on the right.\n\n" +
+                                        "Binary operation (works with two input automata A₁ and A₂)\n" +
+                                        "Unification\n"+
+                                        "A₁ ∪ A₂\n"+
+                                        "Intersection\n"+
+                                        "A₁ ∩ A₂\n"+
+                                        "Concatenation\n"+
+                                        "A₁ · A₂\n"+
+                                        "Difference\n"+
+                                        "A₁ − A₂\n"+
+                                        "\n"+
+                                        "Unary operation (works with one automaton A₁)\n"+
+                                        "Iteration\n"+
+                                        "A₁*\n"+
+                                        "Complement\n"+
+                                        "Ā₁\n"+
+                                        "\n"+
+                                        "If the specified automaton is non-deterministic, the operation\n" +
+                                        " can convert it to deterministic for its needs.\n"+
+                                        "\n"+
+                                        "The resulting automaton can be both NFA and DFA, it depends \n" +  //!!!The machines must not have the same labels!!!
+                                        " on the input automata. However, even two DFA automata can result in an NFA.\n" +
+                                        "\n"+
+                                        "!!!A₁ and A₂ must have different labels!!!"}>
+                    ?</span>
+        </h2>
+    </div>
     <slot />
 </div>
 
 <style>
+    .ttip {
+        font-size: 1.5rem;
+        font-weight: bold;
+        cursor: pointer;
+        position: absolute;
+        top: 1.5rem;
+        white-space: break-spaces;
+        color: #363636;
+
+    }
+
+    :global(body.dark-mode) .ttip {
+        color: #f4f9ff;
+    }
+
     .control-panel {
         position: relative;
         margin: 0 auto;
@@ -35,4 +81,10 @@
     :global(body.dark-mode) .control-panel {
         background: #25252d;
     }
+
+    .tooltip-wrapper :global(#tooltip) {
+        transform: translate(-110%, 0%);
+    }
+
+
 </style>

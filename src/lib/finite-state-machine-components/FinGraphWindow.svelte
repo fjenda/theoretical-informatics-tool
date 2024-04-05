@@ -1,11 +1,12 @@
 <script lang="ts">
     import cytoscape from "cytoscape";
     import {onMount} from "svelte";
-    import {configuration_store,graph_store, resetInputVar} from "../../stores/graphInitStore";
+    import {configuration_store, graph_store, resetInputVar, result_graph_store} from "../../stores/graphInitStore";
     import {input_error_store} from "../../stores/inputErrorStore";
     import {FiniteStateAutomaton} from "./FiniteStateAutomaton";
     import {RegexAutomaton} from "./regex/RegexAutomaton";
     import {ConvertorToDFA} from "./ConvertorToDFA";
+    import {SetOperations} from "./SetsOperations/SetOperations";
 
     let graphObject = new FiniteStateAutomaton([], [], [], [], [], "DFA");
 
@@ -743,6 +744,15 @@
         deleteGraph();
 
         Object.assign(graphObject, $graph_store);
+
+        if(!SetOperations.checkIfDfa(graphObject)){
+            graphObject.type = "NFA";
+            graph_store.update((n) => {
+                n.type = "NFA";
+                return n;
+            });
+        }
+
         graphObject.generateGraphFromTransitions();
 
 

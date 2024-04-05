@@ -41,12 +41,7 @@
         <FirstGraphWindow bind:toolbarFunctions={toolbarFunctions} slot="first-automaton" >
             <FirstToolbar>
                 <FirstToolbarButton type="generate-automata" text="Generate graph" func={toolbarFunctions?.generateGraphFromTransitions} />
-                <FirstToolbarButton type="new-node" text="New node" func={toolbarFunctions?.addNode} />
-                <FirstToolbarButton type="new-edge" text="New edge" func={toolbarFunctions?.addEdge} />
-                <FirstToolbarButton type="delete-element" text="Delete element" func={toolbarFunctions?.toggleDelete}/>
-                <FirstToolbarButton type="save-graph" text="Save graph" func={toolbarFunctions?.saveGraph} />
                 <FirstToolbarButton type="load-graph" text="Load graph" func={toolbarFunctions?.loadGraph} />
-                <FirstToolbarButton type="delete-graph" text="Delete graph" func={toolbarFunctions?.deleteGraph}/>
                 <FirstToolbarButton type="reset-layout" text="Reset layout" func={toolbarFunctions?.resetLayout} />
                 <FirstToolbarButton type="show-definition" text="Show definition" func={toolbarFunctions?.generateConfiguration} />
             </FirstToolbar>
@@ -56,20 +51,15 @@
         <OperationsPanel slot="operation_bar">
             <OperationButton  text="Union" func={resutlToolbarFunctions?.unionFunc} />
             <OperationButton  text="Intersection" func={resutlToolbarFunctions?.intersectionFunc} />
-            <OperationButton  text="Complement" func={resutlToolbarFunctions?.complementFunc} />
             <OperationButton  text="Concatenation" func={resutlToolbarFunctions?.concatenationFunc} />
             <OperationButton  text="Difference" func={resutlToolbarFunctions?.differenceFunc} />
             <OperationButton  text="Iteration" func={resutlToolbarFunctions?.iterationFunc} />
+            <OperationButton  text="Complement" func={resutlToolbarFunctions?.complementFunc} />
         </OperationsPanel>
         <SecondGraphWindow bind:secondToolbarFunctions={secondToolbarFunctions} slot="second-automaton">
             <SecondToolbar>
                 <SecondToolbarButton type="generate-automata" text="Generate graph" func={secondToolbarFunctions?.generateGraphFromTransitions} />
-                <SecondToolbarButton type="new-node" text="New node" func={secondToolbarFunctions?.addNode} />
-                <SecondToolbarButton type="new-edge" text="New edge" func={secondToolbarFunctions?.addEdge} />
-                <SecondToolbarButton type="delete-element" text="Delete element" func={secondToolbarFunctions?.toggleDelete}/>
-                <SecondToolbarButton type="save-graph" text="Save graph" func={secondToolbarFunctions?.saveGraph} />
                 <SecondToolbarButton type="load-graph" text="Load graph" func={secondToolbarFunctions?.loadGraph} />
-                <SecondToolbarButton type="delete-graph" text="Delete graph" func={secondToolbarFunctions?.deleteGraph}/>
                 <SecondToolbarButton type="reset-layout" text="Reset layout" func={secondToolbarFunctions?.resetLayout} />
                 <SecondToolbarButton type="show-definition" text="Show definition" func={secondToolbarFunctions?.generateConfiguration} />
             </SecondToolbar>

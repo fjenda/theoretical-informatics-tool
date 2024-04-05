@@ -41,3 +41,24 @@ html, body {
 .simplebar-mask {
   border-radius: 0.5rem !important;
 }
+
+#tooltip {
+  z-index: 999;
+  position: absolute;
+  bottom: inherit;
+  left: inherit;
+
+  padding: 0.35rem 0.5rem;
+  background: #F4F8FF;
+  color: #333333;
+  font-size: 1rem;
+  border-radius: 0.25rem;
+  filter: drop-shadow(0 1px 2px hsla(0, 0%, 0%, 0.2));
+  width: max-content;
+}
+
+body.dark-mode #tooltip {
+  background: #333333;
+  outline: 0.125rem solid #4A3F64;
+  color: #F4F8FF;
+}
