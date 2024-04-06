@@ -9,4 +9,5 @@ export interface PDAConfigurationType {
     initial_stack_symbol : string,
     final_states? : string[],
     type : string,
+    data: [string, string, string[], (string | number), TransitionType, (string | number)][],
 }

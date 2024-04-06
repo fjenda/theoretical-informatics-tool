@@ -5,7 +5,7 @@ import type {GraphObject} from "../types/GraphObject";
 import type {AutomatonConfiguration} from "../types/AutomatonConfiguration";
 import {FiniteStateAutomaton} from "../lib/finite-state-machine-components/FiniteStateAutomaton";
 import type {PDAConfigurationType} from "../types/pda-cfg/PDAConfigurationType";
-import {PushdownAutomaton} from "../lib/pushdown-automaton-components/PushdownAutomaton";
+import {PushdownAutomaton} from "../lib/pushdown-automaton-components/pda/PushdownAutomaton";
 import type {InitializationType} from "../types/pda-cfg/InitializationType";
 
 export const grammar_results_store = function() {

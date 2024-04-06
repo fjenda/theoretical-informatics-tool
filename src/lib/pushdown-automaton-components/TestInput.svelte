@@ -11,6 +11,10 @@
     let input : string = '';
     let showArrows : boolean = false;
 
+    $: if ($pda_graph_store.status === "idle") {
+        showArrows = false;
+    }
+
     // $: if (!/^[a-zA-Z0-9]+$/.test(input) && input !== '') {
     //     alert("Test input can be made of alphanumeric characters only!")
     //     input = input.substring(0, input.length - 1);
@@ -19,7 +23,7 @@
         table_index_store.set(0);
 
         showArrows = true;
-        testInputFunction(input.trim().split(""));
+        testInputFunction(input.trim());
     }
 
     function next() {
@@ -144,13 +148,13 @@
     .stop {
         width: 1.25rem;
         height: 1.25rem;
-        background-color: #000;
+        background-color: #000 !important;
         margin: 0 1rem;
         cursor: pointer;
     }
 
     :global(body.dark-mode) .stop {
-        background-color: #f4f9ff;
+        background-color: #f4f9ff !important;
     }
 
     .arrow {
