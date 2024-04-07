@@ -419,6 +419,7 @@ export class PDAController {
             n.finalStates = get(pda_backup_store).finalStates;
             n.transitions = get(pda_backup_store).transitions;
             n.nodes = get(pda_backup_store).nodes;
+            n.stackBottom = get(pda_backup_store).stackBottom;
             pda_backup_store.reset();
             n.generateGraphFromTransitions();
             return n;

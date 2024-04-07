@@ -184,8 +184,9 @@
                     dialog.close();
                 }}>Cancel</button>
                     <button on:click={() => {
-                    func() &&
-                    dialog.close()
+                    pda_backup_store.update((n) => { n.stackBottom = "Z"; return n; });
+                    func();
+                    dialog.close();
                 }}>Apply</button>
                 </div>
             </AutomatonGeneratorLayout>

@@ -177,7 +177,6 @@
         if ($pda_graph_store.type === "cfg") {
             pda_graph_store.update((n) => {
                 n.type = "empty";
-                n.stackBottom = $pda_backup_store.stackBottom;
                 return n;
             });
         } else {
