@@ -16,7 +16,7 @@
         {
             title: "Pushdown automaton",
             author: "Jan Fojtík",
-            description: "Pushdown automaton is a type of automaton that employs a stack. Pushdown automata are used in theories about what can be computed by machines. They are more capable than finite-state machines but less capable than Turing machines (see below). Deterministic pushdown automata can recognize all deterministic context-free languages while nondeterministic ones can recognize all context-free languages, with the former often used in parser design.",
+            description: "Pushdown automaton is a type of automaton that employs a stack. Pushdown automata are used in theories about what can be computed by machines. They are more capable than finite-state machines but less capable than Turing machines. Deterministic pushdown automata can recognize all deterministic context-free languages while nondeterministic ones can recognize all context-free languages, with the former often used in parser design.",
             scriptsUrl: "pushdown-automaton-scripts",
             toolUrl: "/Theoretical-informatics-tool/tool/pushdown-automaton",
         }
