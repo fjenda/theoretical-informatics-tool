@@ -184,6 +184,7 @@
                 n.type = "empty";
                 n.startState = "q0";
                 n.finalStates = ["qF"];
+                n.stackBottom = "Z";
                 n.transitions = tmp_transitions;
                 n.nodes = tmp_nodes;
                 return n;
