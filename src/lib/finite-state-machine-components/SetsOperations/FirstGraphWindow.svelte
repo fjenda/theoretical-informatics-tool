@@ -414,6 +414,7 @@
 
         createGraph(false);
         first_graph_store.update((n) => {
+            n.input_alphabet = graphObject.input_alphabet;
             n.generated = true;
             return n;
         });

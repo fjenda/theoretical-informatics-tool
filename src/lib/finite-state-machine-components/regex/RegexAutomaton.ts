@@ -241,8 +241,6 @@ export class  RegexAutomaton{
                 state:  newState,
                 stateLabel: "q" + newState,
                 input: transition.input,
-                stack: "",
-                stackAfter: "",
                 stateAfter: newStateAfter,
                 stateAfterLabel: "q" + newStateAfter
             });
@@ -266,8 +264,6 @@ export class  RegexAutomaton{
                 state:  newState,
                 stateLabel: "q" + newState,
                 input: transition.input,
-                stack: "",
-                stackAfter: "",
                 stateAfter: newStateAfter,
                 stateAfterLabel: "q" + newStateAfter
             });
@@ -281,8 +277,6 @@ export class  RegexAutomaton{
             state:  "0",
             stateLabel: "q0",
             input: "ε",
-            stack: "",
-            stackAfter: "",
             stateAfter: firstStateOfFirst,
             stateAfterLabel: "q" + firstStateOfFirst
         });
@@ -291,8 +285,6 @@ export class  RegexAutomaton{
             state:  "0",
             stateLabel: "q0",
             input: "ε",
-            stack: "",
-            stackAfter: "",
             stateAfter: firstStateOfSecond,
             stateAfterLabel: "q" + firstStateOfSecond
         });
@@ -312,8 +304,6 @@ export class  RegexAutomaton{
                 state:  lastStateOfFirst,
                 stateLabel: "q" + lastStateOfFirst,
                 input: "ε",
-                stack: "",
-                stackAfter: "",
                 stateAfter: end.id,
                 stateAfterLabel: "q" + end.id
             });
@@ -335,8 +325,6 @@ export class  RegexAutomaton{
                 state:  lastStateOfSecond,
                 stateLabel: "q" + lastStateOfSecond,
                 input: "ε",
-                stack: "",
-                stackAfter: "",
                 stateAfter: end.id,
                 stateAfterLabel: "q" + end.id
             });
@@ -375,8 +363,6 @@ export class  RegexAutomaton{
                 state:  newState,
                 stateLabel: "q" + newState,
                 input: transition.input,
-                stack: "",
-                stackAfter: "",
                 stateAfter: newStateAfter,
                 stateAfterLabel: "q" + newStateAfter
             });
@@ -397,8 +383,6 @@ export class  RegexAutomaton{
                 state:  lastStateOfFirst,
                 stateLabel: "q" + lastStateOfFirst,
                 input: "ε",
-                stack: "",
-                stackAfter: "",
                 stateAfter: firstStateOfSecond,
                 stateAfterLabel: "q" + firstStateOfSecond
             });
@@ -430,8 +414,6 @@ export class  RegexAutomaton{
                 state:  newState,
                 stateLabel: "q" + newState,
                 input: transition.input,
-                stack: "",
-                stackAfter: "",
                 stateAfter: newStateAfter,
                 stateAfterLabel: "q" + newStateAfter
             });
@@ -447,8 +429,6 @@ export class  RegexAutomaton{
             state:  "0",
             stateLabel: "q0",
             input: "ε",
-            stack: "",
-            stackAfter: "",
             stateAfter: firstState,
             stateAfterLabel: "q" + firstState
         });
@@ -457,8 +437,6 @@ export class  RegexAutomaton{
             state:  "0",
             stateLabel: "q0",
             input: "ε",
-            stack: "",
-            stackAfter: "",
             stateAfter:  endNode.id,
             stateAfterLabel: "q" +  endNode.id
         });
@@ -478,8 +456,6 @@ export class  RegexAutomaton{
                 state:  lastState,
                 stateLabel: "q" + lastState,
                 input: "ε",
-                stack: "",
-                stackAfter: "",
                 stateAfter: firstState,
                 stateAfterLabel: "q" + firstState
             });
@@ -489,8 +465,6 @@ export class  RegexAutomaton{
             state:  lastState,
             stateLabel: "q" + lastState,
             input: "ε",
-            stack: "",
-            stackAfter: "",
             stateAfter: endNode.id,
             stateAfterLabel: "q" + endNode.id
         });
@@ -519,8 +493,6 @@ export class  RegexAutomaton{
                 state:  newState,
                 stateLabel: "q" + newState,
                 input: transition.input,
-                stack: "",
-                stackAfter: "",
                 stateAfter: newStateAfter,
                 stateAfterLabel: "q" + newStateAfter
             });
@@ -536,8 +508,6 @@ export class  RegexAutomaton{
             state:  "0",
             stateLabel: "q0",
             input: "ε",
-            stack: "",
-            stackAfter: "",
             stateAfter: firstState,
             stateAfterLabel: "q" + firstState
         });
@@ -558,8 +528,6 @@ export class  RegexAutomaton{
                 state:  lastState,
                 stateLabel: "q" + lastState,
                 input: "ε",
-                stack: "",
-                stackAfter: "",
                 stateAfter: firstState,
                 stateAfterLabel: "q" + firstState
             });
@@ -569,8 +537,6 @@ export class  RegexAutomaton{
             state:  lastState,
             stateLabel: "q" + lastState,
             input: "ε",
-            stack: "",
-            stackAfter: "",
             stateAfter: endNode.id,
             stateAfterLabel: "q" + endNode.id
         });
@@ -599,8 +565,6 @@ export class  RegexAutomaton{
                 state:  newState,
                 stateLabel: "q" + newState,
                 input: transition.input,
-                stack: "",
-                stackAfter: "",
                 stateAfter: newStateAfter,
                 stateAfterLabel: "q" + newStateAfter
             });
@@ -616,8 +580,6 @@ export class  RegexAutomaton{
             state:  "0",
             stateLabel: "q0",
             input: "ε",
-            stack: "",
-            stackAfter: "",
             stateAfter: firstState,
             stateAfterLabel: "q" + firstState
         });
@@ -626,8 +588,6 @@ export class  RegexAutomaton{
             state:  "0",
             stateLabel: "q0",
             input: "ε",
-            stack: "",
-            stackAfter: "",
             stateAfter:  endNode.id,
             stateAfterLabel: "q" +  endNode.id
         });
@@ -648,8 +608,6 @@ export class  RegexAutomaton{
                 state:  lastState,
                 stateLabel: "q" + lastState,
                 input: "ε",
-                stack: "",
-                stackAfter: "",
                 stateAfter: endNode.id,
                 stateAfterLabel: "q" + endNode.id
             });
@@ -672,8 +630,6 @@ export class  RegexAutomaton{
             state: "0",
             stateLabel: "q0",
             input: edgeLabel,
-            stack: "",
-            stackAfter: "",
             stateAfter: "1",
             stateAfterLabel: "q1"
         });

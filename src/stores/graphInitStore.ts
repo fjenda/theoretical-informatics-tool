@@ -83,6 +83,22 @@ export const pda_backup_store = function () {
     }
 }();
 
+export const fin_graph_store = function () {
+    const {set, update, subscribe} : Writable<Partial<FiniteStateAutomaton>> = writable(new FiniteStateAutomaton([], [], [], [], [], "DFA"));
+
+    const reset = () => {
+        set(new FiniteStateAutomaton([], [], [], [], [], "DFA"));
+    }
+
+    return {
+        set,
+        update,
+        subscribe,
+        reset,
+    }
+}();
+
+
 export const configuration_store = function() {
     const {set, update, subscribe} : Writable<Partial<AutomatonConfiguration>> = writable({});
 

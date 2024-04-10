@@ -211,7 +211,7 @@
         deleteGraph();
         let newFa : FiniteStateAutomaton;
         if (firstAutomaton.type === "NFA" || secondAutomaton.type === "NFA") {
-            newFa = SetOperations.nfaUnion(firstAutomaton, secondAutomaton);
+            newFa = SetOperations.dfaUnion(firstAutomaton, secondAutomaton);
 
         } else if (firstAutomaton.type === "DFA" && secondAutomaton.type === "DFA") {
             newFa  = SetOperations.dfaUnion(firstAutomaton, secondAutomaton);
@@ -279,6 +279,33 @@
             $second_graph_store.finishState,
             $second_graph_store.type
         )
+
+        let firstAutomatonAlphabet = [];
+        firstAutomaton.transitions.forEach((transition) => {
+            firstAutomatonAlphabet.push(transition.input);
+        });
+
+        //remove duplicates
+        firstAutomatonAlphabet = firstAutomatonAlphabet.filter((item, index) => firstAutomatonAlphabet.indexOf(item) === index);
+
+        //remove epsilon from alphabet
+        firstAutomatonAlphabet = firstAutomatonAlphabet.filter((item) => item !== "ε");
+
+
+        firstAutomaton.input_alphabet = firstAutomatonAlphabet;
+
+        let secondAutomatonAlphabet = [];
+        secondAutomaton.transitions.forEach((transition) => {
+            secondAutomatonAlphabet.push(transition.input);
+        });
+
+        //remove duplicates
+        secondAutomatonAlphabet = secondAutomatonAlphabet.filter((item, index) => secondAutomatonAlphabet.indexOf(item) === index);
+
+        //remove epsilon from alphabet
+        secondAutomatonAlphabet = secondAutomatonAlphabet.filter((item) => item !== "ε");
+
+        secondAutomaton.input_alphabet = secondAutomatonAlphabet;
 
         console.log("first automaton: ", firstAutomaton);
         console.log("second automaton: ",secondAutomaton);
