@@ -12,7 +12,6 @@ export  class FiniteStateAutomaton{
     nodes: GraphNodeMeta[] =  [];
     edges: GraphEdgeDictionary = {};
     transitions: TransitionMeta[] = [];
-    stack: string[] [];
     currentStatus: AutomatonState;
     word: string[] = [];
     isAccepted: boolean = false;
@@ -50,8 +49,6 @@ export  class FiniteStateAutomaton{
             state: state,
             stateLabel: stateLabel,
             input: "ε",
-            stack: "",
-            stackAfter: "",
             stateAfter: stateAfter,
             stateAfterLabel: stateAfterLable,
         });
@@ -355,13 +352,11 @@ export  class FiniteStateAutomaton{
     }
 
     resetTestInput(){
-        this.stack = [];
         this.traversal = [];
         this.word = [];
         this.currentStatus = {
             state: this.startState,
             input: "",
-            stack: "Z",
             step: 0,
         };
     }

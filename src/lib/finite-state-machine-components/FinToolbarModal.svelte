@@ -41,7 +41,7 @@
         // states from nodes
         config += `Q: {${$configuration_store.nodes.join(", ")}}\n`;
 
-        // input alphabet and stack alphabet from transitions
+
         const alphabet = new Set();
         $configuration_store.transitions.forEach((transition) => {
             if (transition.input !== "ε") {

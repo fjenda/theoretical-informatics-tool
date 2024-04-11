@@ -14,6 +14,9 @@
         // console.log("Current status change: ", first_graph_store.currentStatus);
         // do something when this store value changes
         tableData = [];
+        cols = [];
+        inputSymbols = [];
+
         // get traversal
         transitions = $first_graph_store.transitions;
         nodesMeta = $first_graph_store.nodes;

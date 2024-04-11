@@ -45,8 +45,6 @@ export class SetOperations{
                 state: stateID.toString(),
                 stateLabel: transitionStatelabel,
                 input: firstTransition.input,
-                stack: firstTransition.stack,
-                stackAfter: firstTransition.stackAfter,
                 stateAfter: stateAfterID.toString(),
                 stateAfterLabel: transitionStateAfterLabel
             }
@@ -62,8 +60,6 @@ export class SetOperations{
                 state: stateID.toString(),
                 stateLabel: transitionStatelabel,
                 input: secondTransition.input,
-                stack: secondTransition.stack,
-                stackAfter: secondTransition.stackAfter,
                 stateAfter: stateAfterID.toString(),
                 stateAfterLabel: transitionStateAfterLabel
             }
@@ -82,8 +78,6 @@ export class SetOperations{
                         state: stateID.toString(),
                         stateLabel: transitionStatelabel,
                         input: transition.input,
-                        stack: transition.stack,
-                        stackAfter: transition.stackAfter,
                         stateAfter: stateAfterID.toString(),
                         stateAfterLabel: transitionStateAfterLabel
                     }
@@ -103,8 +97,6 @@ export class SetOperations{
                     state: stateID.toString(),
                     stateLabel: transitionStatelabel,
                     input: transition.input,
-                    stack: transition.stack,
-                    stackAfter: transition.stackAfter,
                     stateAfter: stateAfterID.toString(),
                     stateAfterLabel: transitionStateAfterLabel
                 }
@@ -163,8 +155,6 @@ export class SetOperations{
                 state: stateID.toString(),
                 stateLabel: transitionStatelabel,
                 input: firstTransition.input,
-                stack: firstTransition.stack,
-                stackAfter: firstTransition.stackAfter,
                 stateAfter: stateAfterID.toString(),
                 stateAfterLabel: transitionStateAfterLabel
             }
@@ -180,8 +170,6 @@ export class SetOperations{
                 state: stateID.toString(),
                 stateLabel: transitionStatelabel,
                 input: secondTransition.input,
-                stack: secondTransition.stack,
-                stackAfter: secondTransition.stackAfter,
                 stateAfter: stateAfterID.toString(),
                 stateAfterLabel: transitionStateAfterLabel
             }
@@ -197,8 +185,6 @@ export class SetOperations{
                 state: stateID.toString(),
                 stateLabel: transitionStatelabel,
                 input: "ε",
-                stack: "",
-                stackAfter: "",
                 stateAfter: stateAfterID.toString(),
                 stateAfterLabel: transitionStateAfterLabel
             }
@@ -214,8 +200,6 @@ export class SetOperations{
                 state: stateID.toString(),
                 stateLabel: transitionStatelabel,
                 input: "ε",
-                stack: "",
-                stackAfter: "",
                 stateAfter: stateAfterID.toString(),
                 stateAfterLabel: transitionStateAfterLabel
             }
@@ -237,7 +221,7 @@ export class SetOperations{
         for( let firstNode of first.nodes){
             let newNode = firstNode.label;
             for (let secondNode of second.nodes){
-                let newLabel = newNode + ""+ secondNode.label;
+                let newLabel = newNode + ","+ secondNode.label;
                 let classOfNode= "";
                 if ((first.startState.includes(firstNode.id) && second.startState.includes(secondNode.id) && (first.finishState.includes(firstNode.id) && second.finishState.includes(secondNode.id)))){
                     classOfNode = "finish start";
@@ -260,16 +244,14 @@ export class SetOperations{
         for (let firstTransition of first.transitions){
             for (let secondTransition of second.transitions){
                 if (firstTransition.input === secondTransition.input){
-                    let transitionStatelabel = "["+firstTransition.stateLabel + "" + secondTransition.stateLabel+"]";
-                    let transitionStateAfterLabel = "["+firstTransition.stateAfterLabel + "" + secondTransition.stateAfterLabel+"]";
+                    let transitionStatelabel = "["+firstTransition.stateLabel + "," + secondTransition.stateLabel+"]";
+                    let transitionStateAfterLabel = "["+firstTransition.stateAfterLabel + "," + secondTransition.stateAfterLabel+"]";
                     let stateID = newNodes.findIndex((node) => node.label === transitionStatelabel);
                     let stateAfterID = newNodes.findIndex((node) => node.label === transitionStateAfterLabel);
                     let newTransition : TransitionMeta = {
                         state: stateID.toString(),
                         stateLabel: transitionStatelabel,
                         input: firstTransition.input,
-                        stack: firstTransition.stack,
-                        stackAfter: firstTransition.stackAfter,
                         stateAfter: stateAfterID.toString(),
                         stateAfterLabel: transitionStateAfterLabel
                     }
@@ -315,7 +297,7 @@ export class SetOperations{
                     newFinishState.push(indexCounter.toString());
                 }
 
-                newNodes.push({id: indexCounter.toString(), label: newLabel, class: classOfNode});
+                newNodes.push({id: indexCounter.toString(), label: "["+newLabel+"]", class: classOfNode});
                 indexCounter++;
             }
         }
@@ -324,16 +306,14 @@ export class SetOperations{
         for (let firstTransition of firstDfa.transitions){
             for (let secondTransition of secondDfa.transitions){
                 if (firstTransition.input === secondTransition.input){
-                    let transitionStatelabel = firstTransition.stateLabel + "," + secondTransition.stateLabel;
-                    let transitionStateAfterLabel = firstTransition.stateAfterLabel + "," + secondTransition.stateAfterLabel;
+                    let transitionStatelabel = "["+firstTransition.stateLabel + "," + secondTransition.stateLabel+"]";
+                    let transitionStateAfterLabel =  "["+firstTransition.stateAfterLabel + "," + secondTransition.stateAfterLabel+"]";
                     let stateID = newNodes.findIndex((node) => node.label === transitionStatelabel);
                     let stateAfterID = newNodes.findIndex((node) => node.label === transitionStateAfterLabel);
                     let newTransition : TransitionMeta = {
                         state: stateID.toString(),
                         stateLabel: transitionStatelabel,
                         input: firstTransition.input,
-                        stack: firstTransition.stack,
-                        stackAfter: firstTransition.stackAfter,
                         stateAfter: stateAfterID.toString(),
                         stateAfterLabel: transitionStateAfterLabel
                     }
@@ -395,8 +375,6 @@ export class SetOperations{
                 state: stateID.toString(),
                 stateLabel: transitionStatelabel,
                 input: firstTransition.input,
-                stack: firstTransition.stack,
-                stackAfter: firstTransition.stackAfter,
                 stateAfter: stateAfterID.toString(),
                 stateAfterLabel: transitionStateAfterLabel
             }
@@ -638,7 +616,7 @@ export class SetOperations{
         for( let firstNode of first.nodes){
             let newNode = firstNode.label;
             for (let secondNode of second.nodes){
-                let newLabel = newNode + ""+ secondNode.label;
+                let newLabel = newNode + ","+ secondNode.label;
                 let classOfNode= "";
                 if ((first.startState.includes(firstNode.id) && second.startState.includes(secondNode.id) && (first.finishState.includes(firstNode.id) && !second.finishState.includes(secondNode.id)))){
                     classOfNode = "finish start";
@@ -661,8 +639,8 @@ export class SetOperations{
         for (let firstTransition of first.transitions){
             for (let secondTransition of second.transitions){
                 if (firstTransition.input === secondTransition.input){
-                    let transitionStatelabel = "["+firstTransition.stateLabel + "" + secondTransition.stateLabel+"]";
-                    let transitionStateAfterLabel = "["+firstTransition.stateAfterLabel + "" + secondTransition.stateAfterLabel+"]";
+                    let transitionStatelabel = "["+firstTransition.stateLabel + "," + secondTransition.stateLabel+"]";
+                    let transitionStateAfterLabel = "["+firstTransition.stateAfterLabel + "," + secondTransition.stateAfterLabel+"]";
                     let stateID = newNodes.findIndex((node) => node.label === transitionStatelabel);
                     let stateAfterID = newNodes.findIndex((node) => node.label === transitionStateAfterLabel);
                     let newTransition : TransitionMeta = {
@@ -715,7 +693,7 @@ export class SetOperations{
                     newFinishState.push(indexCounter.toString());
                 }
 
-                newNodes.push({id: indexCounter.toString(), label: newLabel, class: classOfNode});
+                newNodes.push({id: indexCounter.toString(), label: "["+newLabel+"]", class: classOfNode});
                 indexCounter++;
             }
         }
@@ -724,16 +702,14 @@ export class SetOperations{
         for (let firstTransition of firstDfa.transitions){
             for (let secondTransition of secondDfa.transitions){
                 if (firstTransition.input === secondTransition.input){
-                    let transitionStatelabel = firstTransition.stateLabel + "," + secondTransition.stateLabel;
-                    let transitionStateAfterLabel = firstTransition.stateAfterLabel + "," + secondTransition.stateAfterLabel;
+                    let transitionStatelabel = "["+firstTransition.stateLabel + "," + secondTransition.stateLabel+"]";
+                    let transitionStateAfterLabel = "["+firstTransition.stateAfterLabel + "," + secondTransition.stateAfterLabel+"]";
                     let stateID = newNodes.findIndex((node) => node.label === transitionStatelabel);
                     let stateAfterID = newNodes.findIndex((node) => node.label === transitionStateAfterLabel);
                     let newTransition : TransitionMeta = {
                         state: stateID.toString(),
                         stateLabel: transitionStatelabel,
                         input: firstTransition.input,
-                        stack: firstTransition.stack,
-                        stackAfter: firstTransition.stackAfter,
                         stateAfter: stateAfterID.toString(),
                         stateAfterLabel: transitionStateAfterLabel
                     }
@@ -778,8 +754,6 @@ export class SetOperations{
                 state: stateID.toString(),
                 stateLabel: transitionStatelabel,
                 input: firstTransition.input,
-                stack: firstTransition.stack,
-                stackAfter: firstTransition.stackAfter,
                 stateAfter: stateAfterID.toString(),
                 stateAfterLabel: transitionStateAfterLabel
             }
@@ -798,8 +772,6 @@ export class SetOperations{
                     state: stateID.toString(),
                     stateLabel: transitionStatelabel,
                     input: transition.input,
-                    stack: transition.stack,
-                    stackAfter: transition.stackAfter,
                     stateAfter: stateAfterID.toString(),
                     stateAfterLabel: transitionStateAfterLabel
                 }
@@ -817,8 +789,6 @@ export class SetOperations{
                         state: stateID.toString(),
                         stateLabel: transitionStatelabel,
                         input: transition.input,
-                        stack: transition.stack,
-                        stackAfter: transition.stackAfter,
                         stateAfter: stateAfterID.toString(),
                         stateAfterLabel: transitionStateAfterLabel
                     }
