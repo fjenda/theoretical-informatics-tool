@@ -1,5 +1,5 @@
 <script lang="ts">
-    import {pda_graph_store, table_index_store} from "../../stores/graphInitStore";
+    import {pda_configuration_store, pda_graph_store, table_index_store} from "../../stores/graphInitStore";
     import type {TransitionType} from "../../types/pda-cfg/TransitionType";
     import {input_error_store} from "../../stores/inputErrorStore";
     import {tooltip} from "../tooltipUtils";
@@ -11,7 +11,7 @@
     window.ResizeObserver = ResizeObserver;
 
     // state, input, stack, ruleNumber, rule, rowNumber
-    let tableData: [string, [string], [string], [number], TransitionType, number][] = [];
+    let tableData: [string, string, string[], number | string, TransitionType, number | string][] = [];
 
     let traversal = [];
 
@@ -33,7 +33,7 @@
             traversal = $pda_graph_store.traversal;
 
             // get word
-            wordBackup = $pda_graph_store.word.join("");
+            wordBackup = $pda_graph_store.word;
 
             // find the first rule that will be used from traversal
             let firstRuleIndex = $pda_graph_store.transitions.findIndex((transition) => {
@@ -56,7 +56,7 @@
 
 
             // push the initial configuration into tableData
-            tableData.push([$pda_graph_store.startState, word, $pda_graph_store.stackBottom, firstRuleIndex ? firstRuleIndex : "#", firstRule ? firstRule : "", 0]);
+            tableData.push([$pda_graph_store.startState, word, [$pda_graph_store.stackBottom], firstRuleIndex ? firstRuleIndex : "#", firstRule ? firstRule : "", 0]);
 
             for (let i = 0; i < traversal.length; i++) {
                 // rule about to be used
@@ -92,7 +92,7 @@
                 // stack
                 if (traversal[i].stackAfter[0] === "ε") { // pop (from the front)
                     stack = stackBackup.slice(1);
-                } else if (traversal[i].stackAfter[0] !== "ε") { // push (to the front) and dont push the last symbol in the stack
+                } else if (traversal[i].stackAfter[0] !== "ε") { // push (to the front) and don't push the last symbol in the stack
                     stack = traversal[i].stackAfter.concat(stackBackup.slice(1));
                 }
                 // console.log(`${traversal[i].stackAfter[0]} -> ${stack}`);
@@ -110,23 +110,26 @@
                 stackBackup = stack;
 
                 // push to table data
-                tableData.push([traversal[i].stateAfter, word, stack.join(""), nextRuleIndex ? nextRuleIndex : "#", nextRule ? nextRule : "", i + 1]);
+                tableData.push([traversal[i].stateAfter, word, stack, nextRuleIndex ? nextRuleIndex : "#", nextRule ? nextRule : "", i + 1]);
             }
         } else {
             if ($pda_graph_store.word) {
                 if ($pda_graph_store.word.length > 10) {
                     word = $pda_graph_store.word.slice(0, 7) + "...";
                 } else {
-                    word = $pda_graph_store.word.join("");
+                    word = $pda_graph_store.word;
                 }
                 // push the initial configuration into tableData
-                tableData.push([$pda_graph_store.startState, $pda_graph_store.word.join(""), $pda_graph_store.stackBottom, "#", "", 0]);
+                tableData.push([$pda_graph_store.startState, $pda_graph_store.word, [$pda_graph_store.stackBottom], "#", {} as TransitionType, 0]);
             }
         }
 
 
-        // console.log(tableData);
         // reset vars
+        pda_configuration_store.update((n) => {
+            n.data = tableData;
+            return n;
+        });
         resetVars();
     }
 
@@ -169,7 +172,7 @@
                     <div class="divTableRow active">
                         <div class="divTableCell">{row[0]}</div>
                         <div class="divTableCell">{row[1]}</div>
-                        <div class="divTableCell">{row[2]}</div>
+                        <div class="divTableCell">{row[2].join("")}</div>
                         {#if row[3] === "#" || row[3] === -1}
                             <div class="divTableCell">{row[3]}</div>
                         {:else}
@@ -182,7 +185,7 @@
                     <div class="divTableRow">
                         <div class="divTableCell">{row[0]}</div>
                         <div class="divTableCell">{row[1]}</div>
-                        <div class="divTableCell">{row[2]}</div>
+                        <div class="divTableCell">{row[2].join("")}</div>
                         {#if row[3] === "#" || row[3] === -1}
                             <div class="divTableCell">{row[3]}</div>
                         {:else}

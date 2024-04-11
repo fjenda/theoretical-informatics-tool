@@ -15,7 +15,6 @@ export interface ToolbarFunctions {
  nextTransition : () => void,
  previousTransition : () => void,
  resetTestInput : () => void,
- getStack : () => string[],
  regexInput: (string) => void,
  convertToDFA: () => void,
 }

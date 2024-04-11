@@ -1,18 +1,19 @@
-import type {GraphNodeMeta} from "../../types/GraphNodeMeta";
-import type {GraphEdgeDictionary} from "../../types/GraphObject";
-import type {AutomatonState} from "../../types/AutomatonState";
-import type {GraphEdgeMeta} from "../../types/GraphEdgeMeta";
-import type {TransitionType} from "../../types/pda-cfg/TransitionType";
+import type {GraphNodeMeta} from "../../../types/GraphNodeMeta";
+import type {GraphEdgeDictionary} from "../../../types/GraphObject";
+import type {AutomatonState} from "../../../types/AutomatonState";
+import type {GraphEdgeMeta} from "../../../types/GraphEdgeMeta";
+import type {TransitionType} from "../../../types/pda-cfg/TransitionType";
+import cytoscape from "cytoscape";
 
 export class PushdownAutomaton {
     // The graph object from the cytoscape library
-    graph = null;
+    graph: cytoscape.Core = cytoscape({});
 
     // The div element where the graph will be rendered
     div: HTMLDivElement = null;
 
     // The status of the automaton
-    status: string;
+    status: string = undefined;
 
     // The nodes of the graph
     nodes: GraphNodeMeta[] = [];
@@ -30,7 +31,7 @@ export class PushdownAutomaton {
     currentStatus: AutomatonState;
 
     // The word to be tested
-    word: string[] = [];
+    word: string = "";
 
     // The result of the test
     isAccepted: boolean = null;
@@ -238,23 +239,6 @@ export class PushdownAutomaton {
         let nextNode = this.traversal[this.currentStatus.step].stateAfter;
         let nextEdge = this.traversal[this.currentStatus.step].state + "-" + nextNode;
 
-        if (this.traversal[this.currentStatus.step].stackAfter[0] === "ε") {
-            this.stack.pop();
-        } else {
-            // const nextStack = this.traversal[this.currentStatus.step].stackAfter?.slice(0, -1);
-            const nextStack = this.traversal[this.currentStatus.step].stackAfter;
-            this.stack.pop();
-
-            if (nextStack.length > 1) {
-                for (let i = nextStack.length - 1; i >= 0; i--) {
-                    this.stack.push(nextStack[i]);
-                }
-            }
-            else {
-                this.stack.push(...nextStack);
-            }
-        }
-
         return {nextNode, nextEdge};
     }
 
@@ -273,22 +257,15 @@ export class PushdownAutomaton {
         let previousNode = this.traversal[this.currentStatus.step].state;
         let previousEdge = previousNode + "-" + this.traversal[this.currentStatus.step].stateAfter;
 
-        let currentTraversal = this.traversal[this.currentStatus.step];
-
-        // TODO: For CF grammars the stack needs to be redone, theres not always E
-        if (currentTraversal.stackAfter[0] === "ε") {
-            this.stack.push(this.traversal[this.currentStatus.step].stack);
-        } else if (currentTraversal.stackAfter[0] !== currentTraversal.stack[0]) {
-            this.stack.pop();
-        }
-
         return {previousNode, previousEdge};
     }
 
     resetTestInput() {
+        this.isAccepted = null;
+        this.status = "idle";
         this.stack = [];
         this.traversal = undefined;
-        this.word = [];
+        this.word = "";
         this.currentStatus = {
             state: this.startState,
             input: "",
@@ -303,5 +280,35 @@ export class PushdownAutomaton {
 
     setStackBottom(char: string) {
         this.stack = [char];
+    }
+
+    changeGraphStyle() {
+        const isDarkMode = window.document.body.classList.contains("dark-mode");
+
+        this.graph.style()
+            .selector("node").style({
+                "background-color": isDarkMode ?  "#f4f9ff" : "#808080",
+                "border-color": isDarkMode ? "#000" : "#101820",
+                "color": isDarkMode ? "#101820" : "#f4f9ff",
+            })
+            .selector("edge").style({
+                "line-color": isDarkMode ? "#f4f9ff" : "#101820",
+                "target-arrow-color": isDarkMode ? "#f4f9ff" : "#101820",
+                "source-arrow-color": isDarkMode ? "#f4f9ff" : "#101820",
+            })
+            .selector(".highlight").style({
+                "background-color": "#00ff00",
+                "line-color": "#00ff00",
+                "target-arrow-color": "#00ff00",
+                "transition-property": "line-color, target-arrow-color, background-color",
+                "transition-duration": 100,
+            })
+            .selector(".start").style({
+                "border-color": "#0080ff",
+            })
+            .selector(".finish").style({
+                "border-color": "#ff0000",
+            })
+        .update();
     }
 }
