@@ -4,7 +4,6 @@
     import MultiSelectState from "./MultiSelectState.svelte";
 
     import {
-        pda_graph_store,
         resetInputVar,
         pda_configuration_store,
         user_grammar_store,
@@ -13,9 +12,7 @@
     import AutomatonGeneratorLayout from "./AutomatonGeneratorLayout.svelte";
     import {input_error_store} from "../../stores/inputErrorStore";
     import StateComboBox from "./StateComboBox.svelte";
-    import StateMultiSelect from "../StateMultiSelect.svelte";
     import type {ToolbarButtonType} from "../../types/ToolbarButtonType";
-    import {MultiSelect} from "flowbite-svelte";
 
     export let showModal : boolean;
     export let type : ToolbarButtonType;

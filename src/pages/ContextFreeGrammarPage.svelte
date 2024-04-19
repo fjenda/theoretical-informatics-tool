@@ -32,12 +32,10 @@
 
 
         // create a copy of the store
-        const grammarCopy: ContextFreeGrammar = {};
+        const grammarCopy: ContextFreeGrammar = {} as ContextFreeGrammar;
         Object.assign(grammarCopy, $user_grammar_store);
         converter.setGrammar(grammarCopy);
         converter.convertToPDA();
-
-        console.log($pda_graph_store.transitions);
     }
 
 </script>
