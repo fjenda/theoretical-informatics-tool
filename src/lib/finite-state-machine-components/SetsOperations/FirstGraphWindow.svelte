@@ -514,68 +514,68 @@
     }
 
     let exampleNodes = [
-        { id: "0", label: "q0", class: "start"},
-        { id: "1", label: "q1", class: "" },
-        { id: "2", label: "q2", class: "" },
-        { id: "3", label: "q3", class: "finish" },
+        { id: "0", label: "p0", class: "start"},
+        { id: "1", label: "p1", class: "" },
+        { id: "2", label: "p2", class: "" },
+        { id: "3", label: "p3", class: "finish" },
     ];
 
     let exampleTransition = [
         {
             state: "0",
-            stateLabel: "q0",
+            stateLabel: "p0",
             input: "a",
             stateAfter: "1",
-            stateAfterLabel: "q1"
+            stateAfterLabel: "p1"
         },
         {
             state: "0",
-            stateLabel: "q0",
+            stateLabel: "p0",
             input: "b",
             stateAfter: "0",
-            stateAfterLabel: "q0"
+            stateAfterLabel: "p0"
         },
         {
             state: "1",
-            stateLabel: "q1",
+            stateLabel: "p1",
             input: "b",
             stateAfter: "2",
-            stateAfterLabel: "q2"
+            stateAfterLabel: "p2"
         },
         {
             state: "1",
-            stateLabel: "q1",
+            stateLabel: "p1",
             input: "a",
             stateAfter: "1",
-            stateAfterLabel: "q1"
+            stateAfterLabel: "p1"
         },
         {
             state: "2",
-            stateLabel: "q2",
+            stateLabel: "p2",
             input: "b",
             stateAfter: "0",
-            stateAfterLabel: "q0"
+            stateAfterLabel: "p0"
         },
         {
             state: "2",
-            stateLabel: "q2",
+            stateLabel: "p2",
             input: "a",
             stateAfter: "3",
-            stateAfterLabel: "q3"
+            stateAfterLabel: "p3"
         },
         {
             state: "3",
-            stateLabel: "q3",
+            stateLabel: "p3",
             input: "a",
             stateAfter: "3",
-            stateAfterLabel: "q3"
+            stateAfterLabel: "p3"
         },
         {
             state: "3",
-            stateLabel: "q3",
+            stateLabel: "p3",
             input: "b",
             stateAfter: "3",
-            stateAfterLabel: "q3"
+            stateAfterLabel: "p3"
         }
     ];
 

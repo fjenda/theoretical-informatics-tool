@@ -200,20 +200,19 @@
     }
 
     function validateTransition(transition) {
-        // let regex = /d\([A-Za-z]+[0-9]+,[A-Za-z0-9]\)=[A-Za-z]+[0-9];/;
-        let regex = /d\([A-Za-z]+[0-9]+,(ε|[A-Za-z0-9])\)=[A-Za-z]+[0-9];/;
+        let regex = /d\(([A-Za-z0-9]|[A-Za-z][0-9]),(ε|[A-Za-z0-9])\)=([A-Za-z0-9]|[A-Za-z][0-9]);$/;
         return regex.test(transition);
     }
 
     function validateTransitionDFA(transition) {
-        let regex = /^d\([A-Za-z]+[0-9]+,[^ε]\)=[A-Za-z]+[0-9]+;$/;
+        let regex = /^d\(([A-Za-z0-9]|[A-Za-z][0-9]),[^ε]\)=([A-Za-z0-9]|[A-Za-z][0-9]);$/;
         return regex.test(transition);
     }
 
     function applyHighlightsDFA(text) {
         return text
             .replace(/\n$/g, '\n\n')
-            .replace(/(d\([A-Za-z]+[0-9]+,[^ε]\)=[A-Za-z]+[0-9]+;)|(.*)/g, function(match, validTransition, other) {
+            .replace(/(d\(([A-Za-z0-9]|[A-Za-z][0-9]),[^ε]\)=([A-Za-z0-9]|[A-Za-z][0-9]);)|(.*)/g, function(match, validTransition, other) {
                 if (validTransition) {
                     return match;  // If it's a valid transition, leave it unchanged
                 } else {
@@ -226,7 +225,7 @@
         if ($second_graph_store.type == "DFA") {
             return text
                 .replace(/\n$/g, '\n\n')
-                .replace(/(d\([A-Za-z]+[0-9]+,([A-Za-z0-9])\)=[A-Za-z]+[0-9]+;)|(.*)/g, function (match, validTransition, other) {
+                .replace(/(d\(([A-Za-z0-9]|[A-Za-z][0-9]),([A-Za-z0-9])\)=([A-Za-z0-9]|[A-Za-z][0-9]);)|(.*)/g, function (match, validTransition, other) {
                     if (validTransition) {
                         return match;  // If it's a valid transition, leave it unchanged
                     } else {
@@ -236,7 +235,7 @@
         } else if ($second_graph_store.type == "NFA") {
             return text
                 .replace(/\n$/g, '\n\n')
-                .replace(/(d\([A-Za-z]+[0-9]+,(ε|[A-Za-z0-9])\)=[A-Za-z]+[0-9]+;)|(.*)/g, function (match, validTransition, other) {
+                .replace(/(d\(([A-Za-z0-9]|[A-Za-z][0-9]),(ε|[A-Za-z0-9])\)=([A-Za-z0-9]|[A-Za-z][0-9]);)|(.*)/g, function (match, validTransition, other) {
                     if (validTransition) {
                         return match;  // If it's a valid transition, leave it unchanged
                     } else {

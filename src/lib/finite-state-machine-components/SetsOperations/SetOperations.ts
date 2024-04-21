@@ -274,6 +274,31 @@ export class SetOperations{
             secondDfa = ConvertorToDFA.convertToDFA(second).newFa;
         }
 
+        //in first dfa change label of states from q to p and Ø to X
+        for (let node of firstDfa.nodes){
+            node.label = node.label.replace("q", "p");
+            node.label = node.label.replace("Ø", "X");
+        }
+
+        //in first dfa change label of transitions from q to p and Ø to X
+        for (let transition of firstDfa.transitions){
+            transition.stateLabel = transition.stateLabel.replace("q", "p");
+            transition.stateLabel = transition.stateLabel.replace("Ø", "X");
+            transition.stateAfterLabel = transition.stateAfterLabel.replace("q", "p");
+            transition.stateAfterLabel = transition.stateAfterLabel.replace("Ø", "X");
+        }
+
+        //in first dfa change label of states from q to p and Ø to X
+        for (let node of secondDfa.nodes){
+            node.label = node.label.replace("Ø", "Y");
+        }
+
+        //in first dfa change label of transitions from q to p and Ø to X
+        for (let transition of secondDfa.transitions){
+            transition.stateLabel = transition.stateLabel.replace("Ø", "Y");
+            transition.stateAfterLabel = transition.stateAfterLabel.replace("Ø", "Y");
+        }
+
         let newNodes : GraphNodeMeta[] = [];
         let newTransitions: TransitionMeta[] = [];
         let newStartState : string[] = [];
@@ -339,6 +364,15 @@ export class SetOperations{
 
         let indexCounter = 0;
 
+        //find if second start state is also finish state
+        let startStateIsFinish = false;
+        for (let finishState of second.finishState) {
+            if (second.startState.includes(finishState)) {
+                startStateIsFinish = true;
+                break;
+            }
+        }
+
         //create new nodes of nodes from first and second no connection
         for (let firstNode of first.nodes) {
             let classOfNode = "";
@@ -346,9 +380,13 @@ export class SetOperations{
                 classOfNode = "start";
                 newStartState.push(indexCounter.toString());
             }
-            if (first.finishState.includes(firstNode.id)) {
-                classOfNode = "finish";
-                newFinishState.push(indexCounter.toString());
+
+            if (startStateIsFinish) {
+
+                if (first.finishState.includes(firstNode.id)) {
+                    classOfNode = "finish";
+                    newFinishState.push(indexCounter.toString());
+                }
             }
 
             newNodes.push({id: indexCounter.toString(), label: firstNode.label, class: classOfNode});
@@ -390,8 +428,6 @@ export class SetOperations{
                 state: stateID.toString(),
                 stateLabel: transitionStatelabel,
                 input: secondTransition.input,
-                stack: secondTransition.stack,
-                stackAfter: secondTransition.stackAfter,
                 stateAfter: stateAfterID.toString(),
                 stateAfterLabel: transitionStateAfterLabel
             }
@@ -411,8 +447,6 @@ export class SetOperations{
                 state: stateID.toString(),
                 stateLabel: transitionStatelabel,
                 input: transition.input,
-                stack: transition.stack,
-                stackAfter: transition.stackAfter,
                 stateAfter: stateAfterID.toString(),
                 stateAfterLabel: transitionStateAfterLabel
             }
@@ -468,8 +502,6 @@ export class SetOperations{
                 state: stateID.toString(),
                 stateLabel: transitionStatelabel,
                 input: firstTransition.input,
-                stack: firstTransition.stack,
-                stackAfter: firstTransition.stackAfter,
                 stateAfter: stateAfterID.toString(),
                 stateAfterLabel: transitionStateAfterLabel
             }
@@ -485,8 +517,6 @@ export class SetOperations{
                 state: stateID.toString(),
                 stateLabel: transitionStatelabel,
                 input: secondTransition.input,
-                stack: secondTransition.stack,
-                stackAfter: secondTransition.stackAfter,
                 stateAfter: stateAfterID.toString(),
                 stateAfterLabel: transitionStateAfterLabel
             }
@@ -502,8 +532,6 @@ export class SetOperations{
             state: stateID.toString(),
             stateLabel: transitionStatelabel,
             input: "ε",
-            stack: "",
-            stackAfter: "",
             stateAfter: stateAfterID.toString(),
             stateAfterLabel: transitionStateAfterLabel
         }
@@ -519,6 +547,22 @@ export class SetOperations{
         let newStartState : string[] = [];
         let newFinishState : string[] = [];
         let indexCounter = 0;
+
+        if(!SetOperations.checkIfTotalDfa(first)) {
+            first = ConvertorToDFA.convertToDFA(first).newFa;
+
+            for (let node of first.nodes){
+                node.label = node.label.replace("q", "p");
+                node.label = node.label.replace("Ø", "X");
+            }
+
+            for (let transition of first.transitions){
+                transition.stateLabel = transition.stateLabel.replace("q", "p");
+                transition.stateLabel = transition.stateLabel.replace("Ø", "X");
+                transition.stateAfterLabel = transition.stateAfterLabel.replace("q", "p");
+                transition.stateAfterLabel = transition.stateAfterLabel.replace("Ø", "X");
+            }
+        }
 
         for(let firstNode of first.nodes){
             let classOfNode = "";
@@ -547,8 +591,6 @@ export class SetOperations{
                 state: stateID.toString(),
                 stateLabel: transitionStatelabel,
                 input: firstTransition.input,
-                stack: firstTransition.stack,
-                stackAfter: firstTransition.stackAfter,
                 stateAfter: stateAfterID.toString(),
                 stateAfterLabel: transitionStateAfterLabel
             }
@@ -592,8 +634,6 @@ export class SetOperations{
                 state: stateID.toString(),
                 stateLabel: transitionStatelabel,
                 input: firstTransition.input,
-                stack: firstTransition.stack,
-                stackAfter: firstTransition.stackAfter,
                 stateAfter: stateAfterID.toString(),
                 stateAfterLabel: transitionStateAfterLabel
             }
@@ -612,6 +652,37 @@ export class SetOperations{
         let newStartState : string[] = [];
         let newFinishState : string[] = [];
         let indexCounter = 0;
+
+        if(!SetOperations.checkIfTotalDfa(first)) {
+            first = ConvertorToDFA.convertToDFA(first).newFa;
+
+            for (let node of first.nodes){
+                node.label = node.label.replace("q", "p");
+                node.label = node.label.replace("Ø", "X");
+            }
+
+
+            for (let transition of first.transitions){
+                transition.stateLabel = transition.stateLabel.replace("q", "p");
+                transition.stateLabel = transition.stateLabel.replace("Ø", "X");
+                transition.stateAfterLabel = transition.stateAfterLabel.replace("q", "p");
+                transition.stateAfterLabel = transition.stateAfterLabel.replace("Ø", "X");
+            }
+        }
+
+        if(!SetOperations.checkIfTotalDfa(second)) {
+            second = ConvertorToDFA.convertToDFA(second).newFa;
+
+            for (let node of second.nodes){
+                node.label = node.label.replace("Ø", "Y");
+            }
+
+
+            for (let transition of second.transitions){
+                transition.stateLabel = transition.stateLabel.replace("Ø", "Y");
+                transition.stateAfterLabel = transition.stateAfterLabel.replace("Ø", "Y");
+            }
+        }
 
         for( let firstNode of first.nodes){
             let newNode = firstNode.label;
@@ -647,8 +718,6 @@ export class SetOperations{
                         state: stateID.toString(),
                         stateLabel: transitionStatelabel,
                         input: firstTransition.input,
-                        stack: firstTransition.stack,
-                        stackAfter: firstTransition.stackAfter,
                         stateAfter: stateAfterID.toString(),
                         stateAfterLabel: transitionStateAfterLabel
                     }
@@ -668,6 +737,31 @@ export class SetOperations{
         }
         if(second.type == "NFA"){
             secondDfa = ConvertorToDFA.convertToDFA(second).newFa;
+        }
+
+        //in first dfa change label of states from q to p and Ø to X
+        for (let node of firstDfa.nodes){
+            node.label = node.label.replace("q", "p");
+            node.label = node.label.replace("Ø", "X");
+        }
+
+        //in first dfa change label of transitions from q to p and Ø to X
+        for (let transition of firstDfa.transitions){
+            transition.stateLabel = transition.stateLabel.replace("q", "p");
+            transition.stateLabel = transition.stateLabel.replace("Ø", "X");
+            transition.stateAfterLabel = transition.stateAfterLabel.replace("q", "p");
+            transition.stateAfterLabel = transition.stateAfterLabel.replace("Ø", "X");
+        }
+
+        //in first dfa change label of states from q to p and Ø to X
+        for (let node of secondDfa.nodes){
+            node.label = node.label.replace("Ø", "Y");
+        }
+
+        //in first dfa change label of transitions from q to p and Ø to X
+        for (let transition of secondDfa.transitions){
+            transition.stateLabel = transition.stateLabel.replace("Ø", "Y");
+            transition.stateAfterLabel = transition.stateAfterLabel.replace("Ø", "Y");
         }
 
         let newNodes : GraphNodeMeta[] = [];
@@ -825,6 +919,18 @@ export class SetOperations{
                 isDfa = false;
             }
             if (transition.input === "ε"){
+                isDfa = false;
+            }
+        }
+        return isDfa;
+    }
+
+    static checkIfTotalDfa = (automaton : FiniteStateAutomaton) : boolean => {
+        let isDfa = true;
+        for (let node of automaton.nodes){
+            let transitions = automaton.transitions.filter
+            ((t) => t.stateLabel === node.label);
+            if (transitions.length < automaton.input_alphabet.length){
                 isDfa = false;
             }
         }
