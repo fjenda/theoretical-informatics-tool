@@ -1,7 +1,7 @@
 <script lang="ts">
     import {FiniteStateAutomaton} from "../FiniteStateAutomaton";
     import {onMount} from "svelte";
-    import {first_graph_store, graph_store, resetInputVar} from "../../../stores/graphInitStore";
+    import {first_graph_store, resetInputVar} from "../../../stores/graphInitStore";
     import cytoscape from "cytoscape";
     import {input_error_store} from "../../../stores/inputErrorStore";
     import {first_configuration_store} from "../../../stores/graphInitStore.js";
@@ -17,16 +17,13 @@
         loadGraph,
         deleteGraph,
         resetLayout,
-        // testInput,
-        // nextTransition,
-        // previousTransition,
-        // resetTestInput,
         generateConfiguration,
         generateGraphFromTransitions,
-        // regexInput,
-        // convertToDFA,
-        // preprocessGraphInput,
     } as ToolbarFunctions;
+
+    $: if ($first_graph_store.theme){
+        graphObject.changeGraphStyle();
+    }
 
 
     function toggleDelete() {
@@ -184,7 +181,7 @@
 
                     if(!SetOperations.checkIfDfa(graphObject)){
                         graphObject.type = "NFA";
-                        graph_store.update((n) => {
+                        first_graph_store.update((n) => {
                             n.type = "NFA";
                             return n;
                         });
@@ -442,33 +439,30 @@
                 {
                     selector: "node",
                     style: {
-                        // "background-color": window.document.body.classList.contains("dark-mode") ? "#808080" : "#080808",
-                        // "background-color": "var(--node-background-color)", // doesnt work
-                        "background-color": "#808080",
-                        "border-color": "#000000",
+                        "background-color": "#f4f9ff",
+                        "border-color": "#000",
                         "border-width": 1,
                         "label": "data(label)",
                         "text-valign": "center",
                         "text-halign": "center",
-                        "color": "#ffffff",
+                        "color": "#363636",
                     }
                 },
 
                 {
                     selector: ".finish",
                     style: {
-                        "background-color": "#6b6b6b",
-                        "border-width": 5,
+                        "border-width": 3.5,
                         "border-style": "double",
+                        "border-color": "#ff0000",
                     }
                 },
 
                 {
                     selector: ".start",
                     style: {
-                        "background-color": "#6b6b6b",
                         "border-width": 3,
-                        "border-color": "#0070ff",
+                        "border-color": "#00ff00",
                     }
                 },
 
@@ -476,19 +470,20 @@
                     selector: "edge",
                     style: {
                         "width": 3,
-                        "line-color": "#000000",
-                        "target-arrow-color": "#000000",
+                        "line-color": "#f4f9ff",
+                        "target-arrow-color": "#f4f9ff",
                         "target-arrow-shape": "triangle",
                         "curve-style": "bezier",
                         "label": "data(label)",
-                        "color": "#000000",
-                        "text-background-opacity": 1,
-                        "text-background-color": "#ffffff",
-                        "text-background-shape": "rectangle",
-                        "text-border-style": "solid",
+                        "color": "#101820",
+                        "text-background-opacity": .85,
+                        "text-background-color": "#f4f9ff",
+                        "text-background-shape": "roundrectangle",
+                        "text-background-padding": "3px",
                         "text-border-opacity": 1,
                         "text-border-width": 1,
-                        "text-border-color": "darkgray",
+                        "text-border-style": "solid",
+                        "text-border-color": "#101820",
                         "text-wrap": "wrap",
                         "control-point-distance": 100,
                     }
@@ -497,9 +492,9 @@
                 {
                     selector: ".highlight",
                     style: {
-                        "background-color": "#00ff00",
-                        "line-color": "#00ff00",
-                        "target-arrow-color": "#00ff00",
+                        "background-color": "#0080ff",
+                        "line-color": "#0080ff",
+                        "target-arrow-color": "#0080ff",
                         "transition-property": "line-color, target-arrow-color, background-color",
                         "transition-duration": 100,
                     }
@@ -507,75 +502,75 @@
             ],
 
             layout: {
-                name: "circle",
+                name: "spread",
             }
 
         });
     }
 
     let exampleNodes = [
-        { id: "0", label: "q0", class: "start"},
-        { id: "1", label: "q1", class: "" },
-        { id: "2", label: "q2", class: "" },
-        { id: "3", label: "q3", class: "finish" },
+        { id: "0", label: "p0", class: "start"},
+        { id: "1", label: "p1", class: "" },
+        { id: "2", label: "p2", class: "" },
+        { id: "3", label: "p3", class: "finish" },
     ];
 
     let exampleTransition = [
         {
             state: "0",
-            stateLabel: "q0",
+            stateLabel: "p0",
             input: "a",
             stateAfter: "1",
-            stateAfterLabel: "q1"
+            stateAfterLabel: "p1"
         },
         {
             state: "0",
-            stateLabel: "q0",
+            stateLabel: "p0",
             input: "b",
             stateAfter: "0",
-            stateAfterLabel: "q0"
+            stateAfterLabel: "p0"
         },
         {
             state: "1",
-            stateLabel: "q1",
+            stateLabel: "p1",
             input: "b",
             stateAfter: "2",
-            stateAfterLabel: "q2"
+            stateAfterLabel: "p2"
         },
         {
             state: "1",
-            stateLabel: "q1",
+            stateLabel: "p1",
             input: "a",
             stateAfter: "1",
-            stateAfterLabel: "q1"
+            stateAfterLabel: "p1"
         },
         {
             state: "2",
-            stateLabel: "q2",
+            stateLabel: "p2",
             input: "b",
             stateAfter: "0",
-            stateAfterLabel: "q0"
+            stateAfterLabel: "p0"
         },
         {
             state: "2",
-            stateLabel: "q2",
+            stateLabel: "p2",
             input: "a",
             stateAfter: "3",
-            stateAfterLabel: "q3"
+            stateAfterLabel: "p3"
         },
         {
             state: "3",
-            stateLabel: "q3",
+            stateLabel: "p3",
             input: "a",
             stateAfter: "3",
-            stateAfterLabel: "q3"
+            stateAfterLabel: "p3"
         },
         {
             state: "3",
-            stateLabel: "q3",
+            stateLabel: "p3",
             input: "b",
             stateAfter: "3",
-            stateAfterLabel: "q3"
+            stateAfterLabel: "p3"
         }
     ];
 
@@ -590,6 +585,7 @@
             n.finishState = ["3"];
             n.input_alphabet = ["a", "b"];
             n.hideConvertTable = true;
+            n.theme = "dark";
             return n;
         });
         $first_graph_store.followingID = 2;

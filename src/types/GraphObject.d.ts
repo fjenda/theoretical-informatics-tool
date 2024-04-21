@@ -26,6 +26,7 @@ export interface GraphObject {
     convertDict : ConvertorTab[], //dictionary of conversion tabs
     hideConvertTable : boolean, //show conversion table
     input_alphabet : string[], //input alphabet
+    theme : string, //dark theme
 }
 
 export type GraphObjectWithoutGraph = Omit<GraphObject, 'graph' | 'div'>;

@@ -13,16 +13,19 @@
                                         "A₁ ∪ A₂\n"+
                                         "Intersection\n"+
                                         "A₁ ∩ A₂\n"+
+                                        "Automatons must be DFA for this operation\n"+
                                         "Concatenation\n"+
                                         "A₁ · A₂\n"+
                                         "Difference\n"+
                                         "A₁ − A₂\n"+
+                                        "Automatons must be total for this operation\n"+
                                         "\n"+
                                         "Unary operation (works with one automaton A₁)\n"+
                                         "Iteration\n"+
                                         "A₁*\n"+
                                         "Complement\n"+
                                         "Ā₁\n"+
+                                        "Automaton must be total for this operation\n"+
                                         "\n"+
                                         "If the specified automaton is non-deterministic, the operation\n" +
                                         " can convert it to deterministic for its needs.\n"+
@@ -30,7 +33,14 @@
                                         "The resulting automaton can be both NFA and DFA, it depends \n" +  //!!!The machines must not have the same labels!!!
                                         " on the input automata. However, even two DFA automata can result in an NFA.\n" +
                                         "\n"+
-                                        "!!!A₁ and A₂ must have different labels!!!"}>
+                                        "!!!A₁ and A₂ must have different labels!!!\n" +
+                                        "\n"+
+                                        "Recommendation:\n" +
+                                        "For the A₁ automaton, choose state names like \"pNUMBER\"(p1)\n" +
+                                        "For the A₂ automaton, choose state names like \"qNUMBER\"(q1)\n" +
+                                        "\n"+
+                                        "If the automaton is not suitable for the selected operation and needs \n" +
+                                        "to be converted to a DFA, the resulting DFA will have a name in this format."}>
                     ?</span>
         </h2>
     </div>

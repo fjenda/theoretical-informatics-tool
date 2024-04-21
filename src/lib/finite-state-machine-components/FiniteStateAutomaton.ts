@@ -3,10 +3,11 @@ import type {GraphEdgeDictionary} from "../../types/GraphObject";
 import type {TransitionMeta} from "../../types/TransitionMeta";
 import type {AutomatonState} from "../../types/AutomatonState";
 import type {GraphEdgeMeta} from "../../types/GraphEdgeMeta";
+import cytoscape from "cytoscape";
 
 
 export  class FiniteStateAutomaton{
-    graph: null;
+    graph:  cytoscape.Core = cytoscape({});
     div: HTMLDivElement = null;
     status: string = "idle";
     nodes: GraphNodeMeta[] =  [];
@@ -359,5 +360,36 @@ export  class FiniteStateAutomaton{
             input: "",
             step: 0,
         };
+    }
+
+    changeGraphStyle() {
+
+        const isDarkMode = window.document.body.classList.contains("dark-mode");
+
+        this.graph.style()
+            .selector("node").style({
+            "background-color": isDarkMode ?  "#f4f9ff" : "#808080",
+            "border-color": isDarkMode ? "#000" : "#101820",
+            "color": isDarkMode ? "#101820" : "#f4f9ff",
+        })
+            .selector("edge").style({
+            "line-color": isDarkMode ? "#f4f9ff" : "#101820",
+            "target-arrow-color": isDarkMode ? "#f4f9ff" : "#101820",
+            "source-arrow-color": isDarkMode ? "#f4f9ff" : "#101820",
+        })
+            .selector(".highlight").style({
+            "background-color": "#0080ff",
+            "line-color": "#0080ff",
+            "target-arrow-color": "#0080ff",
+            "transition-property": "line-color, target-arrow-color, background-color",
+            "transition-duration": 100,
+        })
+            .selector(".start").style({
+            "border-color": "#00ff00",
+        })
+            .selector(".finish").style({
+            "border-color": "#ff0000",
+        })
+            .update();
     }
 }

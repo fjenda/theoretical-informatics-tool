@@ -38,6 +38,10 @@
         updateConfiguration("type");
     }
 
+    $: if ($graph_store.theme){
+        graphObject.changeGraphStyle();
+    }
+
     function convertToDFA(){
         const result = ConvertorToDFA.convertToDFA(graphObject);
         $graph_store.convertDict = ConvertorToDFA.generateConverTable(result.stateRecorder, graphObject);
@@ -140,7 +144,6 @@
         resetInputVar.set(false);
         input_error_store.reset();
 
-        console.log("HERERERERERERERERE: ", graphObject.finishState);
     }
 
     function testInput(wordCh : string[]){
@@ -713,33 +716,30 @@
                 {
                     selector: "node",
                     style: {
-                        // "background-color": window.document.body.classList.contains("dark-mode") ? "#808080" : "#080808",
-                        // "background-color": "var(--node-background-color)", // doesnt work
-                        "background-color": "#808080",
-                        "border-color": "#000000",
+                        "background-color": "#f4f9ff",
+                        "border-color": "#000",
                         "border-width": 1,
                         "label": "data(label)",
                         "text-valign": "center",
                         "text-halign": "center",
-                        "color": "#ffffff",
+                        "color": "#363636",
                     }
                 },
 
                 {
                     selector: ".finish",
                     style: {
-                        "background-color": "#6b6b6b",
-                        "border-width": 5,
+                        "border-width": 3.5,
                         "border-style": "double",
+                        "border-color": "#ff0000",
                     }
                 },
 
                 {
                     selector: ".start",
                     style: {
-                        "background-color": "#6b6b6b",
                         "border-width": 3,
-                        "border-color": "#0070ff",
+                        "border-color": "#00ff00",
                     }
                 },
 
@@ -747,19 +747,20 @@
                     selector: "edge",
                     style: {
                         "width": 3,
-                        "line-color": "#000000",
-                        "target-arrow-color": "#000000",
+                        "line-color": "#f4f9ff",
+                        "target-arrow-color": "#f4f9ff",
                         "target-arrow-shape": "triangle",
                         "curve-style": "bezier",
                         "label": "data(label)",
-                        "color": "#000000",
-                        "text-background-opacity": 1,
-                        "text-background-color": "#ffffff",
-                        "text-background-shape": "rectangle",
-                        "text-border-style": "solid",
+                        "color": "#101820",
+                        "text-background-opacity": .85,
+                        "text-background-color": "#f4f9ff",
+                        "text-background-shape": "roundrectangle",
+                        "text-background-padding": "3px",
                         "text-border-opacity": 1,
                         "text-border-width": 1,
-                        "text-border-color": "darkgray",
+                        "text-border-style": "solid",
+                        "text-border-color": "#101820",
                         "text-wrap": "wrap",
                         "control-point-distance": 100,
                     }
@@ -768,9 +769,9 @@
                 {
                     selector: ".highlight",
                     style: {
-                        "background-color": "#00ff00",
-                        "line-color": "#00ff00",
-                        "target-arrow-color": "#00ff00",
+                        "background-color": "#0080ff",
+                        "line-color": "#0080ff",
+                        "target-arrow-color": "#0080ff",
                         "transition-property": "line-color, target-arrow-color, background-color",
                         "transition-duration": 100,
                     }
@@ -778,7 +779,7 @@
             ],
 
             layout: {
-                name: "circle",
+                name: "spread",
             }
 
         });
@@ -886,6 +887,7 @@
             n.finishState = ["1"];
             n.input_alphabet = ["a", "b"];
             n.hideConvertTable = true;
+            n.theme = "dark";
             return n;
         });
         $graph_store.followingID = 2;

@@ -485,38 +485,38 @@
     }
 
     let exampleNodes = [
-        { id: "0", label: "A0", class: "start"},
-        { id: "1", label: "A1", class: "finish" },
+        { id: "0", label: "q0", class: "start"},
+        { id: "1", label: "q1", class: "finish" },
     ];
 
     let exampleTransition = [
         {
             state: "0",
-            stateLabel: "A0",
+            stateLabel: "q0",
             input: "b",
             stateAfter: "0",
-            stateAfterLabel: "A0"
+            stateAfterLabel: "q0"
         },
         {
             state: "0",
-            stateLabel: "A0",
+            stateLabel: "q0",
             input: "a",
             stateAfter: "1",
-            stateAfterLabel: "A1"
+            stateAfterLabel: "q1"
         },
         {
             state: "1",
-            stateLabel: "A1",
+            stateLabel: "q1",
             input: "a",
             stateAfter: "0",
-            stateAfterLabel: "A0"
+            stateAfterLabel: "q0"
         },
         {
             state: "1",
-            stateLabel: "A1",
+            stateLabel: "q1",
             input: "b",
             stateAfter: "1",
-            stateAfterLabel: "A1"
+            stateAfterLabel: "q1"
         }
     ];
 
