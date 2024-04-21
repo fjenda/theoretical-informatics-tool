@@ -22,7 +22,9 @@
     } as ToolbarFunctions;
 
     $: if ($first_graph_store.theme){
-        graphObject.changeGraphStyle();
+        if (graphObject != undefined){
+            graphObject.changeGraphStyle();
+        }
     }
 
 

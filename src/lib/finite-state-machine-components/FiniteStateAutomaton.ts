@@ -366,6 +366,9 @@ export  class FiniteStateAutomaton{
 
         const isDarkMode = window.document.body.classList.contains("dark-mode");
 
+        if (this.graph === null) {
+            return;
+        }
         this.graph.style()
             .selector("node").style({
             "background-color": isDarkMode ?  "#f4f9ff" : "#808080",

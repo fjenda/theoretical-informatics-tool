@@ -39,7 +39,9 @@
     }
 
     $: if ($graph_store.theme){
-        graphObject.changeGraphStyle();
+        if (graphObject != undefined){
+            graphObject.changeGraphStyle();
+        }
     }
 
     function convertToDFA(){
