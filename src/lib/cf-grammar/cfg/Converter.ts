@@ -157,7 +157,7 @@ export class Converter {
         this.renameNonTerminals();
 
         // remove the recursion
-        this.removeRecursion();
+        // this.removeRecursion();
 
         let transitions: TransitionType[] = [];
         let state = 'q';
