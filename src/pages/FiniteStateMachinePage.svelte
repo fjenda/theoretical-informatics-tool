@@ -14,6 +14,7 @@ import GraphControlPanel from "../lib/pushdown-automaton-components/GraphControl
 import RegexInput from "../lib/finite-state-machine-components/regex/RegexInput.svelte";
 import FinConvertTable from "../lib/finite-state-machine-components/FinConvertTable.svelte";
 import {graph_store} from "../stores/graphInitStore";
+import ThemeToggle from "../lib/ThemeToggle.svelte";
 
 
     const landingPageUrl = "/Theoretical-informatics-tool/"
@@ -27,6 +28,7 @@ import {graph_store} from "../stores/graphInitStore";
 
 <DebugView>
     <main>
+        <ThemeToggle />
         <FiniteStateMachineLayout title="Finite state automaton">
             <FinGraphControlPanel  slot="control-panel">
 

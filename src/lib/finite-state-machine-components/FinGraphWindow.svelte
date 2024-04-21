@@ -38,6 +38,10 @@
         updateConfiguration("type");
     }
 
+    $: if ($graph_store.theme){
+        graphObject.changeGraphStyle();
+    }
+
     function convertToDFA(){
         const result = ConvertorToDFA.convertToDFA(graphObject);
         $graph_store.convertDict = ConvertorToDFA.generateConverTable(result.stateRecorder, graphObject);
@@ -140,7 +144,6 @@
         resetInputVar.set(false);
         input_error_store.reset();
 
-        console.log("HERERERERERERERERE: ", graphObject.finishState);
     }
 
     function testInput(wordCh : string[]){
@@ -884,6 +887,7 @@
             n.finishState = ["1"];
             n.input_alphabet = ["a", "b"];
             n.hideConvertTable = true;
+            n.theme = "dark";
             return n;
         });
         $graph_store.followingID = 2;
