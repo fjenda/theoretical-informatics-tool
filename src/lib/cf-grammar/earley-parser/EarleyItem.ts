@@ -36,12 +36,12 @@ export class EarleyItem {
     }
 
     // Function that compares two Earley items
-    equals(item: EarleyItem) {
+    equals(other: EarleyItem) {
         return (
-            this.rule.lhs === item.rule.lhs &&
-            this.rule.rhs.join("") === item.rule.rhs.join("") &&
-            this.dot === item.dot &&
-            this.start === item.start
+            this.rule.lhs === other.rule.lhs &&
+            this.rule.rhs.join("") === other.rule.rhs.join("") &&
+            this.dot === other.dot &&
+            this.start === other.start
         );
     }
 

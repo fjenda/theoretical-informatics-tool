@@ -101,6 +101,8 @@ export class ContextFreeGrammar {
 
     //  Function that returns a string representation of the grammar
     toString() {
+        this.updateTerminalsAndNonTerminals();
+
         // copy the rules to avoid modifying the original rules
         const logRules = this.rules.map(rule => new CFGRule(rule.leftSide, rule.rightSide));
 
@@ -126,9 +128,14 @@ export class ContextFreeGrammar {
                 });
             }
         });
-        return `Π: {${this.nonTerminals.join(', ')}},
+        return `G = (Π, Σ, S, P), where
+         
+Π: {${this.nonTerminals.join(', ')}},
+
 Σ: {${this.terminals.join(', ')}},
+
 S: ${this.startSymbol},
+
 P: {\n    ${logRules.map(rule => rule.toString()).join('\n    ')}\n}`;
     }
 
