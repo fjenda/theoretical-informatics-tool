@@ -180,8 +180,9 @@ export class PushdownAutomaton {
         // if edge with same source and target exists, add the label to the existing edge
         if (this.graph.$id(edge.id).length !== 0) {
             let tmpEdge = this.graph.$id(edge.id);
+            const labels = tmpEdge.data("label").split("\n").filter(l => l !== "" && l !== undefined);
 
-            if (tmpEdge.data("label").split("\n").includes(edge.label)) {
+            if (labels.includes(edge.label)) {
                 return;
             }
 
@@ -297,14 +298,14 @@ export class PushdownAutomaton {
                 "source-arrow-color": isDarkMode ? "#f4f9ff" : "#101820",
             })
             .selector(".highlight").style({
-                "background-color": "#00ff00",
-                "line-color": "#00ff00",
-                "target-arrow-color": "#00ff00",
+                "background-color": "#0080ff",
+                "line-color": "#0080ff",
+                "target-arrow-color": "#0080ff",
                 "transition-property": "line-color, target-arrow-color, background-color",
                 "transition-duration": 100,
             })
             .selector(".start").style({
-                "border-color": "#0080ff",
+                "border-color": "#00ff00",
             })
             .selector(".finish").style({
                 "border-color": "#ff0000",

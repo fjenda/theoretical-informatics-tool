@@ -162,7 +162,7 @@ LHS Grammar Window for editing the grammar
                        type="text"
                        bind:value={right}
                        on:input={() => { checkIfPipeline(i, j); }}
-                       on:keydown|preventDefault={(event) => { checkIfBackspace(i, j, event) } }
+                       on:keydown={(event) => { checkIfBackspace(i, j, event) } }
                        placeholder="ε" />
                 {#if j < row.rightSide.length - 1}
                     <span>&nbsp;｜&nbsp;</span>

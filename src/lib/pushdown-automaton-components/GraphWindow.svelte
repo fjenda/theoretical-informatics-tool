@@ -77,7 +77,7 @@
                     selector: ".start",
                     style: {
                         "border-width": 3,
-                        "border-color": "#0080ff",
+                        "border-color": "#00ff00",
                     }
                 },
                 {
@@ -90,7 +90,7 @@
                         "curve-style": "bezier",
                         "label": "data(label)",
                         "color": "#101820",
-                        "text-background-opacity": 1,
+                        "text-background-opacity": .85,
                         "text-background-color": "#f4f9ff",
                         "text-background-shape": "roundrectangle",
                         "text-background-padding": "3px",
@@ -99,16 +99,15 @@
                         "text-border-style": "solid",
                         "text-border-color": "#101820",
                         "text-wrap": "wrap",
-                        "control-point-distance": 75,
+                        "control-point-distance": 100,
                     }
                 },
-
                 {
                     selector: ".highlight",
                     style: {
-                        "background-color": "#00ff00",
-                        "line-color": "#00ff00",
-                        "target-arrow-color": "#00ff00",
+                        "background-color": "#0080ff",
+                        "line-color": "#0080ff",
+                        "target-arrow-color": "#0080ff",
                         "transition-property": "line-color, target-arrow-color, background-color",
                         "transition-duration": 100,
                     }

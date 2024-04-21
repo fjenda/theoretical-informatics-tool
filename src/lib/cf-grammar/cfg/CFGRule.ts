@@ -3,7 +3,6 @@
     Class containing the grammar rule logic
     Author: Jan Fojtík
 */
-
 export class CFGRule {
     // Left side of the rule (non-terminal)
     leftSide: string;
