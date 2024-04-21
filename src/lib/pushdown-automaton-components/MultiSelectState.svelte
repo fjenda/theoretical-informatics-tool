@@ -51,7 +51,8 @@
         height: 10.6rem;
         padding: 0.5rem;
 
-        border: 0.1rem solid #ccc;
+        border: none;
+        outline: 0.1rem solid #ccc;
         border-radius: 0.3rem;
 
         font-size: 1rem;
@@ -63,6 +64,6 @@
     :global(body.dark-mode) select {
         background-color: #2f3941;
         color: #f4f9ff;
-        border: 0.1rem solid #9c81da;
+        outline: 0.1rem solid #9c81da;
     }
 </style>

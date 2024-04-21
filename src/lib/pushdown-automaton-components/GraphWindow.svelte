@@ -191,11 +191,7 @@
         }
 
         PDAController.generateGraphFromTransitions(false);
-
-        pda_graph_store.update((n) => {
-            n.changeGraphStyle();
-            return n;
-        });
+        PDAController.changeGraphStyle();
     });
 
 

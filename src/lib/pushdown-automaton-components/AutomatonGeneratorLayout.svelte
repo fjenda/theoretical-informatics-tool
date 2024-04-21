@@ -1,7 +1,7 @@
-
-
 <slot name="type-switch"/>
-<p class="epsilon">ε - copy if needed</p>
+<div class="eps-box">
+    <slot name="eps-button"/>
+</div>
 
 <div class="layout">
     <div class="start-state-box">
@@ -48,10 +48,10 @@
         justify-content: center;
     }
 
-    .epsilon {
-        font-size: 0.8rem;
-        color: #a4a4a4;
-        text-align: center;
+    .eps-box {
+        margin-top: 0.75rem;
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
     }
-
 </style>

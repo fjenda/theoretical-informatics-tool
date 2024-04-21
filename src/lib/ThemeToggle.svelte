@@ -1,10 +1,45 @@
 <script lang="ts">
-    import {pda_graph_store} from "../stores/graphInitStore";
+
+    import {PDAController} from "./pushdown-automaton-components/pda/PDAController";
+    import {graph_store, first_graph_store,second_graph_store,result_graph_store} from "../stores/graphInitStore";
 
     function toggleTheme() {
         window.document.body.classList.toggle("dark-mode");
-        pda_graph_store.update(n => {
-            n.changeGraphStyle();
+        PDAController.changeGraphStyle();
+
+        graph_store.update(n => {
+            if (n.theme === "light") {
+                n.theme = "dark";
+            } else {
+                n.theme = "light";
+            }
+            return n;
+        });
+
+        first_graph_store.update(n => {
+            if (n.theme === "light") {
+                n.theme = "dark";
+            } else {
+                n.theme = "light";
+            }
+            return n;
+        });
+
+        second_graph_store.update(n => {
+            if (n.theme === "light") {
+                n.theme = "dark";
+            } else {
+                n.theme = "light";
+            }
+            return n;
+        });
+
+        result_graph_store.update(n => {
+            if (n.theme === "light") {
+                n.theme = "dark";
+            } else {
+                n.theme = "light";
+            }
             return n;
         });
     }

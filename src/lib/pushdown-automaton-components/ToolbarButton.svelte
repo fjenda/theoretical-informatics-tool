@@ -44,12 +44,17 @@ onMount(() => {
 
             {#if type === "generate-graph"}
                 <span class="ttip" use:tooltip={"Write the rules in the form\n\n" +
-                                                "d(q0,a,Z)=(q1,A Z);\n" +
-                                                "d(q1,b,A)=(q2,B A);\n" +
-                                                "d(q2,c,B)=(q3,ε);\n" +
-                                                "\nIf you don't put a space between the characters\n" +
-                                                "to be put on the stack, the rules won't load properly.\n\n" +
-                                                "The initial stack symbol is always be Z."}>
+                                                "d(q0,a,Z)=(q1,AZ);\n" +
+                                                "d(q1,b,A)=(q2,BA);\n" +
+                                                "d(q2,c,B)=(q3,ε);\n\n" +
+                                                "Alphabet and stack symbols will be automatically\n" +
+                                                "generated from the rules. Usage of only\n" +
+                                                "alphanumeric characters is expected\n\n" +
+                                                "The initial stack symbol will always be Z.\n\n" +
+                                                "Automaton Type:\n" +
+                                                "   Empty - Accepts with empty stack\n" +
+                                                "   Final    - Accepts in final state\n" +
+                                                "   Both    - Accepts in final state with empty stack"}>
                 ?</span>
             {/if}
         </h2>
@@ -102,7 +107,7 @@ onMount(() => {
         top: 1rem;
         right: 1.5rem;
         white-space: break-spaces;
-        text-align: center;
+        text-align: left;
     }
 
     .header {
