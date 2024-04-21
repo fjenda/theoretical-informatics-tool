@@ -108,7 +108,7 @@
                 input: rowSplit[1],
                 stack: rowSplit[2],
                 stateAfter: rowSplit[3],
-                stackAfter: rowSplit[4].split(" "),
+                stackAfter: rowSplit[4].split(""),
             });
         }
     }
@@ -173,13 +173,13 @@
     }
 
     function validateTransition(transition) {
-        return /d\([A-Za-z]+[0-9]*,[A-Za-z-ε],[A-Za-z]+'*\)=\([A-Za-z]+[A-Za-z0-9]*,(?:(?:(?:[a-z]|[A-Z]'?) )*(?:[a-z]|[A-Z]'?)|ε)\);/.test(transition);
+        return /d\([A-Za-z]+[0-9]*,[A-Za-z0-9-ε],[A-Za-z0-9]+'*\)=\([A-Za-z]+[A-Za-z0-9]*,(?:(?:[0-9]|(?:[a-z]|[A-Z]'?))*(?:[0-9]|(?:[a-z]|[A-Z]'?))|ε)\);/.test(transition);
     }
 
     function applyHighlights(text: string) {
         return text
             .replace(/\n$/g, '\n\n')
-            .replace(/(d\([A-Za-z]+[0-9]*,[A-Za-z-ε],[A-Za-z]+'*\)=\([A-Za-z]+[A-Za-z0-9]*,(?:(?:(?:[a-z]|[A-Z]'?) )*(?:[a-z]|[A-Z]'?)|ε)\);)|(.*)/g, function (match, pattern, other) {
+            .replace(/(d\([A-Za-z]+[0-9]*,[A-Za-z0-9-ε],[A-Za-z0-9]+'*\)=\([A-Za-z]+[A-Za-z0-9]*,(?:(?:[0-9]|(?:[a-z]|[A-Z]'?))*(?:[0-9]|(?:[a-z]|[A-Z]'?))|ε)\);)|(.*)/g, function (match, pattern, other) {
                 if (pattern) {
                     return match;
                 } else {
@@ -214,7 +214,7 @@
               on:input={processTransitions}
               id="function-input"
               class="function-input"
-              placeholder={'d(q0,a,Z)=(q1,A Z);'}
+              placeholder={'d(q0,a,Z)=(q1,AZ);'}
               rows="20"/>
 </div>
 

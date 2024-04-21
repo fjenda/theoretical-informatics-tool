@@ -282,34 +282,4 @@ export class PushdownAutomaton {
     setStackBottom(char: string) {
         this.stack = [char];
     }
-
-    changeGraphStyle() {
-        const isDarkMode = window.document.body.classList.contains("dark-mode");
-
-        this.graph.style()
-            .selector("node").style({
-                "background-color": isDarkMode ?  "#f4f9ff" : "#808080",
-                "border-color": isDarkMode ? "#000" : "#101820",
-                "color": isDarkMode ? "#101820" : "#f4f9ff",
-            })
-            .selector("edge").style({
-                "line-color": isDarkMode ? "#f4f9ff" : "#101820",
-                "target-arrow-color": isDarkMode ? "#f4f9ff" : "#101820",
-                "source-arrow-color": isDarkMode ? "#f4f9ff" : "#101820",
-            })
-            .selector(".highlight").style({
-                "background-color": "#0080ff",
-                "line-color": "#0080ff",
-                "target-arrow-color": "#0080ff",
-                "transition-property": "line-color, target-arrow-color, background-color",
-                "transition-duration": 100,
-            })
-            .selector(".start").style({
-                "border-color": "#00ff00",
-            })
-            .selector(".finish").style({
-                "border-color": "#ff0000",
-            })
-        .update();
-    }
 }

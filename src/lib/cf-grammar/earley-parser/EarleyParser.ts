@@ -37,7 +37,7 @@ export class EarleyParser {
     }
 
     // Function that adds the starting rules of the parser to the first state
-    setStartingRules() {
+    private setStartingRules() {
         // add the starting rules to the first state
         const startingRules = this.grammar.filter(rule => rule.lhs === this.startingPoint);
         startingRules.forEach(rule => {
@@ -47,7 +47,7 @@ export class EarleyParser {
 
     // Function that checks if the given symbol is a non-terminal
     // params: symbol: string - symbol to check
-    isNonTerminal(symbol: string) {
+    private isNonTerminal(symbol: string) {
         return this.grammar.some(rule => rule.lhs === symbol);
     }
 
@@ -69,7 +69,7 @@ export class EarleyParser {
     }
 
     // Function to find nullable rules
-    findNullables() {
+    private findNullables() {
         // find direct nullables
         this.nullables.push(
             ...this.grammar
@@ -197,7 +197,7 @@ export class EarleyParser {
     // params: root: TreeNode   - root of the tree (the starting rule)
     //
     // returns: ParserTree      - parser tree
-    createTree(root: TreeNode) {
+    private createTree(root: TreeNode) {
         let tree = new ParserTree(root);
         let stack = [root];
 
@@ -251,7 +251,7 @@ export class EarleyParser {
     //         start: number        - start index
     //         stateIndex: number   - index of the state
     //         itemIndex: number    - index of the item
-    predict(symbol: string, state: State, start: number, stateIndex: number, itemIndex: number) {
+    private predict(symbol: string, state: State, start: number, stateIndex: number, itemIndex: number) {
         // get the rules that have the symbol on the left side
         const rules = this.grammar.filter((rule) => rule.lhs === symbol);
 
@@ -279,7 +279,7 @@ export class EarleyParser {
     //         state: State         - current state
     //         index: number        - index of the item
     //         stateIndex: number   - index of the state
-    scan(input: string, state: State, index: number, stateIndex: number) {
+    private scan(input: string, state: State, index: number, stateIndex: number) {
         // check if the input matches the symbol after the dot
         if (input === state.get(index).rule.rhs[state.get(index).dot]) {
             // we copy the item and move the dot one position to the right
@@ -301,7 +301,7 @@ export class EarleyParser {
     // params: state: State         - current state
     //         stateIndex: number   - index of the state
     //         itemIndex: number    - index of the item
-    complete(state: State, stateIndex: number, itemIndex: number) {
+    private complete(state: State, stateIndex: number, itemIndex: number) {
         // get the start state set of the current item
         let stateSet = this.states[state.get(itemIndex).start];
 

@@ -1,12 +1,9 @@
 <script lang="ts">
-    import {pda_graph_store} from "../stores/graphInitStore";
+    import {PDAController} from "./pushdown-automaton-components/pda/PDAController";
 
     function toggleTheme() {
         window.document.body.classList.toggle("dark-mode");
-        pda_graph_store.update(n => {
-            n.changeGraphStyle();
-            return n;
-        });
+        PDAController.changeGraphStyle();
     }
 
 </script>

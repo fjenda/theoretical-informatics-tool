@@ -95,7 +95,7 @@ export class ParserTree {
     //          rule: Rule      - the rule that is used to replace the char
     //
     // returns: string          - the input string with the replaced char
-    parseChar(input: string, rule: Rule) {
+    private parseChar(input: string, rule: Rule) {
         for (let char of input) {
             if (char === rule.lhs) {
                 // replace the char with the rule lhs

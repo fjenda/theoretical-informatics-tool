@@ -8,12 +8,14 @@
     ];
 </script>
 
-<div class="header">
-    <h1>{title}</h1>
-    <div class="tab-box">
-        {#each tabs as tab}
-            <Button type="tab" text={tab[0]} url={tab[1]}/>
-        {/each}
+<div class="header-wrapper">
+    <div class="header">
+        <h1>{title}</h1>
+        <div class="tab-box">
+            {#each tabs as tab}
+                <Button type="tab" text={tab[0]} url={tab[1]}/>
+            {/each}
+        </div>
     </div>
 </div>
 <div class="wrap">
@@ -117,11 +119,14 @@
   }
 
   .header {
-    margin: 0 auto;
-
-    width: 95%;
+    width: 90%;
     display: flex;
     flex-wrap: wrap;
+  }
+
+  .header-wrapper {
+    width: 95%;
+    margin: 0 auto;
   }
 
   .tab-box {

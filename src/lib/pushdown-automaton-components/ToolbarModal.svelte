@@ -7,7 +7,7 @@
         resetInputVar,
         pda_configuration_store,
         user_grammar_store,
-        pda_backup_store
+        pda_backup_store, pda_graph_store
     } from "../../stores/graphInitStore";
     import AutomatonGeneratorLayout from "./AutomatonGeneratorLayout.svelte";
     import {input_error_store} from "../../stores/inputErrorStore";
@@ -23,6 +23,9 @@
     let isFinishState : boolean = false;
     let isStartState : boolean = false;
     let config : string = "";
+    let showError : boolean = false;
+    let errorType: string = "";
+    let sourceB, targetB, stack = false;
 
     $: if (dialog && showModal) dialog.showModal();
 
@@ -70,7 +73,7 @@
             let i = 1;
             config += "δ: {\n";
             $pda_configuration_store.transitions.forEach((transition) => {
-                config += `   ${i}. (${transition.state}, ${transition.input}, ${transition.stack}) → (${transition.stateAfter}, ${transition.stackAfter.join("")})\n`;
+                config += `   ${i}. (${transition.state}, ${transition.input}, ${transition.stack}) = (${transition.stateAfter}, ${transition.stackAfter.join("")})\n`;
                 i++;
             });
             config += "}\n";
@@ -94,23 +97,73 @@
         label_1 = "", label_2 = "", label_3 = "";
         isFinishState = false;
         isStartState = false;
+        showError = false;
+        errorType = "";
         return true;
     }
 
     function checkInput(type: ToolbarButtonType) {
+        errorType = "";
+        showError = false;
+
         if (!["new-node", "new-edge"].includes(type)) {
             func();
             return true;
         }
 
-        if (type == "new-node" && !label?.trim()) {
-            // console.log("bad input");
-            return false;
+        if (type == "new-node") {
+            if (!label?.trim()) {
+                showError = true;
+                errorType = "Label is empty";
+                return false;
+            }
+
+            // check if node exists
+            if ($pda_graph_store.nodes.find((node) => node.id === label)) {
+                showError = true;
+                errorType = "Node already exists";
+                return false;
+            }
         }
 
         if (type == "new-edge") {
-            if (!source?.trim() || !target?.trim() || !label_2?.trim()) {
-                // console.log("bad input");
+            sourceB = false;
+            targetB = false;
+            stack = false;
+            let wrongID = false;
+            if (!source?.trim()) {
+                showError = true;
+                sourceB = true;
+            }
+
+            if (!target?.trim()) {
+                showError = true;
+                targetB = true;
+            }
+
+            if (!label_2?.trim()) {
+                showError = true;
+                stack = true;
+            }
+
+            // check if nodes exists
+            const nodes = $pda_graph_store.nodes.filter((node) => node.id === target || node.id === source);
+            if (nodes.length !== 2) {
+                if (source !== target) {
+                    showError = true;
+                    wrongID = true;
+                } else if (nodes.length !== 1)
+                    showError = true;
+                wrongID = true;
+            }
+
+            if (showError) {
+                if (wrongID) {
+                    errorType = "Source or target node does not exist";
+                    return false;
+                }
+
+                errorType = "Fields are empty";
                 return false;
             }
         }
@@ -141,6 +194,13 @@
             }
         }
     }
+    
+    function insertEps() {
+        console.log("inserting ε");
+        const transitions = document.getElementById("function-input");
+        transitions.value += "ε";
+        transitions.focus();
+    }
 </script>
 
 <dialog
@@ -167,6 +227,9 @@
         {:else if type === "generate-graph"}
             <AutomatonGeneratorLayout>
                 <ThreeWaySwitch slot="type-switch" />
+
+                <button class="epsilon" slot="eps-button" on:click={insertEps}>Insert ε</button>
+
                 <StateComboBox slot="start-state" options={$pda_backup_store.nodes}/>
 
                 {#if $pda_backup_store.type !== "empty"}
@@ -190,7 +253,10 @@
         {:else}
             <div class="input-box">
                 {#if type === "new-node"}
-                    <input bind:value={label} maxlength="8" placeholder="Label">
+                    {#if showError}
+                        <p class="error-text" style="color: #ff6969;">{errorType}</p>
+                    {/if}
+                    <input class={showError ? "errHigh" : ""} bind:value={label} maxlength="8" placeholder="Label">
                     {#if !$pda_configuration_store.initial_state || $pda_configuration_store.initial_state.length === 0}
                         <div class="checkbox-box">
                             <label>
@@ -206,11 +272,20 @@
                         </label>
                     </div>
                 {:else if type === "new-edge"}
-                    <input id="label-1" bind:value={label_1} maxlength="8" placeholder="ε">
-                    <input id="label-2" bind:value={label_2} maxlength="8" placeholder="Stack">
-                    <input id="label-3" bind:value={label_3} maxlength="8" placeholder="ε">
-                    <input id="source-input" bind:value={source} maxlength="8" placeholder="Source">
-                    <input id="target-input" bind:value={target} maxlength="8" placeholder="Target">
+                    <div class="edge-box">
+                        <div class="label-box">
+                            <input id="label-1" bind:value={label_1} maxlength="8" placeholder="ε">
+                            <input class={stack ? "errHigh" : ""} id="label-2" bind:value={label_2} maxlength="8" placeholder="Stack">
+                            <input id="label-3" bind:value={label_3} maxlength="8" placeholder="ε">
+                        </div>
+                        <div class="nodes">
+                            <input class={sourceB ? "errHigh" : ""} id="source-input" bind:value={source} maxlength="8" placeholder="Source">
+                            <input class={targetB ? "errHigh" : ""} id="target-input" bind:value={target} maxlength="8" placeholder="Target">
+                        </div>
+                        {#if showError}
+                            <p class="error-text" style="color: #ff6969;">{errorType}</p>
+                        {/if}
+                    </div>
                 {/if}
             </div>
             <hr />
@@ -355,5 +430,43 @@
     .single-button {
         display: block;
         margin: auto;
+    }
+
+    input {
+        border: 1px solid #363636;
+        border-radius: 0.25rem;
+        padding: 0.5rem;
+        font-size: 1rem;
+        transition: 200ms ease-in-out;
+    }
+
+    input[type="checkbox"] {
+        margin: 0;
+    }
+
+    .errHigh {
+        background-color: #ff6969;
+    }
+
+    .error-text {
+        margin: 0;
+    }
+
+    .label-box {
+        display: flex;
+        gap: 1rem;
+    }
+
+    .nodes {
+        display: flex;
+        gap: 1rem;
+    }
+
+    .edge-box {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 2rem;
+
     }
 </style>

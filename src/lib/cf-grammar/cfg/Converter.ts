@@ -6,7 +6,7 @@
 
 import {ContextFreeGrammar} from "./ContextFreeGrammar";
 import {CFGRule} from "./CFGRule";
-import {pda_backup_store, pda_graph_store} from "../../../stores/graphInitStore";
+import {pda_backup_store} from "../../../stores/graphInitStore";
 import type {TransitionType} from "../../../types/pda-cfg/TransitionType";
 
 export class Converter {
@@ -138,6 +138,9 @@ export class Converter {
                 }
             }
         }
+
+        this.grammar.rules = this.grammar.rules.filter(r => !(r.leftSide === r.rightSide[0] && r.rightSide.length === 1));
+        console.log(this.grammar.rules);
     }
 
     // Function that checks if the non-terminal is directly recursive
@@ -157,7 +160,7 @@ export class Converter {
         this.renameNonTerminals();
 
         // remove the recursion
-        // this.removeRecursion();
+        this.removeRecursion();
 
         let transitions: TransitionType[] = [];
         let state = 'q';

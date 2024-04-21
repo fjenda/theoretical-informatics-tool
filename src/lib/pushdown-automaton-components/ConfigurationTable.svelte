@@ -253,7 +253,7 @@
   }
 
   .divTableCell :global(#tooltip) {
-    transform: translate(-110%, -5%);
+    transform: translate(-110%, 0%);
   }
 
   .divTable {
