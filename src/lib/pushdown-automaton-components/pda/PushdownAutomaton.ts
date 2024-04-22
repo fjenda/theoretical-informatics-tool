@@ -1,9 +1,17 @@
+/*
+    PushdownAutomaton.ts
+    Class containing the logic for the pushdown automaton
+    Author: Jan Fojtík
+*/
+
 import type {GraphNodeMeta} from "../../../types/GraphNodeMeta";
 import type {GraphEdgeDictionary} from "../../../types/GraphObject";
 import type {AutomatonState} from "../../../types/AutomatonState";
 import type {GraphEdgeMeta} from "../../../types/GraphEdgeMeta";
 import type {TransitionType} from "../../../types/pda-cfg/TransitionType";
 import cytoscape from "cytoscape";
+import {pda_configuration_store} from "../../../stores/graphInitStore";
+import {get} from "svelte/store";
 
 export class PushdownAutomaton {
     // The graph object from the cytoscape library
@@ -186,6 +194,7 @@ export class PushdownAutomaton {
                 return;
             }
 
+            // combine the label
             let combinedLabel = tmpEdge.data("label") + "\n" + edge.label;
             this.graph.$id(edge.id).data("label", combinedLabel);
         } else {
@@ -196,9 +205,12 @@ export class PushdownAutomaton {
         }
     }
 
+    // Function to generate the graph from transitions
     generateGraphFromTransitions() {
+        // reset the graph
         this.resetGraph();
 
+        // add edges from transitions
         this.transitions.forEach(transition => {
             let key = transition.state + "-" + transition.stateAfter;
             this.edges[key] = this.edges[key] ?? [];
@@ -227,6 +239,8 @@ export class PushdownAutomaton {
         });
     }
 
+    // Function for testing the input
+    // returns: {nextNode: string, nextEdge: string} | null - the next transition if it exists, null otherwise
     nextTransition() {
         if (this.status !== "testing") {
             return;
@@ -243,6 +257,8 @@ export class PushdownAutomaton {
         return {nextNode, nextEdge};
     }
 
+    // Function for testing the input
+    // returns: {previousNode: string, previousEdge: string} | null - the previous transition if it exists, null otherwise
     previousTransition() {
         if (this.currentStatus.step <= 0) {
             this.currentStatus.step = 0;
@@ -261,6 +277,7 @@ export class PushdownAutomaton {
         return {previousNode, previousEdge};
     }
 
+    // Function that resets the automaton to its initial state
     resetTestInput() {
         this.isAccepted = null;
         this.status = "idle";
@@ -275,11 +292,58 @@ export class PushdownAutomaton {
         };
     }
 
+    // Function to reset the graph
     resetGraph() {
         this.graph.elements().remove();
     }
 
-    setStackBottom(char: string) {
-        this.stack = [char];
+    toString() {
+        let str = "";
+        // states from nodes
+        str += `Q: {${get(pda_configuration_store).states.join(", ")}}\n`;
+
+        // input alphabet and stack alphabet from transitions
+        const alphabet = new Set();
+        const stackAlphabet = new Set();
+        for (let transition of get(pda_configuration_store).transitions) {
+            if (transition.input !== "ε") {
+                alphabet.add(transition.input);
+            }
+
+            if (transition.stack !== "ε") {
+                stackAlphabet.add(transition.stack);
+            }
+
+            for (let c of transition.stackAfter) {
+                if (c !== "ε") {
+                    stackAlphabet.add(c);
+                }
+            }
+        }
+
+        str += `Σ: {${Array.from(alphabet).join(", ")}}\n`;
+        str += `Γ: {${Array.from(stackAlphabet).join(", ")}}\n`;
+
+        // transitions
+        let i = 1;
+        str += "δ: {\n";
+        for (let transition of get(pda_configuration_store).transitions) {
+            str += `   ${i}. (${transition.state}, ε, ${transition.stack}) = (${transition.stateAfter}, ${transition.stackAfter.join("")})\n`;
+            i++;
+        }
+
+        str += "}\n";
+
+        // start state
+        str += `q0: ${get(pda_configuration_store).initial_state}\n`;
+
+        // stack default
+        str += `Z0: ${get(pda_configuration_store).initial_stack_symbol}\n`;
+
+        // final states
+        if (get(pda_configuration_store).type !== "empty")
+            str += `F: {${get(pda_configuration_store).final_states.join(", ")}}\n`;
+
+        return str;
     }
 }

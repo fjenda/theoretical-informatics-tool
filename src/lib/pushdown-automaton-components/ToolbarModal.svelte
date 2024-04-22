@@ -1,3 +1,11 @@
+<!--
+    ToolbarModal.svelte
+    This component is a modal dialog that is used for several purposes.
+    It can be used to show the definition of the automaton/grammar, to generate a new automaton,
+    or to add a new node or edge to the automaton.
+    Author: Jan Fojtík
+-->
+
 <script lang="ts">
     import TransitionFunctionInput from "./TransitionFunctionInput.svelte";
     import ThreeWaySwitch from "./ThreeWaySwitch.svelte";
@@ -27,8 +35,10 @@
     let errorType: string = "";
     let sourceB, targetB, stack = false;
 
+    // Reactive statement that shows the dialog when the showModal variable is true
     $: if (dialog && showModal) dialog.showModal();
 
+    // Reactive statement that generates the configuration of the automaton/grammar
     $: if (showModal && (type === "show-definition" || type === "cfg-definition")) {
         func();
 
@@ -41,52 +51,10 @@
         }
     }
 
+    // Function that generates the configuration of the automaton/grammar
     function generateConfiguration() {
         if (type === "show-definition") {
-            config = "";
-            // states from nodes
-            config += `Q: {${$pda_configuration_store.states.join(", ")}}\n`;
-
-            // input alphabet and stack alphabet from transitions
-            const alphabet = new Set();
-            const stackAlphabet = new Set();
-            $pda_configuration_store.transitions.forEach((transition) => {
-                if (transition.input !== "ε") {
-                    alphabet.add(transition.input);
-                }
-
-                if (transition.stack !== "ε") {
-                    stackAlphabet.add(transition.stack);
-                }
-
-                for (let c of transition.stackAfter) {
-                    if (c !== "ε") {
-                        stackAlphabet.add(c);
-                    }
-                }
-
-            });
-            config += `Σ: {${Array.from(alphabet).join(", ")}}\n`;
-            config += `Γ: {${Array.from(stackAlphabet).join(", ")}}\n`;
-
-            // transitions
-            let i = 1;
-            config += "δ: {\n";
-            $pda_configuration_store.transitions.forEach((transition) => {
-                config += `   ${i}. (${transition.state}, ${transition.input}, ${transition.stack}) = (${transition.stateAfter}, ${transition.stackAfter.join("")})\n`;
-                i++;
-            });
-            config += "}\n";
-
-            // start state
-            config += `q0: ${$pda_configuration_store.initial_state}\n`;
-
-            // stack default
-            config += `Z0: ${$pda_configuration_store.initial_stack_symbol}\n`;
-
-            // final states
-            if ($pda_configuration_store.type !== "empty")
-                config += `F: {${$pda_configuration_store.final_states.join(", ")}}\n`;
+            config = $pda_graph_store.toString();
         } else if (type === "cfg-definition") {
             config = $user_grammar_store.toString();
         }
@@ -98,6 +66,9 @@
         isFinishState = false;
         isStartState = false;
         showError = false;
+        stack = false;
+        sourceB = false;
+        targetB = false;
         errorType = "";
         return true;
     }

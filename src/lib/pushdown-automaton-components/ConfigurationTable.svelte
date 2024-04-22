@@ -1,3 +1,9 @@
+<!--
+    ConfigurationTable.svelte
+    Table showing the configuration of the PDA
+    Author: Jan Fojtík
+-->
+
 <script lang="ts">
     import {pda_configuration_store, pda_graph_store, table_index_store} from "../../stores/graphInitStore";
     import type {TransitionType} from "../../types/pda-cfg/TransitionType";
@@ -21,6 +27,7 @@
     let stackBackup: string[] = [];
     let stack: string[] = [];
 
+    // Reactive statements to update tableData
     $: if ($table_index_store === -1) {
         tableData = [];
     }
@@ -33,7 +40,11 @@
             traversal = $pda_graph_store.traversal;
 
             // get word
-            wordBackup = $pda_graph_store.word;
+            if ($pda_graph_store.word.length === 0) {
+                wordBackup = "ε";
+            } else {
+                wordBackup = $pda_graph_store.word;
+            }
 
             // find the first rule that will be used from traversal
             let firstRuleIndex = $pda_graph_store.transitions.findIndex((transition) => {
@@ -84,7 +95,7 @@
 
                 // if word is empty
                 if (!word.length) {
-                    word = "Ø";
+                    word = "ε";
                 } else if (word.length > 10) { // if word is too long (> 10 chars)
                     word = word.slice(0, 7) + "...";
                 }
@@ -100,7 +111,7 @@
 
                 // if stack is empty
                 if (stack.length === 0) {
-                    stack = ["Ø"];
+                    stack = ["ε"];
                 } else if (stack.length > 10) { // if stack is too long (> 10 chars)
                     stack = stack.slice(0, 7);
                     stack.push("...");
@@ -142,6 +153,7 @@
         $input_error_store.table = false;
     }
 
+    // Function that resets the variables
     function resetVars() {
         // empty traversal
         traversal = [];

@@ -1,8 +1,15 @@
+<!--
+    StackVisualiser.svelte
+    This component is responsible for visualising the stack of the PDA.
+    Author: Jan Fojtík
+-->
+
 <script lang="ts">
     import {pda_graph_store, stack_store} from "../../stores/graphInitStore";
 
     let stackElements : string[] = [];
 
+    // Reactive statement that updates the stack elements based on the current state of the PDA
     $: if ($stack_store) {
         if ($pda_graph_store.status === "testing")
             stackElements = $stack_store.slice().reverse();

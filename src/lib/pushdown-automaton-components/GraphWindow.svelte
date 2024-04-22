@@ -30,10 +30,6 @@
         previousTransition,             //
     } as ToolbarFunctions;
 
-    $: if ($pda_graph_store.type) {
-        PDAController.updateConfiguration("type");
-    }
-
     function nextTransition() {
         PDAController.nextTransition();
         scrollToTop();

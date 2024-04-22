@@ -1,3 +1,9 @@
+<!--
+    PushdownAutomatonLayout.svelte
+    This is a layout component for the Pushdown Automaton page.
+    Author: Jan Fojtík
+-->
+
 <script lang="ts">
     import Button from "../Button.svelte";
 

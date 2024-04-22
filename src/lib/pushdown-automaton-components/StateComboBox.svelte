@@ -1,3 +1,9 @@
+<!--
+    StateComboBox.svelte
+    This component is used to select the start state of the PDA.
+    Author: Jan Fojtík
+-->
+
 <script lang="ts">
     import {input_error_store} from "../../stores/inputErrorStore";
     import {pda_backup_store, resetInputVar} from "../../stores/graphInitStore";
@@ -17,6 +23,7 @@
         options = [];
     }
 
+    // Function to toggle the dropdown
     function toggleDropdown() {
         if (options.length === 0) {
             return;
@@ -25,6 +32,7 @@
         isOpen = !isOpen;
     }
 
+    // Function to select the option
     function selectOption(option: GraphNodeMeta) {
         selectedOption = option.label;
 
@@ -65,7 +73,7 @@
     }
 
     .combo-box, .dropdown {
-        box-sizing: content-box; /* or box-sizing: border-box; */
+        box-sizing: content-box;
         width: 7.5rem;
     }
 
@@ -87,7 +95,6 @@
         padding: 0.6rem;
         cursor: pointer;
 
-        /*border-radius: 2rem;*/
         border-radius: 0.5rem;
 
         text-align: center;
@@ -101,11 +108,10 @@
         display: none;
         outline: 0.1rem solid #ccc;
 
-        /*border-radius: 2rem;*/
         border-radius: 0.5rem;
 
-        margin: 0; /* Reset margin */
-        padding: 0; /* Reset padding */
+        margin: 0;
+        padding: 0;
     }
 
     :global(body.dark-mode) .dropdown {
