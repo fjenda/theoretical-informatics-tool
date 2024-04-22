@@ -304,13 +304,18 @@
   .derivation-header > button, .wrapper-table button {
     background: none;
     border: none;
-    color: #f4f9ff;
+    color: #101820;
 
     font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
     font-weight: 400;
 
     text-decoration: underline;
     font-size: 1.25rem;
+  }
+
+  :global(body.dark-mode) .derivation-header > button,
+  :global(body.dark-mode) .wrapper-table button {
+    color: #f4f9ff;
   }
 
   .wrapper-smaller {

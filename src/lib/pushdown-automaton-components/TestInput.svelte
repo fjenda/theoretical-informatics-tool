@@ -1,3 +1,9 @@
+<!--
+    TestInput.svelte
+    This component is used to test the input string on the PDA graph.
+    Author: Jan Fojtík
+-->
+
 <script lang="ts">
     import {fly} from "svelte/transition";
     import {pda_graph_store, table_index_store} from "../../stores/graphInitStore";
@@ -15,10 +21,7 @@
         showArrows = false;
     }
 
-    // $: if (!/^[a-zA-Z0-9]+$/.test(input) && input !== '') {
-    //     alert("Test input can be made of alphanumeric characters only!")
-    //     input = input.substring(0, input.length - 1);
-    // }
+    // Process the input string
     function processTestInput() {
         table_index_store.set(0);
 
@@ -26,6 +29,7 @@
         testInputFunction(input.trim());
     }
 
+    // Move to the next step in the table
     function next() {
         table_index_store.update((table_index) => {
             if (table_index < $pda_graph_store.traversal.length) {
@@ -35,11 +39,10 @@
             }
         });
 
-        // console.log($table_index_store);
-
         nextFunc();
     }
 
+    // Move to the previous step in the table
     function previous() {
         table_index_store.update((table_index) => {
             if (table_index > 0) {
@@ -52,15 +55,14 @@
         previousFunc();
     }
 
+    // Stop testing
     function stopTesting() {
         showArrows = false;
-        // console.log("stop");
-
         table_index_store.set(-1);
-
         stopFunc();
     }
 
+    // Check if the input is focused
     function isInputFocused() {
         const input = document.getElementById("test-input");
         return input === document.activeElement;

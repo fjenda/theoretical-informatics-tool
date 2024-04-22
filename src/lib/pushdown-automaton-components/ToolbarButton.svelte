@@ -1,5 +1,13 @@
+<!--
+    ToolbarButton.svelte
+    This component represents a button in the toolbar.
+    It can be of several types, each with different behavior.
+    The button can be a simple button, a button that opens a modal, etc.
+    Author: Jan Fojtík
+-->
+
 <script lang="ts">
-import {resetInputVar, pda_graph_store} from "../../stores/graphInitStore";
+import {resetInputVar} from "../../stores/graphInitStore";
 import ToolbarModal from "./ToolbarModal.svelte";
 import {onMount} from "svelte";
 import {tooltip} from "../tooltipUtils";
@@ -11,6 +19,7 @@ let btn : HTMLButtonElement;
 let btnState : string = "normal";
 let showModal = false;
 
+// Function to toggle the button state (used for delete-element button)
 function toggleButton() {
     if (btnState === "normal") {
         btnState = "active";

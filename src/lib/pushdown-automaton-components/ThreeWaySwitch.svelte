@@ -1,10 +1,16 @@
-<!-- Toggle.svelte -->
+<!--
+    ThreeWaySwitch.svelte
+    This component is used to switch between the three types of PDA.
+    Author: Jan Fojtík
+-->
 <script lang="ts">
     import {pda_backup_store, pda_graph_store} from "../../stores/graphInitStore";
     import {input_error_store} from "../../stores/inputErrorStore";
 
     $pda_backup_store.type = "empty";
 
+    // Function to switch between the three types of PDA
+    // params: newState - new state of the PDA
     const toggle = (newState: string) => {
         pda_backup_store.update((n) => {
             n.type = newState

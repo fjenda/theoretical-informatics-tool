@@ -1,6 +1,8 @@
-<script lang="ts">
-
-</script>
+<!--
+    GraphControlPanel.svelte
+    This component is a container for the control panel on the LHS of the graph.
+    Author: Jan Fojtík
+-->
 
 <div class="control-panel">
     <slot/>

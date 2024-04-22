@@ -1,3 +1,9 @@
+<!--
+    AutomatonGeneratorLayout.svelte
+    Layout for the automaton generator
+    Author: Jan Fojtík
+-->
+
 <slot name="type-switch"/>
 <div class="eps-box">
     <slot name="eps-button"/>
