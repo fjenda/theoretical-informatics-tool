@@ -4,7 +4,10 @@
 </script>
 
 <slot name="type-switch"/>
-<p class="epsilon">ε - copy if needed</p>
+<!--<p class="epsilon">ε - copy if needed</p>-->
+<div class="eps-box">
+    <slot name="eps-button"/>
+</div>
 <div class="layout">
     {#if $graph_store.type === "DFA"}
         <div class="start-state-box">
@@ -70,6 +73,13 @@
         display: flex;
         align-items: center;
         justify-content: center;
+    }
+
+    .eps-box {
+        margin-top: 0.75rem;
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
     }
 
 </style>

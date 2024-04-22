@@ -7,8 +7,8 @@
     } from "../../../stores/graphInitStore";
     import {SetOperations} from "./SetOperations";
     import cytoscape from "cytoscape";
-    import spread from "cytoscape-spread";
-    spread(cytoscape);
+    import cola from "cytoscape-cola";
+    cytoscape.use(cola);
     import {onMount} from "svelte";
     import {input_error_store} from "../../../stores/inputErrorStore";
 
@@ -837,8 +837,7 @@
     }
 
     function resetLayout() {
-        const layout = graphObject.graph.makeLayout({ name: "circle" });
-        layout.options.eles = graphObject.graph.elements();
+        const layout = graphObject.graph.makeLayout({ name: "cola", edgeLength: 150, randomize: true, avoidOverlap: true, handleDisconnected: true});
         layout.run();
     }
 
@@ -946,7 +945,7 @@
             ],
 
             layout: {
-                name: "circle",
+                name: "cola",
             }
 
         });

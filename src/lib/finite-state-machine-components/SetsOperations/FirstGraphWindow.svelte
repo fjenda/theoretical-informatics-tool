@@ -3,6 +3,8 @@
     import {onMount} from "svelte";
     import {first_graph_store, resetInputVar} from "../../../stores/graphInitStore";
     import cytoscape from "cytoscape";
+    import cola from "cytoscape-cola";
+    cytoscape.use(cola);
     import {input_error_store} from "../../../stores/inputErrorStore";
     import {first_configuration_store} from "../../../stores/graphInitStore.js";
     import {SetOperations} from "./SetOperations";
@@ -340,8 +342,7 @@
     }
 
     function resetLayout() {
-        const layout = graphObject.graph.makeLayout({ name: "circle" });
-        layout.options.eles = graphObject.graph.elements();
+        const layout = graphObject.graph.makeLayout({ name: "cola", edgeLength: 150, randomize: true, avoidOverlap: true, handleDisconnected: true});
         layout.run();
     }
 
@@ -504,7 +505,7 @@
             ],
 
             layout: {
-                name: "spread",
+                name: "cola",
             }
 
         });

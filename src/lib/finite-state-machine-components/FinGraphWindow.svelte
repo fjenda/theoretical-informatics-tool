@@ -1,7 +1,7 @@
 <script lang="ts">
     import cytoscape from "cytoscape";
-    import spread from "cytoscape-spread";
-    spread(cytoscape);
+    import cola from "cytoscape-cola";
+    cytoscape.use(cola);
     import {onMount} from "svelte";
     import {configuration_store, graph_store, resetInputVar, result_graph_store} from "../../stores/graphInitStore";
     import {input_error_store} from "../../stores/inputErrorStore";
@@ -24,6 +24,7 @@
         saveGraph,
         loadGraph,
         deleteGraph,
+        deleteGraphFromButton,
         resetLayout,
         testInput,
         nextTransition,
@@ -83,7 +84,7 @@
             n.hideConvertTable = false;
             return n;
         });
-        // graph_store.reset();
+
         resetInputVar.set(false);
         input_error_store.reset();
     }
@@ -110,15 +111,6 @@
         //delete duplicates from alphabet
         let alphabetArr = Array.from(alphabet);
         let alphabetArrNoDuplicates = alphabetArr.filter((item, index) => alphabetArr.indexOf(item) === index);
-
-        // let newStartState : string[] = [];
-        // if (typeof newFa.startState === "string"){
-        //     newStartState.push(newFa.startState);
-        // } else {
-        //     newStartState = newFa.startState;
-        // }
-
-
 
         graphObject.input_alphabet = alphabetArrNoDuplicates;
         graphObject.transitions = newFa.transitions;
@@ -506,8 +498,6 @@
     function addEdgeFromButton(edge : GraphEdgeMeta) {
         try {
             graphObject.addEdge(edge);
-            console.log("HERE EDGE: ", graphObject.edges)
-            console.log("HERE Stare tran: ", graphObject.transitions)
 
             //run tgrought graphObject.eges and if there is edge wich is not in transitions add it
             for (const edge in graphObject.edges) {
@@ -535,8 +525,20 @@
                 });
             }
 
+            //check if in transition isnt input wich isnt in input alphabet
+            let inputAlphabet = new Set();
+            graphObject.transitions.forEach((transition : TransitionMeta) => {
+                inputAlphabet.add(transition.input);
+            });
+
+            let inputAlphabetArr = Array.from(inputAlphabet);
+            let inputAlphabetArrNoDuplicates = inputAlphabetArr.filter((item, index) => inputAlphabetArr.indexOf(item) === index);
+            graphObject.input_alphabet = inputAlphabetArrNoDuplicates;
+
+
             graph_store.update((n) => {
                 n.transitions = graphObject.transitions;
+                n.input_alphabet = graphObject.input_alphabet;
                 n.generated = true;
                 return n;
             });
@@ -607,7 +609,29 @@
                 updateConfiguration("node");
             }
             graphObject.graph.remove("#" + this.id());
+
+            let inputAlphabet = new Set();
+            graphObject.transitions.forEach((transition : TransitionMeta) => {
+                inputAlphabet.add(transition.input);
+            });
+
+            let inputAlphabetArr = Array.from(inputAlphabet);
+            let inputAlphabetArrNoDuplicates = inputAlphabetArr.filter((item, index) => inputAlphabetArr.indexOf(item) === index);
+            graphObject.input_alphabet = inputAlphabetArrNoDuplicates;
+
+            graph_store.update((n) => {
+                n.nodes = graphObject.nodes;
+                n.edges = graphObject.edges;
+                n.transitions = graphObject.transitions;
+                n.startState = graphObject.startState;
+                n.finishState = graphObject.finishState;
+                n.input_alphabet = graphObject.input_alphabet;
+                n.generated = true;
+                return n;
+            });
         });
+
+
     }
 
     function toggleDelete() {
@@ -699,11 +723,28 @@
         graphObject.startState = [];
         graphObject.finishState = [];
         graphObject.followingID = 0;
+        graphObject.input_alphabet = [];
         configuration_store.reset();
     }
 
+    function deleteGraphFromButton(){
+        deleteGraph();
+
+        graph_store.update((n) => {
+            n.nodes = [];
+            n.edges = {};
+            n.transitions = [];
+            n.startState = [];
+            n.finishState = [];
+            n.followingID = 0;
+            n.input_alphabet = [];
+            n.generated = true;
+            return n;
+        });
+    }
+
     function resetLayout() {
-        const layout = graphObject.graph.makeLayout({ name: "spread", padding: 30, randomize: true});
+        const layout = graphObject.graph.makeLayout({ name: "cola", edgeLength: 150, randomize: true, avoidOverlap: true, handleDisconnected: true});
         layout.run();
     }
 
@@ -711,7 +752,6 @@
         graphObject.graph = cytoscape({
 
             container: graphObject.div,
-            // wheelSensitivity: 0.2,
             minZoom: 0.5,
             maxZoom: 2,
 
@@ -782,7 +822,7 @@
             ],
 
             layout: {
-                name: "spread",
+                name: "cola",
             }
 
         });

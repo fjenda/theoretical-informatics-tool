@@ -54,7 +54,7 @@ import ThemeToggle from "../lib/ThemeToggle.svelte";
                     <FinToolbarButton type="delete-element" text="Delete element" func={toolbarFunctions?.toggleDelete}/>
                     <FinToolbarButton type="save-graph" text="Save graph" func={toolbarFunctions?.saveGraph} />
                     <FinToolbarButton type="load-graph" text="Load graph" func={toolbarFunctions?.loadGraph} />
-                    <FinToolbarButton type="delete-graph" text="Delete graph" func={toolbarFunctions?.deleteGraph}/>
+                    <FinToolbarButton type="delete-graph" text="Delete graph" func={toolbarFunctions?.deleteGraphFromButton}/>
                     <FinToolbarButton type="reset-layout" text="Reset layout" func={toolbarFunctions?.resetLayout} />
                     <FinToolbarButton type="show-definition" text="Show definition" func={toolbarFunctions?.generateConfiguration} />
                 </FinGraphToolbar>

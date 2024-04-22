@@ -7,6 +7,8 @@
         second_graph_store
     } from "../../../stores/graphInitStore";
     import cytoscape from "cytoscape";
+    import cola from "cytoscape-cola";
+    cytoscape.use(cola);
     import {input_error_store} from "../../../stores/inputErrorStore";
 
     let graphObject = new FiniteStateAutomaton([], [], [], [], [], "DFA");
@@ -19,15 +21,8 @@
         loadGraph,
         deleteGraph,
         resetLayout,
-        // testInput,
-        // nextTransition,
-        // previousTransition,
-        // resetTestInput,
         generateConfiguration,
         generateGraphFromTransitions,
-        // regexInput,
-        // convertToDFA,
-        // preprocessGraphInput,
     } as ToolbarFunctions;
 
     $: if ($second_graph_store.theme){
@@ -326,8 +321,7 @@
     }
 
     function resetLayout() {
-        const layout = graphObject.graph.makeLayout({ name: "circle" });
-        layout.options.eles = graphObject.graph.elements();
+        const layout = graphObject.graph.makeLayout({ name: "cola", edgeLength: 150, randomize: true, avoidOverlap: true, handleDisconnected: true});
         layout.run();
     }
 
@@ -415,7 +409,6 @@
         graphObject.graph = cytoscape({
 
             container: graphObject.div,
-            // wheelSensitivity: 0.2,
             minZoom: 0.5,
             maxZoom: 2,
 
@@ -486,7 +479,7 @@
             ],
 
             layout: {
-                name: "spread",
+                name: "cola",
             }
 
         });
@@ -536,7 +529,7 @@
             n.transitions = exampleTransition;
             n.nodes = exampleNodes;
             n.startState = ["0"];
-            n.finishState = ["0"];
+            n.finishState = ["1"];
             n.input_alphabet = ["a", "b"];
             n.hideConvertTable = true;
             n.theme = "dark";

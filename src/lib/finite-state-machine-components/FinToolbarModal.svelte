@@ -6,14 +6,14 @@
     import StateMultiSelect from "../StateMultiSelect.svelte";
 
     import FinTransitionFuncInput from "./FinTransitionFuncInput.svelte";
-    import {configuration_store, graph_store, resetInputVar} from "../../stores/graphInitStore";
+    import {
+        configuration_store,
+        graph_store,
+        resetInputVar
+    } from "../../stores/graphInitStore";
     import {input_error_store} from "../../stores/inputErrorStore";
     import StartStateMultiSelect from "../StartStateMultiSelect.svelte";
 
-    let currentState = false;
-    let startNode  : string;
-    let endNode : string;
-    let alphabet : string;
 
     export let showModal : boolean;
     export let type : ToolbarButtonType;
@@ -21,6 +21,10 @@
     let dialog;
     let isFinishState : boolean = false;
     let isStartState : boolean = false;
+    let showError : boolean = false;
+    let errorType : string = "";
+    let sourceB : boolean = false;
+    let targetB : boolean = false;
     let config : string = "";
     let label : string, source : string, target : string, rules : string;
 
@@ -59,7 +63,7 @@
         config += "}\n";
 
         // start state
-        config += `S: {${$configuration_store.initial_state.join(", ")}}\n`;
+        config += `I: {${$configuration_store.initial_state.join(", ")}}\n`;
 
         // final states
         config += `F: {${$configuration_store.final_states.join(", ")}}\n`;
@@ -67,28 +71,75 @@
 
     function resetInput() {
         label = "", source = "", target = "", rules = "";
+        isFinishState = false;
+        isStartState = false;
+        showError = false;
+        errorType = "";
+        sourceB = false;
+        targetB = false;
         return true;
     }
 
     function checkInput(type) {
+        errorType = "";
+        showError = false;
+
         if (!["new-node", "new-edge"].includes(type)) {
             func();
             return true;
         }
 
-        if (!label?.trim()) {
-            console.log("bad input");
-            return false;
-        }
+        if (type == "new-node") {
+            if (!label?.trim()) {
+                showError = true;
+                errorType = "Label is empty";
+                return false;
+            }
 
-        if (type == "new-edge") {
-            if (!source?.trim() || !target?.trim()) {
-                console.log("bad input");
+            // check if node exists
+            if ($graph_store.nodes.find((node) => node.label === label)) {
+                showError = true;
+                errorType = "Node already exists";
                 return false;
             }
         }
 
-        const modifiedLabel = label.trim();
+        if (type == "new-edge") {
+            sourceB = false;
+            targetB = false;
+            let wrongID = false;
+            if (!source?.trim()) {
+                showError = true;
+                sourceB = true;
+            }
+
+            if (!target?.trim()) {
+                showError = true;
+                targetB = true;
+            }
+
+            const nodes = $graph_store.nodes.filter((node) => node.label === target || node.label === source);
+            if (nodes.length !== 2) {
+                if (source !== target) {
+                    showError = true;
+                    wrongID = true;
+                } else if (nodes.length !== 1)
+                    showError = true;
+                wrongID = true;
+            }
+
+            if (showError) {
+                if (wrongID) {
+                    errorType = "Source or target node does not exist";
+                    return false;
+                }
+
+                errorType = "Fields are empty";
+                return false;
+            }
+
+        }
+
 
         switch (type) {
             case "new-node": {
@@ -108,15 +159,23 @@
             }
 
             case "new-edge": {
+                if(!label) label = "ε";
                 const modifiedSource = source.trim();
                 const modifiedTarget = target.trim();
                 let sourceID = $graph_store.nodes.find(node => node.label === modifiedSource)?.id;
                 let targetID = $graph_store.nodes.find(node => node.label === modifiedTarget)?.id;
-                console.log("new-edge - " + modifiedLabel + " " + sourceID + " -> " + targetID);
+                console.log("new-edge - " + label.trim() + " " + sourceID + " -> " + targetID);
                 func({id: `${sourceID}-${targetID}`, label: label, source: sourceID, target: targetID});
                 return true;
             }
         }
+    }
+
+    function insertEps() {
+        console.log("inserting ε");
+        const transitions = document.getElementById("function-input");
+        transitions.value += "ε";
+        transitions.focus();
     }
 
 </script>
@@ -145,6 +204,8 @@
             <FinAutomatonGeneratorLayout >
                 <ToggleSwitch slot="type-switch" />
 
+                <button class="epsilon" slot="eps-button" on:click={insertEps}>Insert ε</button>
+
                 <FinStateComboBox key={125} slot="start-state" />
 
                 <StartStateMultiSelect key={126} slot="multi-select-start" />
@@ -166,12 +227,12 @@
             </FinAutomatonGeneratorLayout>
         {:else}
             <div class="input-box">
-                {#if ["new-node", "new-edge"].includes(type)}
-                    <input bind:value={label} maxlength="8" placeholder="Label">
-                {/if}
-
                 {#if type === "new-node"}
-                    {#if !$configuration_store.initial_state || $configuration_store.initial_state.length === 0 || $graph_store.type === "NFA"}
+                    {#if showError}
+                        <p class="error-text" style="color: #ff6969;">{errorType}</p>
+                    {/if}
+                    <input class={showError ? "errHigh" : ""} bind:value={label} maxlength="8" placeholder="Label">
+                    {#if !$configuration_store.initial_state || $configuration_store.initial_state.length === 0}
                         <div class="checkbox-box">
                             <label>
                                 <input id="start-state-checkbox" type="checkbox" bind:checked={isStartState} />
@@ -186,8 +247,16 @@
                         </label>
                     </div>
                 {:else if type === "new-edge"}
-                    <input id="source-input" bind:value={source} maxlength="8" placeholder="Source">
-                    <input id="target-input" bind:value={target} maxlength="8" placeholder="Target">
+                    <div class="edge-box">
+                        <div class="nodes">
+                            <input class={sourceB ? "errHigh" : ""} id="source-input" bind:value={source} maxlength="8" placeholder="Source">
+                            <input id="label" bind:value={label} maxlength="8" placeholder="ε">
+                            <input class={targetB ? "errHigh" : ""} id="target-input" bind:value={target} maxlength="8" placeholder="Target">
+                        </div>
+                        {#if showError}
+                            <p class="error-text" style="color: #ff6969;">{errorType}</p>
+                        {/if}
+                    </div>
                 {/if}
             </div>
             <hr />
@@ -284,12 +353,12 @@
     }
 
     #transitions {
-        pointer-events: none;
         background: #f7f7f8;
         color: #363636;
         border: none;
         outline: 0.05rem solid #363636;
         padding: 0.2rem;
+        overflow: auto;
     }
 
     :global(body.dark-mode) #transitions {
@@ -335,5 +404,17 @@
     .single-button {
         display: block;
         margin: auto;
+    }
+
+    input {
+        border: 1px solid #363636;
+        border-radius: 0.25rem;
+        padding: 0.5rem;
+        font-size: 1rem;
+        transition: 200ms ease-in-out;
+    }
+
+    input[type="checkbox"] {
+        margin: 0;
     }
 </style>

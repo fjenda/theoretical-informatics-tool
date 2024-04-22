@@ -170,7 +170,7 @@
     .disableBut-17{
         /*appearance: none;*/
         align-items: center;
-        background-color: #9CC6FB;
+        background-color: #999999;
         border-radius: 0.5rem;
         border-style: none;
         /*box-shadow: rgba(0, 0, 0, .2) 0 3px 5px -1px,rgba(0, 0, 0, .14) 0 6px 10px 0,rgba(0, 0, 0, .12) 0 1px 18px 0;*/
