@@ -146,12 +146,6 @@ export class ConvertorToDFA  {
             alphabet = alphabet.filter(item => item !== "ε");
         }
 
-        // console.log("Start States: " + nfaAutomaton.startState)
-        // console.log("Start States: " + typeof nfaAutomaton.startState)
-
-        // for (let state of nfaAutomaton.startState) {
-        //     currentStatesId.push(parseInt(state));
-        // }
         console.log("Start States: " + currentStatesId)
 
         let stateCounter = 0;

@@ -7,6 +7,8 @@
     } from "../../../stores/graphInitStore";
     import {SetOperations} from "./SetOperations";
     import cytoscape from "cytoscape";
+    import spread from "cytoscape-spread";
+    spread(cytoscape);
     import {onMount} from "svelte";
     import {input_error_store} from "../../../stores/inputErrorStore";
 
@@ -886,6 +888,8 @@
                         "text-valign": "center",
                         "text-halign": "center",
                         "color": "#363636",
+                        "width": 55,
+                        "height": 55,
                     }
                 },
 
@@ -942,7 +946,7 @@
             ],
 
             layout: {
-                name: "spread",
+                name: "circle",
             }
 
         });
