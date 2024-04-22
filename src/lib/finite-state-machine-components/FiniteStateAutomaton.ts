@@ -178,12 +178,8 @@ export  class FiniteStateAutomaton{
                 this.finishState.includes(state);
 
             if (isAccepted) {
-                console.log("Accepted");
                 this.isAccepted = true;
-
-
-
-                return path; // String is accepted
+                return path;
             }
             closestDeclinedPath = path;
             for (const transition of this.transitions) {
@@ -197,7 +193,6 @@ export  class FiniteStateAutomaton{
                 }
             }
 
-            //epsilon eges
             for (const transition of this.transitions) {
                 if (transition.state === state && transition.input === "ε") {
                     const newPath = path.concat(transition);
@@ -210,13 +205,10 @@ export  class FiniteStateAutomaton{
             }
         }
 
-
-        console.log("declined");
         this.isAccepted = false;
         if (closestDeclinedPath) {
             return closestDeclinedPath;
         }
-
         return null;
     }
 

@@ -1,5 +1,7 @@
 <script lang="ts">
     import cytoscape from "cytoscape";
+    import spread from "cytoscape-spread";
+    spread(cytoscape);
     import {onMount} from "svelte";
     import {configuration_store, graph_store, resetInputVar, result_graph_store} from "../../stores/graphInitStore";
     import {input_error_store} from "../../stores/inputErrorStore";
@@ -701,8 +703,7 @@
     }
 
     function resetLayout() {
-        const layout = graphObject.graph.makeLayout({ name: "circle" });
-        layout.options.eles = graphObject.graph.elements();
+        const layout = graphObject.graph.makeLayout({ name: "spread", padding: 30, randomize: true});
         layout.run();
     }
 
