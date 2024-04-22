@@ -131,11 +131,8 @@ export class ContextFreeGrammar {
         return `G = (Π, Σ, S, P), where
          
 Π: {${this.nonTerminals.join(', ')}},
-
 Σ: {${this.terminals.join(', ')}},
-
 S: ${this.startSymbol},
-
 P: {\n    ${logRules.map(rule => rule.toString()).join('\n    ')}\n}`;
     }
 

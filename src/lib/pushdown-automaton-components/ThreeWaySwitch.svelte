@@ -91,9 +91,13 @@
         border: none;
         background-color: transparent;
 
-        color: #f4f9ff;
+        color: #101820;
         font-synthesis: none;
         font: normal normal 400 medium / 1.5 Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+    }
+
+    :global(body.dark-mode) .toggle-switch button {
+        color: #f4f9ff;
     }
 
     .selected {

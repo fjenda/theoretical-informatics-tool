@@ -219,7 +219,7 @@
 
     .button-17:hover {
         color: #174ea6;
-        background: #f4f9ff;
+        background: #eee;
     }
 
     .button-17:active {

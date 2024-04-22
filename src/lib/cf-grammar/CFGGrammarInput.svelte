@@ -33,7 +33,7 @@ LHS Grammar Window for editing the grammar
     // grammar row object
     let row1 = new CFGRule('P', ["P*F", "P/F", "F"]);
     let row2 = new CFGRule('F', ["(S)", "N"]);
-    let row3 = new CFGRule('N', ["1N", "2N", "3N", "4N", "1", "2", "3", "4"]);
+    let row3 = new CFGRule('N', ["0N", "1N", "2N", "3N", "4N", "0", "1", "2", "3", "4"]);
 
     // grammar object
     user_grammar_store.update(n => {
