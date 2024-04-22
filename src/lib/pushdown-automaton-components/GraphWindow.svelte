@@ -1,11 +1,8 @@
 <script lang="ts">
     // cytoscape
     import cytoscape from "cytoscape";
-    import spread from "cytoscape-spread";
-    spread(cytoscape);
-
-    // import cola from "cytoscape-cola";
-    // cytoscape.use(cola);
+    import cola from "cytoscape-cola";
+    cytoscape.use(cola);
 
     // utils
     import {onMount} from "svelte";
@@ -111,7 +108,7 @@
             ],
 
             layout: {
-                name: "spread",
+                name: "cola",
             }
 
         });

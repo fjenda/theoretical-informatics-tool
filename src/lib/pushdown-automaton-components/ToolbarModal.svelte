@@ -187,7 +187,7 @@
         {#if type === "show-definition" || type === "cfg-definition"}
             <textarea id="transitions"
                       class="transitions-input"
-                      cols="35" rows="20"
+                      cols="40" rows="15"
                       readonly = {true}
                       value={config}
                       placeholder="Transitions"></textarea>
@@ -272,7 +272,7 @@
 <style>
     dialog {
         max-width: 32em;
-        border-radius: 0.2em;
+        border-radius: 0.5em;
         border: none;
         padding: 0;
         background: #f7f7f8;
@@ -354,8 +354,11 @@
         color: #363636;
         border: none;
         outline: 0.05rem solid #363636;
-        padding: 0.2rem;
+        padding: 0.75rem;
         overflow: auto;
+        font: 1rem / 1.5rem 'Open Sans', sans-serif;
+        border-radius: 0.5rem;
+        margin-bottom: 0.75rem;
     }
 
     :global(body.dark-mode) #transitions {
@@ -387,7 +390,7 @@
 
     button:hover {
         color: #174ea6;
-        background: #f4f9ff;
+        background: #eee;
     }
 
     button:active {

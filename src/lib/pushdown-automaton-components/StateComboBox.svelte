@@ -72,7 +72,12 @@
         background-color: #ff6969 !important;
     }
 
+    :global(body.dark-mode) .option {
+        color: #f4f9ff;
+    }
+
     .combo-box, .dropdown {
+        color: #101820;
         box-sizing: content-box;
         width: 7.5rem;
     }
@@ -91,7 +96,12 @@
         outline: 0.1rem solid #9c81da;
     }
 
+    :global(body.dark-mode) .selected-option {
+        color: #f4f9ff;
+    }
+
     .selected-option {
+        color: #101820;
         padding: 0.6rem;
         cursor: pointer;
 
@@ -124,6 +134,7 @@
     }
 
     .option {
+        color: #101820;
         padding: 0.6rem;
         cursor: pointer;
         text-align: center;

@@ -298,7 +298,7 @@ export class PushdownAutomaton {
     }
 
     toString() {
-        let str = "";
+        let str = "M = (Q, Σ, Γ, δ, q0, Z0, F) where \n\n";
         // states from nodes
         str += `Q: {${get(pda_configuration_store).states.join(", ")}}\n`;
 
@@ -342,7 +342,7 @@ export class PushdownAutomaton {
 
         // final states
         if (get(pda_configuration_store).type !== "empty")
-            str += `F: {${get(pda_configuration_store).final_states.join(", ")}}\n`;
+            str += `F: {${get(pda_configuration_store).final_states.join(", ")}}`;
 
         return str;
     }

@@ -32,8 +32,8 @@ import type {GraphEdgeMeta} from "../../../types/GraphEdgeMeta";
 
 // cytoscape
 import cytoscape from "cytoscape";
-import spread from "cytoscape-spread";
-spread(cytoscape);
+import cola from "cytoscape-cola";
+cytoscape.use(cola);
 
 export class PDAController {
     // static variables
@@ -45,7 +45,7 @@ export class PDAController {
     private static deleteButtonActive: boolean = false;
 
     // Backup of labels
-    public static labelsBackup: string[] = [];
+    private static labelsBackup: string[] = [];
 
     // Debouncer for transitions
     private static debouncerTransition = createDebounce(250);
@@ -351,7 +351,7 @@ export class PDAController {
     // it's called after the graph is loaded, on reset and on resize
     public static resetLayout() {
         // @ts-ignore
-        const layout = get(pda_graph_store).graph.makeLayout({ name: "spread", padding: 50, randomize: true });
+        const layout = get(pda_graph_store).graph.makeLayout({ name: "cola", randomize: true, edgeLength: 150});
         layout.run();
     }
 
