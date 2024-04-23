@@ -208,6 +208,10 @@ LHS Grammar Window for editing the grammar
         width: 3rem;
     }
 
+    .right-side {
+        width: 7rem;
+    }
+
     .grammar-wrapper {
         display: flex;
         flex-direction: column;
