@@ -26,42 +26,41 @@ import ThemeToggle from "../lib/ThemeToggle.svelte";
     let processConvertToDFAFunction : Function = () => {};
 </script>
 
-<DebugView>
-    <main>
-        <ThemeToggle />
-        <FiniteStateMachineLayout title="Finite state automaton">
-            <FinGraphControlPanel  slot="control-panel">
 
-                <FinTestInput phText="ex. ABA" bind:processFunction={processTestInputFunction}
-                                                testInputFunction={toolbarFunctions?.testInput}
-                                                nextFunc={toolbarFunctions?.nextTransition}
-                                                previousFunc={toolbarFunctions?.previousTransition}
-                                                stopFunc={toolbarFunctions?.resetTestInput}
-                />
-                <Button type="test" text="Test" func={processTestInputFunction} />
-                <RegexInput phText="ex. (A+B)*" bind:processFunction={processRegexInputFunction}
-                                                regexInputFunction={toolbarFunctions?.regexInput}
-                />
-                <Button type="test" text="Generate" func={processRegexInputFunction} />
-                <Button type="convert" text="Convert to DFA" func={toolbarFunctions?.convertToDFA} />
-                <Button type="back" text="Back" url={landingPageUrl} />
-            </FinGraphControlPanel>
-            <FinGraphWindow bind:toolbarFunctions={toolbarFunctions} slot="window">
-                <FinGraphToolbar>
-                    <FinToolbarButton type="generate-automata" text="Generate graph" func={toolbarFunctions?.generateGraphFromTransitions} />
-                    <FinToolbarButton type="new-node" text="New node" func={toolbarFunctions?.addNodeFromButton} />
-                    <FinToolbarButton type="new-edge" text="New edge" func={toolbarFunctions?.addEdgeFromButton} />
-                    <FinToolbarButton type="delete-element" text="Delete element" func={toolbarFunctions?.toggleDelete}/>
-                    <FinToolbarButton type="save-graph" text="Save graph" func={toolbarFunctions?.saveGraph} />
-                    <FinToolbarButton type="load-graph" text="Load graph" func={toolbarFunctions?.loadGraph} />
-                    <FinToolbarButton type="delete-graph" text="Delete graph" func={toolbarFunctions?.deleteGraphFromButton}/>
-                    <FinToolbarButton type="reset-layout" text="Reset layout" func={toolbarFunctions?.resetLayout} />
-                    <FinToolbarButton type="show-definition" text="Show definition" func={toolbarFunctions?.generateConfiguration} />
-                </FinGraphToolbar>
-                <TypeView slot="type" type={$graph_store.type}/>
-            </FinGraphWindow>
-            <FinTable slot="table"/>
-            <FinConvertTable slot="convert-table"/>
-        </FiniteStateMachineLayout>
-    </main>
-</DebugView>
+<main>
+    <ThemeToggle />
+    <FiniteStateMachineLayout title="Finite state automaton">
+        <FinGraphControlPanel  slot="control-panel">
+
+            <FinTestInput phText="ex. ABA" bind:processFunction={processTestInputFunction}
+                                            testInputFunction={toolbarFunctions?.testInput}
+                                            nextFunc={toolbarFunctions?.nextTransition}
+                                            previousFunc={toolbarFunctions?.previousTransition}
+                                            stopFunc={toolbarFunctions?.resetTestInput}
+            />
+            <Button type="test" text="Test" func={processTestInputFunction} />
+            <RegexInput phText="ex. (A+B)*" bind:processFunction={processRegexInputFunction}
+                                            regexInputFunction={toolbarFunctions?.regexInput}
+            />
+            <Button type="test" text="Generate" func={processRegexInputFunction} />
+            <Button type="convert" text="Convert to DFA" func={toolbarFunctions?.convertToDFA} />
+            <Button type="back" text="Back" url={landingPageUrl} />
+        </FinGraphControlPanel>
+        <FinGraphWindow bind:toolbarFunctions={toolbarFunctions} slot="window">
+            <FinGraphToolbar>
+                <FinToolbarButton type="generate-automata" text="Generate graph" func={toolbarFunctions?.generateGraphFromTransitions} />
+                <FinToolbarButton type="new-node" text="New node" func={toolbarFunctions?.addNodeFromButton} />
+                <FinToolbarButton type="new-edge" text="New edge" func={toolbarFunctions?.addEdgeFromButton} />
+                <FinToolbarButton type="delete-element" text="Delete element" func={toolbarFunctions?.toggleDelete}/>
+                <FinToolbarButton type="save-graph" text="Save graph" func={toolbarFunctions?.saveGraph} />
+                <FinToolbarButton type="load-graph" text="Load graph" func={toolbarFunctions?.loadGraph} />
+                <FinToolbarButton type="delete-graph" text="Delete graph" func={toolbarFunctions?.deleteGraphFromButton}/>
+                <FinToolbarButton type="reset-layout" text="Reset layout" func={toolbarFunctions?.resetLayout} />
+                <FinToolbarButton type="show-definition" text="Show definition" func={toolbarFunctions?.generateConfiguration} />
+            </FinGraphToolbar>
+            <TypeView slot="type" type={$graph_store.type}/>
+        </FinGraphWindow>
+        <FinTable slot="table"/>
+        <FinConvertTable slot="convert-table"/>
+    </FiniteStateMachineLayout>
+</main>

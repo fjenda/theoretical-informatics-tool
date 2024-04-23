@@ -259,7 +259,7 @@
             {@html applyHighlights(textInput)}
         </div>
     </div>
-    <textarea id="function-input"
+    <textarea id="function-input-sec"
               bind:value={textInput}
               bind:this={textarea}
               on:input={processTransitions}

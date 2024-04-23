@@ -9,7 +9,7 @@
         {
             title: "Finite-state automaton",
             author: "Marek Krúpa",
-            description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Integer nec odio. Praesent libero. Sed cursus ante dapibus diam. Sed nisi. Nulla quis sem at nibh elementum imperdiet. Duis sagittis ipsum. Praesent mauris. Fusce nec tellus sed augue semper porta. Mauris massa. Vestibulum lacinia arcu eget nulla. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Curabitur sodales ligula in libero.",
+            description: "A finite automaton is a simple mathematical model that consists of a control unit with its own state, an input tape that contains the input data, and a reading head. The finite automaton represents a fundamental computational model that is capable of recognizing only regular languages. This model operates by transitioning between states based on the input symbols it reads, following predefined rules. Finite automata are used extensively in the design of digital circuits, parsing of regular expressions, and in the development of various software applications where pattern recognition is required.",
             scriptsUrl: "finite-state-machine-scripts",
             toolUrl: "/Theoretical-informatics-tool/tool/finite-state-automaton",
         },

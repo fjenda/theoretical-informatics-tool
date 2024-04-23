@@ -115,6 +115,13 @@
         }
     }
 
+    function insertEps() {
+        console.log("inserting ε");
+        const transitions = document.getElementById("function-input");
+        transitions.value += "ε";
+        transitions.focus();
+    }
+
 </script>
 
 <dialog
@@ -140,6 +147,8 @@
         {:else if type === "generate-automata"}
             <FirstAutomatonGeneratorLayout >
                 <FirstToggleSwitch slot="type-switch" />
+
+                <button class="epsilon" slot="eps-button" on:click={insertEps}>Insert ε</button>
 
                 <FirstStateComboBox key={125} slot="start-state" />
 

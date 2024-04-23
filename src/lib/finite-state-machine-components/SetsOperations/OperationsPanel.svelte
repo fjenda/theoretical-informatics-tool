@@ -8,24 +8,14 @@
         <h2>
         <span class="ttip" use:tooltip={"The following 2 automata are used for set operations.\n" +
                                         "A₁ on the left, A₂ on the right.\n\n" +
+                                        "!!!A₁ and A₂ must have different labels!!!\n" +
                                         "Binary operation (works with two input automata A₁ and A₂)\n" +
-                                        "Unification\n"+
-                                        "A₁ ∪ A₂\n"+
-                                        "Intersection\n"+
-                                        "A₁ ∩ A₂\n"+
-                                        "Automatons must be DFA for this operation\n"+
-                                        "Concatenation\n"+
-                                        "A₁ · A₂\n"+
-                                        "Difference\n"+
-                                        "A₁ − A₂\n"+
-                                        "Automatons must be total for this operation\n"+
+                                        "Unification: A₁ ∪ A₂ | Intersection: A₁ ∩ A₂ \n"+
+                                        "Concatenation: A₁ · A₂ | Difference: A₁ − A₂ \n"+
                                         "\n"+
                                         "Unary operation (works with one automaton A₁)\n"+
-                                        "Iteration\n"+
-                                        "A₁*\n"+
-                                        "Complement\n"+
-                                        "Ā₁\n"+
-                                        "Automaton must be total for this operation\n"+
+                                        "Iteration: A₁* | Complement: Ā₁ \n"+
+                                        "Automaton must be total for operations Intersection and Difference \n"+
                                         "\n"+
                                         "If the specified automaton is non-deterministic, the operation\n" +
                                         " can convert it to deterministic for its needs.\n"+
@@ -33,11 +23,9 @@
                                         "The resulting automaton can be both NFA and DFA, it depends \n" +  //!!!The machines must not have the same labels!!!
                                         " on the input automata. However, even two DFA automata can result in an NFA.\n" +
                                         "\n"+
-                                        "!!!A₁ and A₂ must have different labels!!!\n" +
-                                        "\n"+
                                         "Recommendation:\n" +
-                                        "For the A₁ automaton, choose state names like \"pNUMBER\"(p1)\n" +
-                                        "For the A₂ automaton, choose state names like \"qNUMBER\"(q1)\n" +
+                                        "For the A₁ automaton, choose state names in p₁ to p_n\n" +
+                                        "For the A₂ automaton, choose state names in q₁ to q_n\n" +
                                         "\n"+
                                         "If the automaton is not suitable for the selected operation and needs \n" +
                                         "to be converted to a DFA, the resulting DFA will have a name in this format."}>
@@ -66,9 +54,9 @@
     .control-panel {
         position: relative;
         margin: 0 auto;
-        height: 60%;
-        /*width: 90%;*/
-        width: 13rem;
+        width: fit-content;
+        height: fit-content;
+        padding: 2rem 1rem 1rem 1rem;
         min-width: 5rem;
         min-height: 15.5rem;
 

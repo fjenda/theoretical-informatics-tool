@@ -88,6 +88,7 @@
 
   .operation_bar {
     width: 100%;
+    //height: fit-content;
     display: flex;
     justify-content: center;
     align-items: flex-start;
