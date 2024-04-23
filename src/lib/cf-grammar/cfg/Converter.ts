@@ -45,7 +45,7 @@ export class Converter {
 
     // Function that renames non-terminals to A0, A1, ...
     // This is then used for removing the recursion
-    private renameNonTerminals() {
+    public renameNonTerminals() {
         // rule loop
         this.grammar.rules.forEach(rule => {
             // if the left side of the rule is not in the dictionary, add it
@@ -63,6 +63,24 @@ export class Converter {
                 this.nonTerminalsDict[symbol] = this.nonTerminalsDict[symbol] || `A${Object.keys(this.nonTerminalsDict).length}`;
             });
         });
+    }
+
+    // Function that checks if the grammar is recursive
+    // returns: boolean - true if the grammar is recursive, false otherwise
+    public isRecursive() {
+        let recursive = false;
+        for (let i = 0; i < Object.keys(this.nonTerminalsDict).length; i++) {
+            for (let j = 0; j < i; j++) {
+                // get rules for Ai -> Aj
+                let rules = this.grammar.rules.filter(rule => rule.leftSide === Object.keys(this.nonTerminalsDict)[i] &&
+                    rule.rightSide[0] === Object.keys(this.nonTerminalsDict)[j]);
+                if (rules.length > 0) {
+                    recursive = true;
+                    break;
+                }
+            }
+        }
+        return recursive;
     }
 
     // Function that removes the recursion from the grammar
@@ -140,7 +158,6 @@ export class Converter {
         }
 
         this.grammar.rules = this.grammar.rules.filter(r => !(r.leftSide === r.rightSide[0] && r.rightSide.length === 1));
-        console.log(this.grammar.rules);
     }
 
     // Function that checks if the non-terminal is directly recursive

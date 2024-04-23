@@ -14,6 +14,9 @@ import {State} from "./State";
 
 import {TreeNode} from "./TreeNode";
 import {ParserTree} from "./ParserTree";
+import {Converter} from "../cfg/Converter";
+import {ContextFreeGrammar} from "../cfg/ContextFreeGrammar";
+import {CFGRule} from "../cfg/CFGRule";
 
 
 export class EarleyParser {
@@ -28,6 +31,9 @@ export class EarleyParser {
 
     // States of the chart
     states: State[] = [];
+
+    // Variable that says if the grammar is recursive
+    isRecursive: boolean = false;
 
     // Constructor of the EarleyParser
     constructor(startingPoint: string, grammar: Rule[]) {
@@ -113,6 +119,9 @@ export class EarleyParser {
         // initialize nullable rules
         this.findNullables();
 
+        // check if grammar is recursive
+        this.isRecursive = this.isGrammarRecursive();
+
         // outer loop
         for (let i = 0; i < this.states.length; i++) {
             // inner loop
@@ -141,11 +150,6 @@ export class EarleyParser {
             }
         }
 
-        // check if we read the whole input
-        if (this.states.length < input.length + 1) {
-            return { accepted: false, length: -1, derivation: [] };
-        }
-
         // make a copy of the last state and check if it contains the starting rule
         let lastState = new State();
         this.states[this.states.length - 1].items.forEach(item => lastState.push(item));
@@ -154,7 +158,6 @@ export class EarleyParser {
         const lastItems = lastState.items.filter(item => item.rule.lhs === this.startingPoint &&
             item.start === 0 &&
             item.dot === item.rule.rhs.length);
-
 
         // create the parser tree
         if (lastItems.length > 0) {
@@ -165,13 +168,11 @@ export class EarleyParser {
                 return this.createTree(root);
             });
 
-            // creates the parser tree(s) and checks if the input is accepted
-            let acc: boolean = false
+
             trees.forEach((tree, index) => {
                 if (tree) {
                     console.log(`\nParser tree ${index}`);
                     tree.print();
-                    acc = tree.findAllLeaves() === input;
                 }
             });
 
@@ -179,13 +180,26 @@ export class EarleyParser {
             if (trees.length > 1) {
                 let derivations = trees.map(tree => {
                     if (tree === undefined) return;
-                    return tree.getDerivation(this)
-                });
-                return { accepted: acc, length: derivations.length, derivation: derivations };
+
+                    const der = tree.getDerivation(this);
+                    if (der[der.length - 1].result !== input) return;
+
+                    return der;
+                }).filter(der => der !== undefined);
+
+                if (derivations.length === 0) return { accepted: false, length: -1, derivation: [] };
+                if (derivations.length === 1) return { accepted: true, length: 1, derivation: derivations[0] };
+
+                // remove duplicates
+                derivations = this.removeDuplicateDerivations(derivations);
+                if (derivations.length === 1) return { accepted: true, length: 1, derivation: derivations[0] };
+                const firstDerivations = derivations.splice(0, 4);
+                return { accepted: true, length: firstDerivations.length, derivation: firstDerivations };
             }
 
             // if there is only one tree we return it
             let derivation: { rule: string; result: string }[] = trees[0].getDerivation(this);
+            let acc = derivation[derivation.length - 1].result === input;
             return { accepted: acc, length: 1, derivation: derivation };
         }
 
@@ -194,7 +208,7 @@ export class EarleyParser {
     }
 
     // Function that creates the parser tree from the given root and input
-    // params: root: TreeNode   - root of the tree (the starting rule)
+    // @param: root: TreeNode   - root of the tree (the starting rule)
     //
     // returns: ParserTree      - parser tree
     private createTree(root: TreeNode) {
@@ -224,7 +238,11 @@ export class EarleyParser {
                     }
 
                     // check if there's a symbol
-                    if (node.item.from[stI] === undefined) continue;
+                    if (node.item.from[stI] === undefined) {
+                        let child = new TreeNode(rhs);
+                        node.addChild(child);
+                        continue;
+                    }
 
                     // get the start and end of the item
                     let start = node.item.from[stI][0];
@@ -270,7 +288,8 @@ export class EarleyParser {
 
         // remove duplicates, or we will be stuck in an infinite loop
         state.items = state.items.filter((item, index) => {
-            return state.items.findIndex((i) => i.equals(item)) === index;
+            if (this.isRecursive) return state.items.findIndex((i) => i.equalsSimple(item)) === index;
+            else return state.items.findIndex((i) => i.equals(item)) === index;
         });
     }
 
@@ -318,8 +337,14 @@ export class EarleyParser {
             let item = new EarleyItem(rule.rule, rule.dot + 1, rule.start, ItemAction.COMPLETE, f);
 
             // if item is already completed we don't need to add it again
-            if (state.items.some((i) => i.equals(item))) {
-                return;
+            if (this.isRecursive) {
+                if (state.items.some((i) => i.equalsSimple(item))) {
+                    return;
+                }
+            } else {
+                if (state.items.some((i) => i.equals(item))) {
+                    return;
+                }
             }
 
             // push the completed item into the current state
@@ -331,5 +356,48 @@ export class EarleyParser {
     // params: rules: Rule[] - rules to set
     setRules(rules: Rule[]) {
         this.grammar = rules;
+    }
+
+    // Function that removes duplicate derivations
+    // params: derivations: {rule: string, result: string}[][] - derivations to remove duplicates from
+    //
+    // returns: {rule: string, result: string}[][] - derivations without duplicates
+    private removeDuplicateDerivations(derivations: {rule: string, result: string}[][]): {rule: string, result: string}[][] {
+        let newDerivations: {rule: string, result: string}[][] = [];
+        derivations.forEach(der => {
+            let found = false;
+            newDerivations.forEach(newDer => {
+                if (der.length !== newDer.length) return;
+                let equal = true;
+                for (let i = 0; i < der.length; i++) {
+                    if (der[i].rule !== newDer[i].rule || der[i].result !== newDer[i].result) {
+                        equal = false;
+                        break;
+                    }
+                }
+                if (equal) found = true;
+            });
+            if (!found) newDerivations.push(der);
+        });
+        return newDerivations;
+    }
+
+    private isGrammarRecursive(): boolean {
+        // is directly recursive
+        let r = false;
+        this.grammar.forEach(rule => {
+            if (rule.lhs === rule.rhs[0]) r = true;
+        });
+
+        if (r) return true;
+
+        const nonTerminals = this.grammar.map(rule => rule.lhs).filter((value, index, self) => self.indexOf(value) === index);
+        const terminals = this.grammar.map(rule => rule.rhs).flat().filter(symbol => !nonTerminals.includes(symbol)).filter((value, index, self) => self.indexOf(value) === index);
+        let cfgRules = this.grammar.map(rule => new CFGRule(rule.lhs, [rule.rhs.join("")]));
+        let g = new ContextFreeGrammar(nonTerminals, terminals, cfgRules);
+        g.removeRule(0);
+        let c = new Converter(g);
+        c.renameNonTerminals();
+        return c.isRecursive();
     }
 }

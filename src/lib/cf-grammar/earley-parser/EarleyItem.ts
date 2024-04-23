@@ -36,7 +36,25 @@ export class EarleyItem {
     }
 
     // Function that compares two Earley items
+    // params: other: EarleyItem - the other item to compare
+    //
+    // returns: boolean - true if the items are equal, false otherwise
     equals(other: EarleyItem) {
+        return (
+            this.rule.lhs === other.rule.lhs &&
+            this.rule.rhs.join("") === other.rule.rhs.join("") &&
+            this.dot === other.dot &&
+            this.start === other.start &&
+            this.from.length === other.from.length &&
+            this.from.every((f, i) => f[0] === other.from[i][0] && f[1] === other.from[i][1])
+        );
+    }
+
+    // Function that compares two Earley items without the from array
+    // params: other: EarleyItem - the other item to compare
+    //
+    // returns: boolean - true if the items are equal, false otherwise
+    equalsSimple(other: EarleyItem) {
         return (
             this.rule.lhs === other.rule.lhs &&
             this.rule.rhs.join("") === other.rule.rhs.join("") &&

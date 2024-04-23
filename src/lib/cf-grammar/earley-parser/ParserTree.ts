@@ -63,6 +63,9 @@ export class ParserTree {
                     // parse the result with the rule of the node
                     result = this.parseChar(result, node.item.rule);
                     derivation.push({rule: `${node.item.rule.toString()}`, result: result});
+                } else if (parser.grammar.some(r => r.lhs === node.value && (r.rhs.length === 0 || (r.rhs.length == 1 && r.rhs[0] === "")))){
+                    result = this.parseEpsilon(result, node.value);
+                    derivation.push({rule: `${node.value} → ε`, result: result});
                 }
             }
 
@@ -76,13 +79,13 @@ export class ParserTree {
 
         // check if the last derivation has any non-terminals
         for (let i = 0; i < result.length; i++) {
-            for (let rule of nt) {
-                if (result[i] === rule.lhs) {
+            for (let j = 0; j < nt.length; j++) {
+                if (result[i] === nt[j].lhs) {
                     // parse the result with the rule
-                    result = this.parseChar(result, rule);
-                    derivation.push({rule: rule.toString(), result: result});
+                    result = this.parseChar(result, nt[j]);
+                    derivation.push({rule: nt[j].toString(), result: result});
                     i = 0;
-                    break;
+                    j = 0;
                 }
             }
         }
@@ -98,8 +101,20 @@ export class ParserTree {
     private parseChar(input: string, rule: Rule) {
         for (let char of input) {
             if (char === rule.lhs) {
-                // replace the char with the rule lhs
+                // replace the char at index with the rule lhs
                 input = input.replace(char, rule.rhs.join(""));
+                break;
+            }
+        }
+
+        return input;
+    }
+
+    private parseEpsilon(input: string, lhs: string) {
+        for (let char of input) {
+            if (char === lhs) {
+                // replace the char at index with the rule lhs
+                input = input.replace(char, "");
                 break;
             }
         }
