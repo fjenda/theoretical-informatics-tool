@@ -49,7 +49,7 @@
         height: 60%;
 
         width: 60%;
-        max-width: 50rem;
+        /*min-width: 50rem;*/
 
         padding-bottom: 1.25vw;
         border-radius: 1rem;

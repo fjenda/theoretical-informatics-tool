@@ -1,5 +1,5 @@
 <script lang="ts">
-    import {pda_backup_store, pda_graph_store, resetInputVar} from "../../stores/graphInitStore";
+    import {pda_backup_store, resetInputVar} from "../../stores/graphInitStore";
     import {input_error_store} from "../../stores/inputErrorStore";
     import type {TransitionType} from "../../types/pda-cfg/TransitionType";
 
@@ -7,87 +7,14 @@
     let textInput: string = "";
     let textArea: HTMLTextAreaElement;
     let backdrop: HTMLDivElement;
-// Test input
-// d(q0,a,Z)=(q0,A Z);
-// d(q0,a,A)=(q0,A A);
-// d(q0,b,A)=(q1,ε);
-// d(q1,b,A)=(q1,ε);
-// d(q1,ε,Z)=(q1,ε);
-// aaabbb - patri
-// aabbb - nepatri
-// ----------------
-// d(q0,a,Z)=(q0,a Z);
-// d(q0,c,a)=(q1,a);
-// d(q0,c,b)=(q1,b);
-// d(q0,b,Z)=(q0,b Z);
-// d(q0,c,Z)=(q1,ε);
-// d(q0,a,a)=(q0,a a);
-// d(q0,a,b)=(q0,a b);
-// d(q1,a,a)=(q1,ε);
-// d(q1,b,b)=(q1,ε);
-// d(q0,b,a)=(q0,b a);
-// d(q0,b,b)=(q0,b b);
-// d(q1,ε,Z)=(q1,ε);
-// abcba - patri
-// abca - nepatri
-// ----------------
-// d(q0,a,Z)=(q0,x x Z);
-// d(q0,a,x)=(q0,x x x);
-// d(q0,b,x)=(q1,ε);
-// d(q1,b,x)=(q1,ε);
-// d(q1,ε,Z)=(qf,ε);
-// aabbbb - patri
-// ab - nepatri
-// ----------------
-// d(q0,a,Z)=(q1,A Z);
-// d(q1,a,A)=(q1,A A);
-// d(q1,b,A)=(q2,ε);
-// d(q2,b,A)=(q2,ε);
-// d(q2,ε,Z)=(q3,Z);
-// d(q3,b,Z)=(q3,Z);
-// d(q3,ε,Z)=(q4,Z);
-// aaabbb - patri
-// aabbb - nepatri
-// ----------------
-// d(q0,a,Z)=(q1,Z);
-// d(q0,a,Z)=(q2,Z);
-// d(q1,b,Z)=(q1,Z);
-// d(q2,c,Z)=(q2,Z);
-// d(q1,ε,Z)=(q3,Z);
-// d(q2,ε,Z)=(q3,Z);
-// d(q3,ε,Z)=(q3,ε);
-// ab, ac - patri
-// aa - nepatri
-// ----------------
-// d(q0,a,Z)=(q1,Z);
-// d(q0,a,Z)=(q2,Z);
-// d(q1,b,Z)=(q1,Z);
-// d(q2,b,Z)=(q2,Z);
-// d(q1,ε,Z)=(q3,Z);
-// d(q2,ε,Z)=(q4,Z);
-// d(q3,a,Z)=(q4,Z);
-// d(q4,ε,Z)=(q4,ε);
-// aa, aba, abba - patri
-// aab - nepatri
-// ----------------
-// Context-free grammar
-// d(q,ε,Z)=(q,a b Z b a);
-// d(q,ε,Z)=(q,A);
-// d(q,ε,A)=(q,c A c);
-// d(q,ε,A)=(q,a B);
-// d(q,ε,B)=(q,a B);
-// d(q,ε,B)=(q,ε);
-// d(q,a,a)=(q,ε);
-// d(q,b,b)=(q,ε);
-// d(q,c,c)=(q,ε);
-// d(q,ε,Z)=(q,ε);
-// abaaba - patri
-// ----------------
 
+    // Reactive statement to reset the input text
     $: if ($resetInputVar) {
         textInput = "";
     }
 
+    // Function that parses the input text and stores the transitions
+    // params: row: string - the row to be parsed
     function parseRow(row: string) {
         let rowSplit = row.split(/[=,\n)(;]/);
         for (let i = rowSplit.length - 1; i > 0; i--) {
@@ -102,6 +29,7 @@
         }
         rowSplit.splice(0, 1);
 
+        // store the transition
         if (rowSplit.length === 5) {
             transitions.push({
                 state: rowSplit[0],
@@ -113,16 +41,19 @@
         }
     }
 
+    // Function that extracts the nodes from transitions and stores them
     function storeNodes() {
         //get nodes from transitions
         let nodes: GraphNodeMeta[] = [];
         for (let transition of transitions) {
+            // if the node is not already in the list, add it
             if (!nodes.find(node => node.id === transition.state)) {
                 nodes.push({
                     id: transition.state,
                     label: transition.state,
                 });
             }
+            // if the node is not already in the list, add it
             if (!nodes.find(node => node.id === transition.stateAfter)) {
                 nodes.push({
                     id: transition.stateAfter,
@@ -131,18 +62,22 @@
             }
         }
 
+        // store the nodes
         pda_backup_store.update((n) => {
             n.nodes = nodes;
             return n;
         });
     }
 
+    // Function that processes the text input into transitions
     function processTransitions() {
         transitions = [];
         let rows = textInput.split("\n").filter(Boolean);
 
+        // apply highlights to the text
         applyHighlights(textInput);
 
+        // validate each row and parse it
         let allTrue: boolean = true;
         for (let row of rows) {
             // console.log(row);
@@ -169,13 +104,17 @@
             n.transitions = transitions;
             return n;
         });
+
+        // store the nodes
         storeNodes();
     }
 
+    // Function that validates a transition using regex
     function validateTransition(transition) {
         return /d\([A-Za-z]+[0-9]*,[A-Za-z0-9-ε],[A-Za-z0-9]+'*\)=\([A-Za-z]+[A-Za-z0-9]*,(?:(?:[0-9]|(?:[a-z]|[A-Z]'?))*(?:[0-9]|(?:[a-z]|[A-Z]'?))|ε)\);/.test(transition);
     }
 
+    // Function that applies highlights to the text using regex
     function applyHighlights(text: string) {
         return text
             .replace(/\n$/g, '\n\n')
@@ -188,10 +127,16 @@
             });
     }
 
+    // Function that handles the scroll of the text area for the highlights
     function handleScroll() {
         backdrop.scrollTop = textArea.scrollTop;
     }
 
+    // Function that compares two transitions
+    // params: t1: TransitionType - the first transition
+    //         t2: TransitionType - the second transition
+    //
+    // returns: boolean - true if the transitions are equal, false otherwise
     function transitionEquals(t1: TransitionType, t2: TransitionType) {
         return t1.state === t2.state &&
             t1.input === t2.input &&

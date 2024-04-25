@@ -23,7 +23,7 @@
   .layout {
     width: 60rem;
     max-width: 90%;
-    height: calc(100vh - 6.5rem);
+    //height: calc(100vh - 6.5rem);
     margin: 0 auto;
     display: flex;
     justify-content: center;
@@ -43,10 +43,6 @@
     @extend .layout;
     width: 100%;
     max-width: 100%;
-  }
-
-  .header {
-    display: flex;
   }
 
   :root {

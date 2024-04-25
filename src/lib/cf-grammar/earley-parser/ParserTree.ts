@@ -63,13 +63,14 @@ export class ParserTree {
                     // parse the result with the rule of the node
                     result = this.parseChar(result, node.item.rule);
                     derivation.push({rule: `${node.item.rule.toString()}`, result: result});
+                    stack.push(...node.children.reverse());
                 } else if (parser.grammar.some(r => r.lhs === node.value && (r.rhs.length === 0 || (r.rhs.length == 1 && r.rhs[0] === "")))){
                     result = this.parseEpsilon(result, node.value);
-                    derivation.push({rule: `${node.value} → ε`, result: result});
+
+                    if (result !== "err") derivation.push({rule: `${node.value} → ε`, result: result});
                 }
             }
 
-            stack.push(...node.children.reverse());
             node.visited = true;
         }
 
@@ -111,12 +112,18 @@ export class ParserTree {
     }
 
     private parseEpsilon(input: string, lhs: string) {
+        let changed = false;
         for (let char of input) {
             if (char === lhs) {
                 // replace the char at index with the rule lhs
                 input = input.replace(char, "");
+                changed = true;
                 break;
             }
+        }
+
+        if (!changed) {
+            return "err";
         }
 
         return input;

@@ -3,7 +3,7 @@
     import {PDAController} from "./pushdown-automaton-components/pda/PDAController";
     import {graph_store, first_graph_store,second_graph_store,result_graph_store} from "../stores/graphInitStore";
 
-    let isDark = true;
+    let isDark = undefined;
     function toggleTheme() {
         window.document.body.classList.toggle("dark-mode");
         isDark = !isDark;
@@ -48,8 +48,8 @@
 
 </script>
 
-<button class={isDark ? "down" : "up"} on:click={toggleTheme}></button>
-<button class={isDark ? "left" : "right"} on:click={toggleTheme}></button>
+<button class={isDark === undefined ? "" : isDark ? "down" : "up"} on:click={toggleTheme}></button>
+<button class={isDark === undefined ? "" : isDark ? "left" : "right"} on:click={toggleTheme}></button>
 
 <style>
     button {

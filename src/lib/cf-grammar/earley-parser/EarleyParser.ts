@@ -169,6 +169,7 @@ export class EarleyParser {
             });
 
 
+            // Uncomment this if you want to see parser trees in the console
             trees.forEach((tree, index) => {
                 if (tree) {
                     console.log(`\nParser tree ${index}`);
@@ -220,11 +221,7 @@ export class EarleyParser {
 
             if (!node) continue;
 
-            // check if the node is a leaf
-            if (node.item.rule.rhs.length === 0) {
-                let child = new TreeNode("");
-                node.addChild(child);
-            } else {
+            if (node.item.rule.rhs.length !== 0) {
                 let stI = 0;
 
                 // check every symbol of the rules rhs
