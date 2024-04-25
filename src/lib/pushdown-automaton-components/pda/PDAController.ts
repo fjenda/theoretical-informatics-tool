@@ -503,7 +503,8 @@ export class PDAController {
 
         return !(get(input_error_store).transitions === false ||
                  get(input_error_store).startState  === false ||
-                 get(input_error_store).finishState === false);
+                 get(input_error_store).finishState === false ||
+                 get(input_error_store).type === false);
     }
 
     // Function that creates the graph from the transitions
@@ -715,5 +716,83 @@ export class PDAController {
                 "border-color": "#ff0000",
             })
         .update();
+    }
+
+    // Function that initializes the graph
+    public static initGraph() {
+        get(pda_graph_store).graph = cytoscape({
+
+            container: get(pda_graph_store).div,
+            wheelSensitivity: 0.1,
+            minZoom: 0.45,
+            maxZoom: 3,
+
+            style: [
+                {
+                    selector: "node",
+                    style: {
+                        "background-color": "#f4f9ff",
+                        "border-color": "#000",
+                        "border-width": 1,
+                        "label": "data(label)",
+                        "text-valign": "center",
+                        "text-halign": "center",
+                        "color": "#363636",
+                    }
+                },
+                {
+                    selector: ".finish",
+                    style: {
+                        "border-width": 3.5,
+                        "border-style": "double",
+                        "border-color": "#ff0000",
+                    }
+                },
+                {
+                    selector: ".start",
+                    style: {
+                        "border-width": 3,
+                        "border-color": "#00ff00",
+                    }
+                },
+                {
+                    selector: "edge",
+                    style: {
+                        "width": 3,
+                        "line-color": "#f4f9ff",
+                        "target-arrow-color": "#f4f9ff",
+                        "target-arrow-shape": "triangle",
+                        "curve-style": "bezier",
+                        "label": "data(label)",
+                        "color": "#101820",
+                        "text-background-opacity": .85,
+                        "text-background-color": "#f4f9ff",
+                        "text-background-shape": "roundrectangle",
+                        "text-background-padding": "3px",
+                        "text-border-opacity": 1,
+                        "text-border-width": 1,
+                        "text-border-style": "solid",
+                        "text-border-color": "#101820",
+                        "text-wrap": "wrap",
+                        "control-point-distance": 100,
+                    }
+                },
+                {
+                    selector: ".highlight",
+                    style: {
+                        "background-color": "#0080ff",
+                        "line-color": "#0080ff",
+                        "target-arrow-color": "#0080ff",
+                        "transition-property": "line-color, target-arrow-color, background-color",
+                        "transition-duration": 100,
+                    }
+                },
+            ],
+
+            layout: {
+                name: "cola",
+            }
+
+        });
     }
 }

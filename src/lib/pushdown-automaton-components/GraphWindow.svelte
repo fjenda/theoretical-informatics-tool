@@ -22,96 +22,32 @@
 
     let stack_wrapper: HTMLDivElement;
 
+    // toolbarFunctions is used to pass some functions to the toolbar
     export const toolbarFunctions = {
-        nextTransition,                 //
-        previousTransition,             //
+        nextTransition,
+        previousTransition,
     } as ToolbarFunctions;
 
+    // Function that displays the nextTransition using the controller
     function nextTransition() {
         PDAController.nextTransition();
         scrollToTop();
     }
 
+    // Function that displays the previousTransition using the controller
     function previousTransition() {
         PDAController.previousTransition();
         scrollToTop();
     }
 
+    // Function that initializes the graph using the controller
     function graphInit() {
-        $pda_graph_store.graph = cytoscape({
+        PDAController.initGraph();
+    }
 
-            container: $pda_graph_store.div,
-            wheelSensitivity: 0.1,
-            minZoom: 0.45,
-            maxZoom: 3,
-
-            style: [
-                {
-                    selector: "node",
-                    style: {
-                        "background-color": "#f4f9ff",
-                        "border-color": "#000",
-                        "border-width": 1,
-                        "label": "data(label)",
-                        "text-valign": "center",
-                        "text-halign": "center",
-                        "color": "#363636",
-                    }
-                },
-                {
-                    selector: ".finish",
-                    style: {
-                        "border-width": 3.5,
-                        "border-style": "double",
-                        "border-color": "#ff0000",
-                    }
-                },
-                {
-                    selector: ".start",
-                    style: {
-                        "border-width": 3,
-                        "border-color": "#00ff00",
-                    }
-                },
-                {
-                    selector: "edge",
-                    style: {
-                        "width": 3,
-                        "line-color": "#f4f9ff",
-                        "target-arrow-color": "#f4f9ff",
-                        "target-arrow-shape": "triangle",
-                        "curve-style": "bezier",
-                        "label": "data(label)",
-                        "color": "#101820",
-                        "text-background-opacity": .85,
-                        "text-background-color": "#f4f9ff",
-                        "text-background-shape": "roundrectangle",
-                        "text-background-padding": "3px",
-                        "text-border-opacity": 1,
-                        "text-border-width": 1,
-                        "text-border-style": "solid",
-                        "text-border-color": "#101820",
-                        "text-wrap": "wrap",
-                        "control-point-distance": 100,
-                    }
-                },
-                {
-                    selector: ".highlight",
-                    style: {
-                        "background-color": "#0080ff",
-                        "line-color": "#0080ff",
-                        "target-arrow-color": "#0080ff",
-                        "transition-property": "line-color, target-arrow-color, background-color",
-                        "transition-duration": 100,
-                    }
-                },
-            ],
-
-            layout: {
-                name: "cola",
-            }
-
-        });
+    // Function that scrolls to the top of the stack
+    function scrollToTop() {
+        stack_wrapper.scrollTop = 0;
     }
 
 
@@ -158,10 +94,6 @@
             stackAfter: ["ε"],
         }
     ];
-
-    function scrollToTop() {
-        stack_wrapper.scrollTop = 0;
-    }
 
     onMount(() => {
         graphInit();
@@ -210,13 +142,9 @@
     .window {
         width: 95%;
         height: 95%;
-
         min-height: 25.5rem;
-
         border-radius: 0.5rem;
-
         background: #f7f7f8;
-
         box-shadow: rgba(0, 0, 0, .2) 0 3px 5px -1px,rgba(0, 0, 0, .14) 0 6px 10px 0,rgba(0, 0, 0, .12) 0 1px 18px 0;
         box-sizing: border-box;
     }
@@ -233,9 +161,7 @@
 
     .graph {
         overflow: hidden;
-
         border-radius: 0.5rem;
-
         height: calc(100% - 3rem);
     }
 
@@ -255,12 +181,7 @@
         position: absolute;
         top: 0;
         right: 1rem;
-        /*pointer-events: ;*/
-
         max-height: 30vh;
-        /*overflow-y: scroll;*/
-
         padding: 0 2rem;
-        /*outline: 0.125rem solid #000000;*/
     }
 </style>

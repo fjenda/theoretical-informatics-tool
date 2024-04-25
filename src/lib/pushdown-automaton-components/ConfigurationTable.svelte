@@ -252,10 +252,6 @@
     background-color: #393939 !important;
   }
 
-  .simplebar-content-wrapper {
-    border-radius: 0.5rem;
-  }
-
   :global(.tooltip) {
     white-space: nowrap;
     position: relative;

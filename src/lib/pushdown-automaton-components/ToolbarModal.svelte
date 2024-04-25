@@ -21,6 +21,7 @@
     import {input_error_store} from "../../stores/inputErrorStore";
     import StateComboBox from "./StateComboBox.svelte";
     import type {ToolbarButtonType} from "../../types/ToolbarButtonType";
+    import {PDAController} from "./pda/PDAController";
 
     export let showModal : boolean;
     export let type : ToolbarButtonType;
@@ -60,6 +61,7 @@
         }
     }
 
+    // Function that resets the input fields
     function resetInput() {
         label = "", source = "", target = "";
         label_1 = "", label_2 = "", label_3 = "";
@@ -73,15 +75,20 @@
         return true;
     }
 
+    // Function that checks the input fields and adds a new node or edge to the automaton
+    // params: type - type of the button that was clicked
+    //
+    // returns: true if the input is correct, false otherwise
     function checkInput(type: ToolbarButtonType) {
         errorType = "";
         showError = false;
 
+        // if type is not new-node or new-edge, return true
         if (!["new-node", "new-edge"].includes(type)) {
-            func();
             return true;
         }
 
+        // checking input for new-node type
         if (type == "new-node") {
             if (!label?.trim()) {
                 showError = true;
@@ -97,6 +104,7 @@
             }
         }
 
+        // checking input for new-edge type
         if (type == "new-edge") {
             sourceB = false;
             targetB = false;
@@ -139,7 +147,9 @@
             }
         }
 
+        // if everything is correct, add a new node or edge
         switch (type) {
+            // add a new node
             case "new-node": {
                 // console.log("new-node - " + modifiedLabel);
                 if (isStartState && isFinishState) {
@@ -155,6 +165,7 @@
                 return true;
             }
 
+            // add a new edge
             case "new-edge": {
                 if (!label_1) label_1 = "ε";
                 if (!label_3) label_3 = "ε";
@@ -165,9 +176,9 @@
             }
         }
     }
-    
+
+    // Function that inserts ε into the transition function input
     function insertEps() {
-        console.log("inserting ε");
         const transitions = document.getElementById("function-input");
         transitions.value += "ε";
         transitions.focus();
@@ -178,10 +189,10 @@
     bind:this={dialog}
     on:close={() => (showModal = false)}
     on:click|self={() => dialog.close()}
+    on:keydown|self={(e) => e.key === "Escape" && dialog.close()}
 >
-    <div on:click|stopPropagation>
+    <div on:click|stopPropagation role="dialog">
         <slot name="header" />
-<!--        <hr />-->
         <slot />
 
         {#if type === "show-definition" || type === "cfg-definition"}
@@ -192,7 +203,6 @@
                       value={config}
                       placeholder="Transitions"></textarea>
 
-<!--            <hr />-->
             <button class="single-button" on:click={() => dialog.close()}>Close</button>
 
         {:else if type === "generate-graph"}
@@ -215,6 +225,8 @@
                     dialog.close();
                 }}>Cancel</button>
                     <button on:click={() => {
+                    if (!PDAController.checkGenerationInput())
+                        return;
                     pda_backup_store.update((n) => { n.stackBottom = "Z"; return n; });
                     func();
                     dialog.close();

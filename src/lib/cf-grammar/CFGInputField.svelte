@@ -20,6 +20,7 @@
 
         // calling a function to check the inputs
         user_grammar_store.update((n) => {
+            n.lastInput = parsed;
             n.validateInputs(parsed);
             return n;
         });

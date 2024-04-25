@@ -18,7 +18,6 @@
         background: #dedede;
         display: flex;
         align-items: center;
-        justify-content: space-evenly;
         gap: 0.25rem;
     }
 

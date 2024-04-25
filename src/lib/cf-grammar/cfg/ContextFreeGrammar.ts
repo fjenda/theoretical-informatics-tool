@@ -29,6 +29,9 @@ export class ContextFreeGrammar {
     // A boolean to check if the rules need updating for the parser
     updateRules: boolean = true;
 
+    // Last input that was validated
+    lastInput: string[][] = [];
+
     // Constructor for the CFG
     constructor(nonTerminals: string[], terminals: string[], rules: CFGRule[]) {
         this.nonTerminals = nonTerminals;
@@ -97,6 +100,7 @@ export class ContextFreeGrammar {
         // remove duplicates
         this.nonTerminals = this.nonTerminals.filter((value, index, self) => self.indexOf(value) === index);
         this.terminals = this.terminals.filter((value, index, self) => self.indexOf(value) === index);
+        this.updateRules = true;
     }
 
     //  Function that returns a string representation of the grammar
@@ -138,7 +142,7 @@ P: {\n    ${logRules.map(rule => rule.toString()).join('\n    ')}\n}`;
 
     // Function to validate the inputs
     // params: inputs: string[][] - an array of strings to be validated
-    validateInputs(inputs: string[][]) {
+    validateInputs(inputs: string[][] = this.lastInput) {
         // check if the rules in the parser need to be updated
         if (this.updateRules) {
             this.convertRulesForParser(this.rules);

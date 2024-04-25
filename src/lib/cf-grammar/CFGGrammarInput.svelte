@@ -1,10 +1,3 @@
-<!--TODO: REMOVE THIS-->
-<!--Test strings-->
-<!--2+3-->
-<!--(4*5)+6-->
-<!--7*(8+9)-->
-<!--1-->
-
 <!--
 LHS Grammar Window for editing the grammar
 -->
@@ -20,6 +13,7 @@ LHS Grammar Window for editing the grammar
     $: if ($user_grammar_store.rules) {
         user_grammar_store.update(n => {
             n.updateTerminalsAndNonTerminals();
+            n.validateInputs();
             return n;
         });
 
@@ -140,10 +134,10 @@ LHS Grammar Window for editing the grammar
     {#each $user_grammar_store.rules as row, i}
         <div class="grammar-row">
             {#if i !== 0} <!-- Starting rule (no delete button) -->
-                <button class="delete-button" on:click={() => { removeRow(i) } }>X</button>
+                <button class="delete-button" on:click={() => { removeRow(i) } }></button>
             {/if}
             {#if i === 0} <!-- Other rules -->
-                <button class="delete-button inactive">X</button>
+                <button class="delete-button inactive"></button>
 
                 <input class="left-side padding-left"
                        maxlength="1"
@@ -209,7 +203,7 @@ LHS Grammar Window for editing the grammar
     }
 
     .right-side {
-        width: 7rem;
+        width: 6.6rem;
     }
 
     .grammar-wrapper {
@@ -224,6 +218,9 @@ LHS Grammar Window for editing the grammar
 
     .grammar-row {
         line-height: 2.5rem;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.35rem;
     }
 
     .add-button {
@@ -240,12 +237,29 @@ LHS Grammar Window for editing the grammar
         padding: 0 0.5rem;
         border-radius: 100vh;
         margin: 0 0.75rem 0 0;
+
+        background-color: transparent;
+        background-image: url("../../assets/delete.svg");
+        background-size: contain;
+        background-repeat: no-repeat;
+
+        aspect-ratio: 1/1;
+        width: 40px;
+        border: none;
+    }
+
+    :global(body.dark-mode) .delete-button {
+        filter: invert(1);
+    }
+
+    :global(body.dark-mode) .delete-button:hover {
+        color: #f4f9ff;
+        filter: brightness(0) saturate(100%) invert(13%) sepia(81%) saturate(7248%) hue-rotate(360deg) brightness(104%) contrast(114%);
     }
 
     .delete-button:hover {
-        background-color: #ff0000;
         color: #f4f9ff;
-        transition: 0.3s;
+        filter: brightness(0) saturate(100%) invert(13%) sepia(81%) saturate(7248%) hue-rotate(360deg) brightness(104%) contrast(114%);
     }
 
     .inactive {
