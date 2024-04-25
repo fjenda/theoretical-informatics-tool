@@ -1,4 +1,3 @@
-import {graph_store} from "../../../stores/graphInitStore";
 import type {TransitionMeta} from "../../../types/TransitionMeta";
 import {FiniteStateAutomaton} from "../FiniteStateAutomaton";
 import {TreeNode} from "./TreeNode";
@@ -13,11 +12,6 @@ export class  RegexAutomaton{
         this.position = 0;
         this.finAut = new FiniteStateAutomaton([], [], [], [], [], "DFA");
     };
-
-    getAlphabet() : string[] {
-        let alphabet = this.regex.split("");
-        return alphabet;
-    }
 
     printTree(node: TreeNode | null, depth: number = 0): void {
         if (node === null) {
@@ -34,8 +28,6 @@ export class  RegexAutomaton{
         }
     }
 
-
-
     regexProcessFunc() : FiniteStateAutomaton | null {
         const queue: { state: string; index: number; path: TransitionMeta[] }[] = [
             { state: this.finAut.startState, index: 0, path: [] },
@@ -44,19 +36,15 @@ export class  RegexAutomaton{
         //remove . from the this.regex
         this.regex = this.regex.replace(/\./g, "");
 
-        let alphabet = this.regex.split("");
 
         let tree = this.parse();
 
         if (tree === null) {
             return null;
         }
-        console.log("Regex Tree full:", tree);
         console.log("Regex Tree:");
         this.printTree(tree);
 
-        // let result = this.fromTreeToAutomaton(tree);
-        // console.log("Result:", result);
         return this.fromTreeToAutomaton(tree);
     }
 
@@ -107,7 +95,6 @@ export class  RegexAutomaton{
             return this.fromSymbol(root.children[0].label);
         }
 
-        console.log("Jsem tady dokoncuji prevod");
         return null;
     }
 
@@ -120,7 +107,6 @@ export class  RegexAutomaton{
     }
 
     parse() : TreeNode | null {
-
         return this.expression();
     }
 
@@ -137,7 +123,6 @@ export class  RegexAutomaton{
     }
 
     isMetaChar(c : string) : boolean {
-        // return c === "*" || c === "+" || c === "?";
         return c === "*";
     }
 
@@ -154,11 +139,6 @@ export class  RegexAutomaton{
             this.match("+");
             let expression = this.expression();
 
-            // if (expression === null) {
-            //     return null;
-            // }
-
-            // term = new TreeNode("expression", [term, new TreeNode("|", null), expression]);
             return new TreeNode("expression", [term, new TreeNode("+", null), expression]);
         }
         return new TreeNode("expression", [term]);
@@ -636,9 +616,4 @@ export class  RegexAutomaton{
 
         return new FiniteStateAutomaton(nodes, transitions, [startNode.id], [endNode.id], "DFA");
     }
-
-
-
-
-
 }
