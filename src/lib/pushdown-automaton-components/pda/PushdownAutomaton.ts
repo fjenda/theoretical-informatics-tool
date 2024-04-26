@@ -328,7 +328,7 @@ export class PushdownAutomaton {
         let i = 1;
         str += "δ: {\n";
         for (let transition of get(pda_configuration_store).transitions) {
-            str += `   ${i}. (${transition.state}, ε, ${transition.stack}) = (${transition.stateAfter}, ${transition.stackAfter.join("")})\n`;
+            str += `   ${i}. (${transition.state}, ${transition.input}, ${transition.stack}) = (${transition.stateAfter}, ${transition.stackAfter.join("")})\n`;
             i++;
         }
 
@@ -343,6 +343,8 @@ export class PushdownAutomaton {
         // final states
         if (get(pda_configuration_store).type !== "empty")
             str += `F: {${get(pda_configuration_store).final_states.join(", ")}}`;
+        else
+            str += `F: ∅`;
 
         return str;
     }
