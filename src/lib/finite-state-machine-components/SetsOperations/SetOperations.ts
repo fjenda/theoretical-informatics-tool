@@ -1,10 +1,20 @@
-import {FiniteStateAutomaton} from "../FiniteStateAutomaton";
+/*
+    FiniteStateAutomaton.ts
+    Class for set operations on finite state automaton
+
+    Author: Marek Krúpa
+*/
+
+//types
 import type {GraphNodeMeta} from "../../../types/GraphNodeMeta";
 import type {TransitionMeta} from "../../../types/TransitionMeta";
+// classes
+import {FiniteStateAutomaton} from "../FiniteStateAutomaton";
 import {ConvertorToDFA} from "../ConvertorToDFA";
 
 export class SetOperations{
 
+    //Static method for union of two finite state automaton (DFA and NFA)
     static dfaUnion = (first : FiniteStateAutomaton, second : FiniteStateAutomaton) : FiniteStateAutomaton => {
         let newNodes : GraphNodeMeta[] = [];
         let newTransitions: TransitionMeta[] = [];
@@ -12,10 +22,12 @@ export class SetOperations{
         let newFinishState : string[] = [];
         let indexCounter = 0;
 
+        // create new start state
         newNodes.push({id: indexCounter.toString(), label: "S", class: "start"});
         indexCounter++;
         newStartState.push("0");
 
+        // create new nodes from first automaton
         for(let firstNode of first.nodes){
             let classOfNode = "";
             if (first.finishState.includes(firstNode.id)){
@@ -26,6 +38,7 @@ export class SetOperations{
             indexCounter++;
         }
 
+        // create new nodes from second automaton
         for(let secondNode of second.nodes){
             let classOfNode = "";
             if (second.finishState.includes(secondNode.id)){
@@ -36,6 +49,7 @@ export class SetOperations{
             indexCounter++;
         }
 
+        // create transitions from first automaton
         for (let firstTransition of first.transitions){
             let transitionStatelabel = firstTransition.stateLabel;
             let transitionStateAfterLabel = firstTransition.stateAfterLabel;
@@ -51,6 +65,7 @@ export class SetOperations{
             newTransitions.push(newTransition);
         }
 
+        // create transitions from second automaton
         for (let secondTransition of second.transitions){
             let transitionStatelabel = secondTransition.stateLabel;
             let transitionStateAfterLabel = secondTransition.stateAfterLabel;
@@ -66,6 +81,7 @@ export class SetOperations{
             newTransitions.push(newTransition);
         }
 
+        // create transitions from new start state, copy transitions from old start state from first automaton
         for (let oldStartState of first.startState){
            let transitionsFromOldStart = first.transitions.filter((transition) =>
                transition.stateLabel === first.nodes.find((node) => node.id === oldStartState).label);
@@ -85,6 +101,7 @@ export class SetOperations{
               }
         }
 
+        // create transitions from new start state, copy transitions from old start state from second automaton
         for (let oldStartState of second.startState){
             let transitionsFromOldStart = second.transitions.filter((transition) =>
                 transition.stateLabel === second.nodes.find((node) => node.id === oldStartState).label);
@@ -105,119 +122,17 @@ export class SetOperations{
         }
 
         return new FiniteStateAutomaton(newNodes, newTransitions, newStartState, newFinishState, "NFA");
-
-
-
     }
 
-    static nfaUnion = (first : FiniteStateAutomaton, second : FiniteStateAutomaton) : FiniteStateAutomaton => {
-        let newNodes : GraphNodeMeta[] = [];
-        let newTransitions: TransitionMeta[] = [];
-        let newStartState : string[] = [];
-        let newFinishState : string[] = [];
-        let oldStartStateSecond = first.startState;
-        let oldStartStateFirst = second.startState;
-
-        let indexCounter = 0;
-
-        newNodes.push({id: indexCounter.toString(), label: "S", class: "start"});
-        indexCounter++;
-
-        newStartState.push("0");
-
-        for(let firstNode of first.nodes){
-            let classOfNode = "";
-            if (first.finishState.includes(firstNode.id)){
-                classOfNode = "finish";
-                newFinishState.push(indexCounter.toString());
-            }
-            newNodes.push({id: indexCounter.toString(), label: firstNode.label, class: classOfNode});
-            indexCounter++;
-        }
-
-        for(let secondNode of second.nodes){
-            let classOfNode = "";
-            if (second.finishState.includes(secondNode.id)){
-                classOfNode = "finish";
-                newFinishState.push(indexCounter.toString());
-            }
-            newNodes.push({id: indexCounter.toString(), label: secondNode.label, class: classOfNode});
-            indexCounter++;
-        }
-
-
-        for (let firstTransition of first.transitions){
-            let transitionStatelabel = firstTransition.stateLabel;
-            let transitionStateAfterLabel = firstTransition.stateAfterLabel;
-            let stateID = newNodes.findIndex((node) => node.label === transitionStatelabel);
-            let stateAfterID = newNodes.findIndex((node) => node.label === transitionStateAfterLabel);
-            let newTransition : TransitionMeta = {
-                state: stateID.toString(),
-                stateLabel: transitionStatelabel,
-                input: firstTransition.input,
-                stateAfter: stateAfterID.toString(),
-                stateAfterLabel: transitionStateAfterLabel
-            }
-            newTransitions.push(newTransition);
-        }
-
-        for (let secondTransition of second.transitions){
-            let transitionStatelabel = secondTransition.stateLabel;
-            let transitionStateAfterLabel = secondTransition.stateAfterLabel;
-            let stateID = newNodes.findIndex((node) => node.label === transitionStatelabel);
-            let stateAfterID = newNodes.findIndex((node) => node.label === transitionStateAfterLabel);
-            let newTransition : TransitionMeta = {
-                state: stateID.toString(),
-                stateLabel: transitionStatelabel,
-                input: secondTransition.input,
-                stateAfter: stateAfterID.toString(),
-                stateAfterLabel: transitionStateAfterLabel
-            }
-            newTransitions.push(newTransition);
-        }
-
-        for (let oldStartState of oldStartStateFirst){
-            let transitionStatelabel = "S";
-            let transitionStateAfterLabel = second.nodes.find((node) => node.id === oldStartState).label;
-            let stateID = newNodes.findIndex((node) => node.label === transitionStatelabel);
-            let stateAfterID = newNodes.findIndex((node) => node.label === transitionStateAfterLabel);
-            let newTransition : TransitionMeta = {
-                state: stateID.toString(),
-                stateLabel: transitionStatelabel,
-                input: "ε",
-                stateAfter: stateAfterID.toString(),
-                stateAfterLabel: transitionStateAfterLabel
-            }
-            newTransitions.push(newTransition);
-        }
-
-        for (let oldStartState of oldStartStateSecond){
-            let transitionStatelabel = "S";
-            let transitionStateAfterLabel = first.nodes.find((node) => node.id === oldStartState).label;
-            let stateID = newNodes.findIndex((node) => node.label === transitionStatelabel);
-            let stateAfterID = newNodes.findIndex((node) => node.label === transitionStateAfterLabel);
-            let newTransition : TransitionMeta = {
-                state: stateID.toString(),
-                stateLabel: transitionStatelabel,
-                input: "ε",
-                stateAfter: stateAfterID.toString(),
-                stateAfterLabel: transitionStateAfterLabel
-            }
-            newTransitions.push(newTransition);
-        }
-
-        return new FiniteStateAutomaton(newNodes, newTransitions, newStartState, newFinishState, "NFA");
-
-    }
-
+    // Static method for intersection of two finite state automaton (DFA)
     static dfaIntersection = (first : FiniteStateAutomaton, second : FiniteStateAutomaton) : FiniteStateAutomaton => {
-
         let newNodes : GraphNodeMeta[] = [];
         let newTransitions: TransitionMeta[] = [];
         let newStartState : string[] = [];
         let newFinishState : string[] = [];
         let indexCounter = 0;
 
+        // create pairs of nodes from first and second automaton
         for( let firstNode of first.nodes){
             let newNode = firstNode.label;
             for (let secondNode of second.nodes){
@@ -263,10 +178,13 @@ export class SetOperations{
         return new FiniteStateAutomaton(newNodes, newTransitions, newStartState, newFinishState, "DFA");
     }
 
+    // Static method for intersection of two finite state automaton (NFA)
     static nfaIntersection = (first : FiniteStateAutomaton, second : FiniteStateAutomaton) : FiniteStateAutomaton => {
+        // Variables
         let firstDfa = first;
         let secondDfa = second;
 
+        // convert to dfa if not already
         if(first.type == "NFA"){
             firstDfa = ConvertorToDFA.convertToDFA(first).newFa;
         }
@@ -274,13 +192,13 @@ export class SetOperations{
             secondDfa = ConvertorToDFA.convertToDFA(second).newFa;
         }
 
-        //in first dfa change label of states from q to p and Ø to X
+        // In first dfa change label of states from q to p and Ø to X
         for (let node of firstDfa.nodes){
             node.label = node.label.replace("q", "p");
             node.label = node.label.replace("Ø", "X");
         }
 
-        //in first dfa change label of transitions from q to p and Ø to X
+        // In first dfa change label of transitions from q to p and Ø to X
         for (let transition of firstDfa.transitions){
             transition.stateLabel = transition.stateLabel.replace("q", "p");
             transition.stateLabel = transition.stateLabel.replace("Ø", "X");
@@ -288,23 +206,25 @@ export class SetOperations{
             transition.stateAfterLabel = transition.stateAfterLabel.replace("Ø", "X");
         }
 
-        //in first dfa change label of states from q to p and Ø to X
+        // In first dfa change label of states from q to p and Ø to X
         for (let node of secondDfa.nodes){
             node.label = node.label.replace("Ø", "Y");
         }
 
-        //in first dfa change label of transitions from q to p and Ø to X
+        // In first dfa change label of transitions from q to p and Ø to X
         for (let transition of secondDfa.transitions){
             transition.stateLabel = transition.stateLabel.replace("Ø", "Y");
             transition.stateAfterLabel = transition.stateAfterLabel.replace("Ø", "Y");
         }
 
+        // Variables
         let newNodes : GraphNodeMeta[] = [];
         let newTransitions: TransitionMeta[] = [];
         let newStartState : string[] = [];
         let newFinishState : string[] = [];
         let indexCounter = 0;
 
+        // Create pairs of nodes from first and second automaton
         for( let firstNode of firstDfa.nodes){
             let newNode = firstNode.label;
             for (let secondNode of secondDfa.nodes){
@@ -327,7 +247,7 @@ export class SetOperations{
             }
         }
 
-        //make intersection of transitions with same input
+        // Make intersection of transitions with same input
         for (let firstTransition of firstDfa.transitions){
             for (let secondTransition of secondDfa.transitions){
                 if (firstTransition.input === secondTransition.input){
@@ -346,13 +266,12 @@ export class SetOperations{
                 }
             }
         }
-
         return new FiniteStateAutomaton(newNodes, newTransitions, newStartState, newFinishState, "DFA");
-
     }
 
+    // Static method for concatenation of two finite state automaton (DFA)
     static dfaConcatenation = (first : FiniteStateAutomaton, second : FiniteStateAutomaton) : FiniteStateAutomaton => {
-
+        // Variables
         let newNodes: GraphNodeMeta[] = [];
         let newTransitions: TransitionMeta[] = [];
         let newStartState: string[] = [];
@@ -364,7 +283,7 @@ export class SetOperations{
 
         let indexCounter = 0;
 
-        //find if second start state is also finish state
+        // Find if second start state is also finish state
         let startStateIsFinish = false;
         for (let finishState of second.finishState) {
             if (second.startState.includes(finishState)) {
@@ -373,16 +292,14 @@ export class SetOperations{
             }
         }
 
-        //create new nodes of nodes from first and second no connection
+        // Create new nodes of nodes from first and second no connection
         for (let firstNode of first.nodes) {
             let classOfNode = "";
             if (first.startState.includes(firstNode.id)) {
                 classOfNode = "start";
                 newStartState.push(indexCounter.toString());
             }
-
             if (startStateIsFinish) {
-
                 if (first.finishState.includes(firstNode.id)) {
                     classOfNode = "finish";
                     newFinishState.push(indexCounter.toString());
@@ -403,7 +320,7 @@ export class SetOperations{
             indexCounter++;
         }
 
-        //create transitions from first and second
+        //Create transitions from first and second
         for (let firstTransition of first.transitions) {
             let transitionStatelabel = firstTransition.stateLabel;
             let transitionStateAfterLabel = firstTransition.stateAfterLabel;
@@ -434,7 +351,7 @@ export class SetOperations{
             newTransitions.push(newTransition);
         }
 
-        //filter transitions from second that are from start state
+        // Filter transitions from second that are from start state
         let transitionsFromSecStart = second.transitions.filter((transition) =>
             transition.stateLabel === oldStartStateLabel);
 
@@ -456,9 +373,9 @@ export class SetOperations{
         return new FiniteStateAutomaton(newNodes, newTransitions, newStartState, newFinishState, "DFA");
     }
 
-
-
+    // Static method for concatenation of two finite state automaton (NFA)
     static nfaConcatenation = (first : FiniteStateAutomaton, second : FiniteStateAutomaton) : FiniteStateAutomaton => {
+        // Variables
         let newNodes : GraphNodeMeta[] = [];
         let newTransitions: TransitionMeta[] = [];
         let newStartState : string[] = [];
@@ -470,7 +387,7 @@ export class SetOperations{
 
         let indexCounter = 0;
 
-        //create new nodes of nodes from first and second no connection
+        // Create new nodes of nodes from first and second no connection
         for(let firstNode of first.nodes){
             let classOfNode = "";
             if (first.startState.includes(firstNode.id)){
@@ -492,7 +409,7 @@ export class SetOperations{
             indexCounter++;
         }
 
-        //create transitions from first and second
+        // Create transitions from first and second
         for (let firstTransition of first.transitions){
             let transitionStatelabel = firstTransition.stateLabel;
             let transitionStateAfterLabel = firstTransition.stateAfterLabel;
@@ -523,7 +440,7 @@ export class SetOperations{
             newTransitions.push(newTransition);
         }
 
-        //create transitions from first to second epsilon with old finish state of first to old start state of second
+        // Create transitions from first to second epsilon with old finish state of first to old start state of second
         let transitionStatelabel = olfFinishStateLabel;
         let transitionStateAfterLabel = oldStartStateLabel;
         let stateID = newNodes.findIndex((node) => node.label === transitionStatelabel);
@@ -536,18 +453,19 @@ export class SetOperations{
             stateAfterLabel: transitionStateAfterLabel
         }
         newTransitions.push(newTransition);
-
-
         return new FiniteStateAutomaton(newNodes, newTransitions, newStartState, newFinishState, "NFA");
     }
 
+    // Static method for complement of finite state automaton (DFA)
     static dfaComplement = (first : FiniteStateAutomaton) : FiniteStateAutomaton => {
+        // Variables
         let newNodes : GraphNodeMeta[] = [];
         let newTransitions: TransitionMeta[] = [];
         let newStartState : string[] = [];
         let newFinishState : string[] = [];
         let indexCounter = 0;
 
+        // Convert to total dfa if not already
         if(!SetOperations.checkIfTotalDfa(first)) {
             first = ConvertorToDFA.convertToDFA(first).newFa;
 
@@ -564,6 +482,7 @@ export class SetOperations{
             }
         }
 
+        // Create new nodes from first automaton
         for(let firstNode of first.nodes){
             let classOfNode = "";
             if (first.startState.includes(firstNode.id)){
@@ -575,13 +494,13 @@ export class SetOperations{
                 classOfNode = "finish";
                 newFinishState.push(indexCounter.toString());
             }
-            
 
             newNodes.push({id: indexCounter.toString(), label: firstNode.label, class: classOfNode});
             indexCounter++;
             classOfNode = "";
         }
 
+        // Create transitions from first automaton
         for (let firstTransition of first.transitions){
             let transitionStatelabel = firstTransition.stateLabel;
             let transitionStateAfterLabel = firstTransition.stateAfterLabel;
@@ -596,11 +515,12 @@ export class SetOperations{
             }
             newTransitions.push(newTransition);
         }
-
         return new FiniteStateAutomaton(newNodes, newTransitions, newStartState, newFinishState, "DFA");
     }
 
+    // Static method for complement of finite state automaton (NFA)
     static nfaComplement = (first : FiniteStateAutomaton) : FiniteStateAutomaton => {
+        // Variables
         let toDFAAtomaton = ConvertorToDFA.convertToDFA(first).newFa;
         let newNodes : GraphNodeMeta[] = [];
         let newTransitions: TransitionMeta[] = [];
@@ -608,6 +528,7 @@ export class SetOperations{
         let newFinishState : string[] = [];
         let indexCounter = 0;
 
+        // Create new nodes from first automaton
         for(let firstNode of toDFAAtomaton.nodes){
             let classOfNode = "";
             if (toDFAAtomaton.startState.includes(firstNode.id)){
@@ -625,6 +546,7 @@ export class SetOperations{
             classOfNode = "";
         }
 
+        // Create transitions from first automaton
         for (let firstTransition of toDFAAtomaton.transitions){
             let transitionStatelabel = firstTransition.stateLabel;
             let transitionStateAfterLabel = firstTransition.stateAfterLabel;
@@ -639,20 +561,19 @@ export class SetOperations{
             }
             newTransitions.push(newTransition);
         }
-
         return new FiniteStateAutomaton(newNodes, newTransitions, newStartState, newFinishState, "DFA");
-
-
     }
 
+    // Static method for difference of two finite state automaton (DFA)
     static dfaDifference = (first : FiniteStateAutomaton, second : FiniteStateAutomaton) : FiniteStateAutomaton => {
-
+        //Variables
         let newNodes : GraphNodeMeta[] = [];
         let newTransitions: TransitionMeta[] = [];
         let newStartState : string[] = [];
         let newFinishState : string[] = [];
         let indexCounter = 0;
 
+        // Convert to total dfa if not already
         if(!SetOperations.checkIfTotalDfa(first)) {
             first = ConvertorToDFA.convertToDFA(first).newFa;
 
@@ -670,6 +591,7 @@ export class SetOperations{
             }
         }
 
+        // Convert to total dfa if not already
         if(!SetOperations.checkIfTotalDfa(second)) {
             second = ConvertorToDFA.convertToDFA(second).newFa;
 
@@ -684,6 +606,7 @@ export class SetOperations{
             }
         }
 
+        // Create pairs of nodes from first and second automaton
         for( let firstNode of first.nodes){
             let newNode = firstNode.label;
             for (let secondNode of second.nodes){
@@ -706,7 +629,7 @@ export class SetOperations{
             }
         }
 
-        //make intersection of transitions with same input
+        // Make intersection of transitions with same input
         for (let firstTransition of first.transitions){
             for (let secondTransition of second.transitions){
                 if (firstTransition.input === secondTransition.input){
@@ -725,13 +648,16 @@ export class SetOperations{
                 }
             }
         }
-
         return new FiniteStateAutomaton(newNodes, newTransitions, newStartState, newFinishState, "DFA");
     }
+
+    // Static method for difference of two finite state automaton (NFA)
     static nfaDifference = (first : FiniteStateAutomaton, second : FiniteStateAutomaton) : FiniteStateAutomaton => {
+        // Variables
         let firstDfa = first;
         let secondDfa = second;
 
+        // Convert to dfa if not already
         if(first.type == "NFA"){
             firstDfa = ConvertorToDFA.convertToDFA(first).newFa;
         }
@@ -739,13 +665,13 @@ export class SetOperations{
             secondDfa = ConvertorToDFA.convertToDFA(second).newFa;
         }
 
-        //in first dfa change label of states from q to p and Ø to X
+        // In first dfa change label of states from q to p and Ø to X
         for (let node of firstDfa.nodes){
             node.label = node.label.replace("q", "p");
             node.label = node.label.replace("Ø", "X");
         }
 
-        //in first dfa change label of transitions from q to p and Ø to X
+        // In first dfa change label of transitions from q to p and Ø to X
         for (let transition of firstDfa.transitions){
             transition.stateLabel = transition.stateLabel.replace("q", "p");
             transition.stateLabel = transition.stateLabel.replace("Ø", "X");
@@ -753,23 +679,25 @@ export class SetOperations{
             transition.stateAfterLabel = transition.stateAfterLabel.replace("Ø", "X");
         }
 
-        //in first dfa change label of states from q to p and Ø to X
+        // In first dfa change label of states from q to p and Ø to X
         for (let node of secondDfa.nodes){
             node.label = node.label.replace("Ø", "Y");
         }
 
-        //in first dfa change label of transitions from q to p and Ø to X
+        // In first dfa change label of transitions from q to p and Ø to X
         for (let transition of secondDfa.transitions){
             transition.stateLabel = transition.stateLabel.replace("Ø", "Y");
             transition.stateAfterLabel = transition.stateAfterLabel.replace("Ø", "Y");
         }
 
+        // Variables
         let newNodes : GraphNodeMeta[] = [];
         let newTransitions: TransitionMeta[] = [];
         let newStartState : string[] = [];
         let newFinishState : string[] = [];
         let indexCounter = 0;
 
+        // Create pairs of nodes from first and second automaton
         for( let firstNode of firstDfa.nodes){
             let newNode = firstNode.label;
             for (let secondNode of secondDfa.nodes){
@@ -792,7 +720,7 @@ export class SetOperations{
             }
         }
 
-        //make intersection of transitions with same input
+        // Make intersection of transitions with same input
         for (let firstTransition of firstDfa.transitions){
             for (let secondTransition of secondDfa.transitions){
                 if (firstTransition.input === secondTransition.input){
@@ -811,24 +739,25 @@ export class SetOperations{
                 }
             }
         }
-
         return new FiniteStateAutomaton(newNodes, newTransitions, newStartState, newFinishState, "DFA");
-
     }
 
+    // Static method for iteration of finite state automaton (DFA and NFA)
     static dfaIteration = (first : FiniteStateAutomaton) : FiniteStateAutomaton => {
+        // Variables
         let newNodes : GraphNodeMeta[] = [];
         let newTransitions: TransitionMeta[] = [];
         let newStartState : string[] = [];
         let newFinishState : string[] = [];
         let indexCounter = 0;
 
+        // Create new start state
         newNodes.push({id: indexCounter.toString(), label: "S", class: "start"});
         indexCounter++;
         newStartState.push("0");
-
         newFinishState.push("0");
 
+        // Create new nodes from first automaton
         for(let firstNode of first.nodes){
             let classOfNode = "";
             if (first.finishState.includes(firstNode.id)){
@@ -839,6 +768,7 @@ export class SetOperations{
             indexCounter++;
         }
 
+        // Create transitions from first automaton
         for (let firstTransition of first.transitions){
             let transitionStatelabel = firstTransition.stateLabel;
             let transitionStateAfterLabel = firstTransition.stateAfterLabel;
@@ -854,6 +784,7 @@ export class SetOperations{
             newTransitions.push(newTransition);
         }
 
+        // Create transitions from new start state, copy transitions from old start state from first automaton
         for (let oldStartState of first.startState) {
             let transitionsFromOldStart = first.transitions.filter((transition) =>
                 transition.stateLabel === first.nodes.find((node) => node.id === oldStartState).label);
@@ -892,22 +823,16 @@ export class SetOperations{
             }
         }
 
-        //remove duplicates from newTransitions
+        // Remove duplicates from newTransitions
         newTransitions = newTransitions.filter((thing, index, self) =>
             index === self.findIndex((t) => (
                 t.state === thing.state && t.stateAfter === thing.stateAfter && t.input === thing.input
             ))
         )
-
-
-
         return new FiniteStateAutomaton(newNodes, newTransitions, newStartState, newFinishState, "DFA");
     }
 
-    static nfaIteration = (first : FiniteStateAutomaton) : FiniteStateAutomaton => {
-        return null;
-    }
-
+    // Static for checking if automaton is DFA
     static checkIfDfa = (automaton : FiniteStateAutomaton) : boolean => {
         let isDfa = true;
         for (let transition of automaton.transitions){
@@ -925,6 +850,7 @@ export class SetOperations{
         return isDfa;
     }
 
+    // Static for checking if automaton is Total DFA
     static checkIfTotalDfa = (automaton : FiniteStateAutomaton) : boolean => {
         let isDfa = true;
         for (let node of automaton.nodes){
@@ -936,7 +862,4 @@ export class SetOperations{
         }
         return isDfa;
     }
-
-
-
 }

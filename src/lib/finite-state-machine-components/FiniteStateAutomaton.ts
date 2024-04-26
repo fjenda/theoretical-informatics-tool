@@ -1,12 +1,23 @@
+/*
+    FiniteStateAutomaton.ts
+    Class for logic of finite state automaton
+
+    Author: Marek Krúpa
+*/
+
+//types
 import type {GraphNodeMeta} from "../../types/GraphNodeMeta";
 import type {GraphEdgeDictionary} from "../../types/GraphObject";
 import type {TransitionMeta} from "../../types/TransitionMeta";
 import type {AutomatonState} from "../../types/AutomatonState";
 import type {GraphEdgeMeta} from "../../types/GraphEdgeMeta";
+
+//cytoscape
 import cytoscape from "cytoscape";
 
-
 export  class FiniteStateAutomaton{
+
+    //properties
     graph:  cytoscape.Core = cytoscape({});
     div: HTMLDivElement = null;
     status: string = "idle";
@@ -24,6 +35,7 @@ export  class FiniteStateAutomaton{
     followingID : number = 0;
     input_alphabet: string[] = [];
 
+    // Constructor
     constructor(nodes : GraphNodeMeta[], transitions : TransitionMeta[], startStare : string[], finishState : string[], type : string) {
         this.graph = null;
         this.nodes = nodes;
@@ -33,90 +45,27 @@ export  class FiniteStateAutomaton{
         this.type = type;
     };
 
+    // getter for nodes
     getNodes(){
         return this.nodes;
     }
 
-    getEdges(){
-        return this.edges;
-    }
-
+    // getter for transitions
     getTransitions(){
         return this.transitions;
     }
 
-    addEpsilonTransition(state : string, stateLabel : string, stateAfter : string, stateAfterLable : string){
-        this.transitions.push({
-            state: state,
-            stateLabel: stateLabel,
-            input: "ε",
-            stateAfter: stateAfter,
-            stateAfterLabel: stateAfterLable,
-        });
-    }
-
-    preprocessGraphInputDFA(): TransitionMeta[] | null{
-        const queue: { state: string; index: number; path: TransitionMeta[] }[] = [
-            { state: this.startState, index: 0, path: [] },
-        ];
-
-        let closestDeclinedPath: TransitionMeta[] | null = null;
-        while (queue.length > 0) {
-            const { state, index, path } = queue.shift()!;
-
-            const isAccepted =
-                index === this.word.length &&
-                this.finishState.includes(state);
-
-            if (isAccepted) {
-                console.log("Accepted");
-                this.isAccepted = true;
-                return path; // String is accepted
-            }
-            closestDeclinedPath = path;
-            for (const transition of this.transitions) {
-                if (transition.state === state && transition.input === this.word[index]) {
-                    const newPath = path.concat(transition);
-                    queue.push({
-                        state: transition.stateAfter,
-                        index: index + 1,
-                        path: newPath,
-                    });
-                }
-            }
-
-            //epsilon eges
-            for (const transition of this.transitions) {
-                if (transition.state === state && transition.input === "ε") {
-                    const newPath = path.concat(transition);
-                    queue.push({
-                        state: transition.stateAfter,
-                        index: index,
-                        path: newPath,
-                    });
-                }
-            }
-        }
-
-
-        console.log("declined");
-        this.isAccepted = false;
-        if (closestDeclinedPath) {
-            return closestDeclinedPath;
-        }
-
-        return null;
-    }
-
+    // Method for testing input for NFA
     preprocessGraphInputNFA(): TransitionMeta[] | null{
         let closestDeclinedPath: TransitionMeta[] | null = null;
-        console.log('Pocateni stavy: ', this.startState);
-        // Pro každý možný počáteční stav
+
+        // Go through all start states
         for (const startState of this.startState) {
             const queue: { state: string; index: number; path: TransitionMeta[] }[] = [
                 { state: startState, index: 0, path: [] },
             ];
 
+            // Till the queue is not empty go through all transitions and epsilon transitions
             while (queue.length > 0) {
                 const { state, index, path } = queue.shift()!;
                 const isAccepted = index === this.word.length && this.finishState.includes(state);
@@ -130,7 +79,7 @@ export  class FiniteStateAutomaton{
 
                 closestDeclinedPath = path;
 
-                // Procházení přechodů na vstupním symbolu
+                // Go through all transitions
                 for (const transition of this.transitions) {
                     if (transition.state === state && transition.input === this.word[index]) {
                         const newPath = path.concat(transition);
@@ -142,7 +91,7 @@ export  class FiniteStateAutomaton{
                     }
                 }
 
-                // Procházení epsilon přechodů
+                // Go through all epsilon transitions
                 for (const transition of this.transitions) {
                     if (transition.state === state && transition.input === "ε") {
                         const newPath = path.concat(transition);
@@ -156,6 +105,7 @@ export  class FiniteStateAutomaton{
             }
         }
 
+
         console.log("declined");
         this.isAccepted = false;
         if (closestDeclinedPath) {
@@ -164,15 +114,18 @@ export  class FiniteStateAutomaton{
         return null;
     }
 
+    // Method for testing input for DFA
     preprocessGraphInput() : TransitionMeta[] | null {
         const queue: { state: string; index: number; path: TransitionMeta[] }[] = [
             { state: this.startState[0], index: 0, path: [] },
         ];
 
+        // Go through all transitions and epsilon transitions till the queue is not empty
         let closestDeclinedPath: TransitionMeta[] | null = null;
         while (queue.length > 0) {
             const { state, index, path } = queue.shift()!;
 
+            // Check if the string is accepted
             const isAccepted =
                 index === this.word.length &&
                 this.finishState.includes(state);
@@ -182,6 +135,7 @@ export  class FiniteStateAutomaton{
                 return path;
             }
             closestDeclinedPath = path;
+            // Go through all transitions
             for (const transition of this.transitions) {
                 if (transition.state === state && transition.input === this.word[index]) {
                     const newPath = path.concat(transition);
@@ -193,6 +147,7 @@ export  class FiniteStateAutomaton{
                 }
             }
 
+            // Go through all epsilon transitions
             for (const transition of this.transitions) {
                 if (transition.state === state && transition.input === "ε") {
                     const newPath = path.concat(transition);
@@ -212,8 +167,8 @@ export  class FiniteStateAutomaton{
         return null;
     }
 
+    // Method for adding node to graph
     addNode(node : GraphNodeMeta) {
-        // console.log(node);
         if (this.graph.$id(node.id).length !== 0) {
             return;
         }
@@ -237,10 +192,9 @@ export  class FiniteStateAutomaton{
         if (node.class?.includes("start")  && this.startState.filter((startNode : string) => startNode === node.id).length === 0) {
             this.startState.push(node.id);
         }
-
-
     }
 
+    // Method for adding edge to graph
     addEdge(edge : GraphEdgeMeta){
         //if graphEdges already has this edge
         if (this.edges[edge.id]) {
@@ -269,8 +223,8 @@ export  class FiniteStateAutomaton{
         }
     }
 
+    // Method for generating graph from transitions
     generateGraphFromTransitions(){
-        let savedNodeId = "";
         this.transitions.forEach(transition => {
             let key = transition.state + "-" + transition.stateAfter;
             this.edges[key] = this.edges[key] ?? [];
@@ -282,7 +236,6 @@ export  class FiniteStateAutomaton{
                     target: transition.stateAfter
                 });
         });
-        //console.log(graphObject.edges);
 
         // add start and finish state to nodes
         let nodesArray = this.nodes.slice();
@@ -305,8 +258,8 @@ export  class FiniteStateAutomaton{
 
     }
 
+    // Method for next transition in testing
     nextTransition(){
-
         if (this.status !== "testing") {
             return;
         }
@@ -318,7 +271,6 @@ export  class FiniteStateAutomaton{
             return { myIsAccepted};
         }
 
-
         let  currenStatus = this.currentStatus;
         let nextNode = this.traversal[this.currentStatus.step].stateAfter;
         let nextEdge = this.traversal[this.currentStatus.step].state + "-" + nextNode;
@@ -326,6 +278,7 @@ export  class FiniteStateAutomaton{
         return {nextNode, nextEdge, currenStatus};
     }
 
+    // Method for previous transition in testing
     previousTransition(){
         if (this.currentStatus.step <= 0) {
             this.currentStatus.step = 0;
@@ -344,16 +297,19 @@ export  class FiniteStateAutomaton{
         return {previousNode, previousEdge};
     }
 
+    // Method for resetting testing
     resetTestInput(){
         this.traversal = [];
         this.word = [];
         this.currentStatus = {
-            state: this.startState,
+            state: this.startState[0],
             input: "",
+            stack: "",
             step: 0,
         };
     }
 
+    // Method for changing page theme
     changeGraphStyle() {
 
         const isDarkMode = window.document.body.classList.contains("dark-mode");
