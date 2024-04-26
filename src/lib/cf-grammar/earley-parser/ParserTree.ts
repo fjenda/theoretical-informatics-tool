@@ -111,6 +111,12 @@ export class ParserTree {
         return input;
     }
 
+    // Function that replaces the char in the input with epsilon (it gets rid of the char)
+    // params:  input: string   - the input string
+    //          lhs: string     - the left side of the rule
+    //
+    // returns: string          - the input string with the replaced char
+    //                          - or "err" if the char was not found
     private parseEpsilon(input: string, lhs: string) {
         let changed = false;
         for (let char of input) {
