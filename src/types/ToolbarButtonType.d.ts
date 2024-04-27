@@ -10,4 +10,5 @@ export enum ToolbarButtonType {
     SHOWDEFINITION = "show-definition",
     STACK = "stack",
     GENERATEAUTOMATA = "generate-automata",
+    CFGDEFINITION = "cfg-definition",
 }
