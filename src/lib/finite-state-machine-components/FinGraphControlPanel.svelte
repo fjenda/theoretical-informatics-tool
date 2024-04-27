@@ -1,5 +1,10 @@
-<script lang="ts">
+<!--
+    FinGraphControlPanel.svelte
+    This component is a container for the control panel of the application.
+    Author: Marek Krúpa
+-->
 
+<script lang="ts">
 </script>
 
 <div class="control-panel">

@@ -1,16 +1,25 @@
+<!--
+    FirstStartStateMultiSelect.svelte
+    This component is used to select start states for the NFA graph.
+    Author: Marek Krúpa
+-->
+
 <script>
 
     import {input_error_store} from "../../../stores/inputErrorStore";
     import {first_graph_store, resetInputVar} from "../../../stores/graphInitStore";
 
+    // Variables
     let selectedOptions = [];
     let selectedOptionsId = [];
     $: options = $first_graph_store.nodes?.map(node => node);
 
+    // Reset the selected options
     $: if ($resetInputVar) {
         selectedOptions = [];
     }
 
+    // Function to find the IDs of the selected options
     function findIDs(){
         let finalStates = [];
         for (let i = 0; i < selectedOptions.length; i++) {
@@ -23,6 +32,7 @@
         return finalStates;
     }
 
+    // Function to handle the select event
     function handleSelect(event) {
         input_error_store.update((n) => {
             n.startState = true;
@@ -34,7 +44,6 @@
             n.startState = selectedOptionsId;
             return n;
         });
-        console.log("Start states v boxu" + $first_graph_store.startState)
     }
 </script>
 

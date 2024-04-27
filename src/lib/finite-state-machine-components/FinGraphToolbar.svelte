@@ -1,5 +1,10 @@
-<script lang="ts">
+<!--
+    FinGraphToolbar.svelte
+    This component is a toolbar for the FinGraph component. It is used to display the buttons for the user to interact with the graph.
+    Author: Marek Krúpa
+-->
 
+<script lang="ts">
 </script>
 
 <div class="toolbar">
@@ -9,9 +14,8 @@
 <style>
     .toolbar {
         width: calc(100% - 1rem);
-        height: 3rem;
+        height: 2rem;
 
-        /*border-radius: 2vw 2vw 0 0;*/
         border-radius: 0.5rem 0.5rem 0 0;
 
         background: #dedede;

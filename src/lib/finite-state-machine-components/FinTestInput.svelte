@@ -1,62 +1,81 @@
+<!--
+    FinTestInput.svelte
+    This component is used to test the input string on the finite automaton.
+    Author: Marek Krúpa
+-->
+
 <script lang="ts">
 
     import {fly} from 'svelte/transition';
     import {graph_store, table_index_store} from "../../stores/graphInitStore";
 
+    // Variables
     export let phText : string = "";
-
     export let testInputFunction : Function = () => {};
-
     export const processFunction : Function = processTestInput;
-
     export let nextFunc : Function = () => {};
-
     export let previousFunc : Function = () => {};
-
     export let stopFunc : Function = () => {};
-
     let input : string = '';
     let showArrows : boolean = false;
 
+    // Function to validate the input
     $: if (!/^[a-zA-Z0-9]+$/.test(input) && input !== '') {
         alert("Test input can be made of alphanumeric characters only!")
         input = input.substring(0, input.length - 1);
     }
 
+    // Function to process the input string
     function processTestInput() {
 
         showArrows = true;
         testInputFunction(input.trim().split(""));
-        // console.log('Current traversal ',  $graph_store.traversal);
-        // console.log('su tu >', $graph_store.currentStatus.state)
     }
 
+    // Function to move to the next state
     function next() {
-        // console.log('traveslal: ' + $graph_store.traversal[$graph_store.currenStatus.step].stateAfter);
         nextFunc();
-
     }
 
+    // Function to move to the previous state
     function previous() {
-        // table_index_store.update((table_index) => {
-        //     if (table_index > 0) {
-        //         return table_index - 1;
-        //     } else {
-        //         return table_index;
-        //     }
-        // });
-
         previousFunc();
     }
 
+    // Function to stop testing
     function stopTesting() {
         showArrows = false;
-        // console.log("stop");
-
         table_index_store.set(-1);
         stopFunc();
     }
+
+    // Function to check if the input is focused
+    function isInputFocused() {
+        const input = document.getElementById("test-input");
+        return input === document.activeElement;
+    }
+
+    // Function to handle keydown events
+    function onKeydown(e: KeyboardEvent) {
+        if (e.key === "Enter" && isInputFocused()) {
+            processTestInput();
+            return;
+        }
+
+        if (!showArrows) return;
+
+        if (e.key === "ArrowRight") {
+            next();
+        } else if (e.key === "ArrowLeft") {
+            previous();
+        } else if (e.key === "Escape") {
+            stopTesting();
+        }
+    }
+
 </script>
+
+<svelte:window on:keydown={onKeydown}/>
 
 <div class="input-box">
     <input id="test-input"
@@ -67,9 +86,9 @@
 
 {#if showArrows}
     <div class="arrows-box" transition:fly={{ y: 50, duration: 500 }}>
-        <div class="arrow left" on:click={() => previous()}></div>
-        <div class="stop" on:click={() => stopTesting()}></div>
-        <div class="arrow right" on:click={() => next()}></div>
+        <button class="arrow left" on:click={() => previous()}></button>
+        <button class="stop" on:click={() => stopTesting()}></button>
+        <button class="arrow right" on:click={() => next()}></button>
     </div>
 {/if}
 
@@ -86,7 +105,6 @@
 
     .input-box {
         text-align: center;
-        /*margin: 1rem;*/
         padding-top: 1rem;
     }
 
@@ -107,6 +125,11 @@
         display: flex;
         justify-content: center;
         margin: 1rem 0;
+    }
+
+    .arrows-box > button {
+        background: none;
+        border: none;
     }
 
     .stop {

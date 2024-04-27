@@ -1,32 +1,26 @@
+<!--
+    RegexInput.svelte
+    This component is used to input a regex pattern for testing.
+    Author: Marek Krúpa
+-->
+
 <script lang="ts">
 
-    import {fly} from 'svelte/transition';
-    import {graph_store} from "../../../stores/graphInitStore";
-
+    // Variables
     export let phText : string = "";
-
     export let regexInputFunction : Function = () => {};
-
     export const processFunction : Function = processTestInput;
-    //
-    // export let nextFunc : Function = () => {};
-    //
-    // export let previousFunc : Function = () => {};
-    //
-    // export let stopFunc : Function = () => {};
-
     let input : string = '';
-    // let showArrows : boolean = false;
 
-    // $: if (!/^[a-zA-Z0-9]+$/.test(input) && input !== '') {
-    //     alert("Test input can be made of alphanumeric characters only!")
-    //     input = input.substring(0, input.length - 1);
-    // }
+    // Check if the input is valid
+    $: if (!/^[a-zA-Z0-9()+.*]+$/.test(input) && input !== '') {
+        alert("Test input can contain alphanumeric characters and special characters (, ), +, ., * only!");
+        input = input.substring(0, input.length - 1);
+    }
 
+    // Process the input
     function processTestInput() {
         regexInputFunction(input.trim());
-        // showArrows = true;
-        // testInputFunction(input.trim().split(""));
     }
 
 </script>
@@ -38,11 +32,9 @@
            placeholder={phText}/>
 </div>
 
-
 <style>
     .input-box {
         text-align: center;
-        /*margin: 1rem;*/
         padding-top: 1rem;
     }
 
@@ -58,6 +50,4 @@
         border-radius: 0.5rem;
         border: 0.125rem solid #101820;
     }
-
-
 </style>

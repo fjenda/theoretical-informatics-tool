@@ -1,4 +1,13 @@
+<!--
+    FinGraphWindow.svelte
+    This component is a window for the finite state automaton graph.
+     It contains the graph itself and the toolbar with functions for the graph manipulation.
+    Author: Marek Krúpa
+-->
+
+
 <script lang="ts">
+    // Imports
     import cytoscape from "cytoscape";
     import cola from "cytoscape-cola";
     cytoscape.use(cola);
@@ -10,11 +19,12 @@
     import {ConvertorToDFA} from "./ConvertorToDFA";
     import {SetOperations} from "./SetsOperations/SetOperations";
 
+    // Variables
     let graphObject = new FiniteStateAutomaton([], [], [], [], [], "DFA");
-
     let highlightedNodesIS : String[] = [];
     let deleteButtonActive : boolean = false;
 
+    // Toolbar functions
     export const toolbarFunctions = {
         addNode,
         addNodeFromButton,
@@ -34,19 +44,21 @@
         generateGraphFromTransitions,
         regexInput,
         convertToDFA,
-        // preprocessGraphInput,
     } as ToolbarFunctions;
 
+    // Check if the type of the graph has changed
     $: if ($graph_store.type) {
         updateConfiguration("type");
     }
 
+    // Check if the theme of the graph has changed
     $: if ($graph_store.theme){
         if (graphObject != undefined){
             graphObject.changeGraphStyle();
         }
     }
 
+    // Function for converting NFA to DFA, using the ConvertorToDFA class
     function convertToDFA(){
         const result = ConvertorToDFA.convertToDFA(graphObject);
         $graph_store.convertDict = ConvertorToDFA.generateConverTable(result.stateRecorder, graphObject);
@@ -89,19 +101,11 @@
         input_error_store.reset();
     }
 
+    // Function for processing the regex input and generating the graph from it using the RegexAutomaton class
     function regexInput(wordCh : string){
-
-        // console.log(wordCh)
         let regex = new RegexAutomaton(wordCh);
-        // console.log(regex);
-        console.log("Tady je stary graph object: ", graphObject);
         deleteGraph();
-        // console.log($graph_store);
-
         let newFa : FiniteStateAutomaton = regex.regexProcessFunc();
-        console.log("resutl", newFa);
-
-        // regex.reduceAutomaton(newFa);
 
         let alphabet = new Set();
         newFa.transitions.forEach((transition) => {
@@ -120,9 +124,6 @@
         graphObject.type = newFa.type;
 
         graphObject.generateGraphFromTransitions();
-        console.log("Tady je nový graph object: ", graphObject);
-
-        console.log("Tady je store: ", $graph_store);
 
         createGraph(false);
         graph_store.update((n) => {
@@ -136,12 +137,11 @@
             n.hideConvertTable = true;
             return n;
         });
-        // graph_store.reset();
         resetInputVar.set(false);
         input_error_store.reset();
-
     }
 
+    // Function for testing the input word on the graph
     function testInput(wordCh : string[]){
         resetTestInput();
         removeHighlighted();
@@ -159,7 +159,6 @@
         if (graphObject.type === "DFA") {
             let tmpNode: GraphNodeMeta;
 
-            //finin  graphObject.nodes node eith id as startstate and store it ot the tmpNode
             tmpNode = graphObject.nodes.find((node: GraphNodeMeta) => {
                 if (Array.isArray(graphObject.startState))
                     return graphObject.startState.includes(node.id);
@@ -179,11 +178,9 @@
             graph_store.update((n) => {
                 n.currentStatus = graphObject.currentStatus;
                 n.currentStep = -1;
-                // console.log("updating current status", n.currentStatus);
                 return n;
             });
         } else {
-            // console.log("Jsem v NFA větvi");
             graphObject.startState = $graph_store.startState;
             graphObject.traversal = graphObject.preprocessGraphInputNFA();
             highlightElement(graphObject.correctStartState);
@@ -191,23 +188,17 @@
             graph_store.update((n) => {
                 n.currentStatus = graphObject.currentStatus;
                 n.currentStep = -1;
-                // console.log("updating current status", n.currentStatus);
                 return n;
             });
         }
 
-        // console.log(graphObject);
-
         graph_store.update((n) => {
             n.traversal = graphObject.traversal;
-            // console.log("updating store", n.traversal);
             return n;
         });
-        // console.log(graphObject.traversal);
-
-
     }
 
+    // Function for moving to the next transition in the testing process
     function nextTransition(){
         removeHighlighted();
 
@@ -236,19 +227,17 @@
 
             graphObject.currentStatus.state = graphObject.traversal[graphObject.currentStatus.step].stateAfter;
             graphObject.currentStatus.step++;
-            // console.log(graphObject.currentStatus);
-
         }, 250);
 
         graph_store.update((n) => {
             n.currentStatus = graphObject.currentStatus;
             n.currentStep++;
-            // console.log("updating current status", n.currentStatus);
             return n;
         });
 
     }
 
+    // Function for moving to the previous transition in the testing process
     function previousTransition(){
         removeHighlighted();
 
@@ -266,13 +255,11 @@
             highlightElement(previousEdge);
 
             graphObject.currentStatus.state = graphObject.traversal[graphObject.currentStatus.step].state;
-            // console.log(graphObject.currentStatus);
         }, 250);
 
         graph_store.update((n) => {
             n.currentStatus = graphObject.currentStatus;
             n.currentStep--;
-            // console.log("updating current status", n.currentStatus);
             return n;
         });
     }
@@ -289,7 +276,7 @@
         graphObject.resetTestInput();
     }
 
-
+    // Function for highlighting the graph element
     function highlightElement(id : string | number) {
         graphObject.graph.elements().forEach(graphElement => {
             if (id == graphElement.id()) {
@@ -299,6 +286,7 @@
         });
     }
 
+    // Function for removing the highlighted graph elements
     function removeHighlighted() {
         graphObject.graph.elements().forEach(graphElement => {
             if (highlightedNodesIS.includes(graphElement.id())) {
@@ -309,9 +297,10 @@
         highlightedNodesIS = [];
     }
 
+    // Function for generating the configuration of the graph
     function generateConfiguration() {
         if (graphObject.nodes.length === 0 || graphObject.transitions.length === 0) {
-            //erase configuration
+            // Erase the configuration
             configuration_store.reset();
             return;
         }
@@ -361,9 +350,9 @@
         configuration.type = graphObject.type;
 
         Object.assign($configuration_store, configuration);
-        // console.log($configuration_store);
     }
 
+    // Function for updating the configuration of the graph
     function updateConfiguration(mode : string) {
         let configuration : AutomatonConfiguration = {};
 
@@ -415,6 +404,7 @@
         Object.assign($configuration_store, configuration);
     }
 
+    // Function for checking the input for generating the graph
     function checkGenerationInput(){
         if($input_error_store.transitions == false){
             return false;
@@ -447,6 +437,7 @@
             $input_error_store.finishState === false);
     }
 
+    // Function for adding a node to the graph
     function addNode(node : GraphNodeMeta) {
         try {
             graphObject.addNode(node);
@@ -458,11 +449,11 @@
                 n.nodes = graphObject.nodes;
                 return n;
             });
-            // console.log('After add node: ', $graph_store);
             resetLayout();
         }
     }
 
+    // Function for adding a node to the graph from the toolbar
     function addNodeFromButton(node : GraphNodeMeta) {
         try {
 
@@ -484,6 +475,7 @@
         }
     }
 
+    // Function for adding an edge to the graph
     function addEdge(edge : GraphEdgeMeta) {
         try {
             graphObject.addEdge(edge);
@@ -491,15 +483,14 @@
             console.log(e);
         } finally {
             updateConfiguration("edge");
-            // resetLayout();
         }
     }
 
+    // Function for adding an edge to the graph from the toolbar
     function addEdgeFromButton(edge : GraphEdgeMeta) {
         try {
             graphObject.addEdge(edge);
 
-            //run tgrought graphObject.eges and if there is edge wich is not in transitions add it
             for (const edge in graphObject.edges) {
                 graphObject.edges[edge].forEach((edge : GraphEdgeMeta) => {
                     let tmpTransition = {
@@ -525,7 +516,6 @@
                 });
             }
 
-            //check if in transition isnt input wich isnt in input alphabet
             let inputAlphabet = new Set();
             graphObject.transitions.forEach((transition : TransitionMeta) => {
                 inputAlphabet.add(transition.input);
@@ -535,14 +525,12 @@
             let inputAlphabetArrNoDuplicates = inputAlphabetArr.filter((item, index) => inputAlphabetArr.indexOf(item) === index);
             graphObject.input_alphabet = inputAlphabetArrNoDuplicates;
 
-
             graph_store.update((n) => {
                 n.transitions = graphObject.transitions;
                 n.input_alphabet = graphObject.input_alphabet;
                 n.generated = true;
                 return n;
             });
-
 
         } catch (e) {
             console.log(e);
@@ -552,6 +540,7 @@
         }
     }
 
+    // Function for deleting a graph element
     function deleteGraphElement() {
         graphObject.graph.on("click", "*", function() {
 
@@ -581,7 +570,6 @@
                     let finishNodes = graphObject.finishState.length;
                     //let finishNodes = graphObject.nodes.slice().filter((node : GraphNodeMeta) => node.class.includes("finish")).length;
                     if (finishNodes === 1) {
-                        console.log("cannot remove a finish class");
                         return;
                     } else {
                         // remove node from finishState
@@ -630,10 +618,9 @@
                 return n;
             });
         });
-
-
     }
 
+    // Function for toggling the delete button
     function toggleDelete() {
         deleteButtonActive = !deleteButtonActive;
 
@@ -644,6 +631,7 @@
         }
     }
 
+    // Function for saving the graph
     function saveGraph () {
         const simplifiedGraphObject = {
             edges: graphObject.edges,
@@ -657,9 +645,6 @@
         // save graphObject into json
         let jsonData = JSON.stringify(simplifiedGraphObject, null, 4);
 
-        // let jsonData = graphObject.graph.json(false);
-        // jsonData = JSON.stringify(jsonData, null, 4);
-
         const blob = new Blob([jsonData], { type: "application/json" });
         const url = URL.createObjectURL(blob);
 
@@ -669,9 +654,9 @@
         a.click();
 
         URL.revokeObjectURL(url);
-
     }
 
+    // Function for loading the graph
     function loadGraph() {
         const input = document.createElement("input");
         input.type = "file";
@@ -712,9 +697,9 @@
         };
 
         input.click();
-
     }
 
+    // Function for deleting the graph
     function deleteGraph () {
         graphObject.graph.elements().remove();
         graphObject.nodes = [];
@@ -727,6 +712,7 @@
         configuration_store.reset();
     }
 
+    // Function for deleting the graph from the toolbar
     function deleteGraphFromButton(){
         deleteGraph();
 
@@ -743,11 +729,13 @@
         });
     }
 
+    // Function for resetting the layout of the graph
     function resetLayout() {
         const layout = graphObject.graph.makeLayout({ name: "cola", edgeLength: 150, randomize: true, avoidOverlap: true, handleDisconnected: true});
         layout.run();
     }
 
+    // Function for generating the configuration of the graph
     function graphConstructor(){
         graphObject.graph = cytoscape({
 
@@ -828,6 +816,7 @@
         });
     }
 
+    // Function for creating the graph
     function createGraph(genTransitions : boolean = false) {
         graphObject.nodes.forEach((node : GraphNodeMeta) => {
             addNode(node);
@@ -847,8 +836,7 @@
         resetLayout();
     }
 
-
-
+    // Function for generating the graph from the transitions
     function generateGraphFromTransitions() {
         if (!checkGenerationInput()) {
             return false;
@@ -868,24 +856,16 @@
 
         graphObject.generateGraphFromTransitions();
 
-
-
-
         createGraph(false);
         graph_store.update((n) => {
             n.input_alphabet = graphObject.input_alphabet;
             n.generated = true;
             return n;
         });
-        // graph_store.reset();
         resetInputVar.set(false);
         input_error_store.reset();
 
-
-
         graphObject.startState = $graph_store.startState;
-
-
 
         return true;
     }
@@ -919,6 +899,7 @@
         }
     ];
 
+    // Initialize the graph
     onMount(() => {
         graphConstructor();
 
@@ -934,11 +915,7 @@
             return n;
         });
         $graph_store.followingID = 2;
-
-        console.log("Here", graphObject)
-
         generateGraphFromTransitions();
-        console.log($graph_store);
     });
 
 </script>
@@ -976,7 +953,6 @@
     .graph {
         overflow: hidden;
 
-        /*border-radius: 2vw;*/
         border-radius: 0.5rem;
 
         height: calc(100% - 5vh);

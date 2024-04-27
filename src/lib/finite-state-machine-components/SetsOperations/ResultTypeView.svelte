@@ -1,5 +1,10 @@
-<script lang="ts">
+<!--
+    ResultTypeView.svelte
+    This component is responsible for displaying the type of the result graph.
+    Author: Marek Krúpa
+-->
 
+<script lang="ts">
     import {result_graph_store} from "../../../stores/graphInitStore";
 </script>
 

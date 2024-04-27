@@ -1,7 +1,14 @@
+<!--
+    FirstTable.svelte
+    This component is responsible for displaying the table of the first graph.
+    Author: Marek Krúpa
+-->
+
 <script lang="ts">
     import {first_graph_store,} from "../../../stores/graphInitStore";
     import {input_error_store} from "../../../stores/inputErrorStore";
 
+    // Variables
     let cols: string[] = [];
     let transitions = [];
     let inputSymbols = [];
@@ -9,10 +16,8 @@
     let tableData = [];
     let nodesMeta = [];
 
+    // Generate the table data if the graph has been generated or the current status has changed
     $: if ($first_graph_store.generated == true || $first_graph_store.currentStatus) {
-        // console.log("HEREHERHER");
-        // console.log("Current status change: ", first_graph_store.currentStatus);
-        // do something when this store value changes
         tableData = [];
         cols = [];
         inputSymbols = [];
@@ -21,15 +26,11 @@
         transitions = $first_graph_store.transitions;
         nodesMeta = $first_graph_store.nodes;
 
-        console.log("input_alphabet", $first_graph_store.input_alphabet);
-        console.log("transitions", transitions);
-
         let alphabet = $first_graph_store.input_alphabet;
         if (alphabet.includes('ε')) {
             alphabet.splice(alphabet.indexOf('ε'), 1);
             alphabet.push('ε');
         }
-
 
         if (typeof $first_graph_store.input_alphabet !== 'undefined'){
             cols = [...alphabet];
@@ -63,12 +64,9 @@
                     rowData.node = '<- ' + rowData.node;
                 }
 
-
                 tableData.push(rowData);
-                console.log("tableData", tableData);
             });
 
-            //if in table data is node and empty stiong fill it with -
             tableData.forEach(row => {
                 inputSymbols.forEach(inputSymbol => {
                     if (row[inputSymbol] === '') {
@@ -82,15 +80,8 @@
     }
 
     $: if ($input_error_store.table) {
-        // do something when this store value changes
-
-        // tableData = [];
-        // empty traversal
         transitions = [];
-
-        // set to false
         $input_error_store.table = false;
-
     }
 
 </script>
@@ -152,8 +143,6 @@
 
     box-shadow: rgba(0, 0, 0, .2) 0 3px 5px -1px, rgba(0, 0, 0, .14) 0 6px 10px 0, rgba(0, 0, 0, .12) 0 1px 18px 0;
     box-sizing: border-box;
-
-    //margin: 0 auto;
 
     overflow: visible scroll;
   }

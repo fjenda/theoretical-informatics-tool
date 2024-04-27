@@ -1,12 +1,13 @@
-<!-- Toggle.svelte -->
+<!--
+    ToggleSwitch.svelte
+    This component is toggle switch for changing the type of the graph (DFA/NFA)
+    Author: Marek Krúpa
+-->
+
 <script lang="ts">
-    import {graph_store, resetInputVar} from "../../stores/graphInitStore";
+    import {graph_store} from "../../stores/graphInitStore";
 
     let toggleState = "DFA";
-
-    $: if ($resetInputVar) {
-        // toggle($graph_store?.type);
-    }
 
     $: {
         if ($graph_store.type == "empty") {
@@ -14,32 +15,31 @@
         }
     }
 
+    // Function for changing the type of the graph
     const toggle = (newState) => {
         toggleState = newState;
         graph_store.update((n) => {
             n.type = newState
             return n;
         });
-
-        console.log("KA type: ",$graph_store.type);
     };
 </script>
 
 <div class="toggle-box">
     <div class="toggle-label">Type</div>
     <div class="toggle-switch">
-        <div
+        <button
                 class={$graph_store.type === "DFA" ? 'selected' : ''}
                 on:click={() => toggle("DFA")}
         >
             DFA
-        </div>
-        <div
+        </button>
+        <button
                 class={$graph_store.type === "NFA" ? 'selected' : ''}
                 on:click={() => toggle("NFA")}
         >
             NFA
-        </div>
+        </button>
     </div>
 </div>
 
@@ -68,18 +68,30 @@
         padding: 0.25rem;
     }
 
+
     :global(body.dark-mode) .toggle-switch {
         background-color: #2f3941;
         outline: 0.15rem solid #555;
         color: #f4f9ff;
     }
 
-    .toggle-switch div {
+    .toggle-switch button {
         flex: 1;
         text-align: center;
         cursor: pointer;
         padding: 0.25rem;
         transition: border-color 0.3s, color 0.3s;
+
+        border: none;
+        background-color: transparent;
+
+        color: #101820;
+        font-synthesis: none;
+        font: normal normal 400 medium / 1.5 Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+    }
+
+    :global(body.dark-mode) .toggle-switch button {
+        color: #f4f9ff;
     }
 
     .selected {

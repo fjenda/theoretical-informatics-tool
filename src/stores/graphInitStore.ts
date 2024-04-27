@@ -7,6 +7,7 @@ import {FiniteStateAutomaton} from "../lib/finite-state-machine-components/Finit
 import type {PDAConfigurationType} from "../types/pda-cfg/PDAConfigurationType";
 import {PushdownAutomaton} from "../lib/pushdown-automaton-components/pda/PushdownAutomaton";
 import type {InitializationType} from "../types/pda-cfg/InitializationType";
+import type {FinInitializationType} from "../types/FinInitType";
 
 export const grammar_results_store = function() {
     const {set, update, subscribe} : Writable<Partial<GrammarResult[]>> = writable([]);
@@ -83,11 +84,11 @@ export const pda_backup_store = function () {
     }
 }();
 
-export const fin_graph_store = function () {
-    const {set, update, subscribe} : Writable<Partial<FiniteStateAutomaton>> = writable(new FiniteStateAutomaton([], [], [], [], "DFA"));
+export const fin_backup_store = function () {
+    const {set, update, subscribe} : Writable<Partial<FinInitializationType>> = writable({});
 
     const reset = () => {
-        set(new FiniteStateAutomaton([], [], [], [], "DFA"));
+        set({});
     }
 
     return {

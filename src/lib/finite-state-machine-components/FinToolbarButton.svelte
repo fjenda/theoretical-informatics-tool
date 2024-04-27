@@ -1,33 +1,38 @@
+<!--
+    FinToolbarButton.svelte
+    This component is used to create buttons in the toolbar.
+    Author: Marek Krúpa
+-->
+
 <script lang="ts">
-import FinToolbarModal from "./FinToolbarModal.svelte";
-import {onMount} from "svelte";
-import {tooltip} from "../tooltipUtils";
-import {graph_store, resetInputVar} from "../../stores/graphInitStore";
+    import FinToolbarModal from "./FinToolbarModal.svelte";
+    import {onMount} from "svelte";
+    import {tooltip} from "../tooltipUtils";
+    import {graph_store, resetInputVar} from "../../stores/graphInitStore";
 
+    // Variables
+    export let type : ToolbarButtonType;
+    export let text : string = "";
+    export let func : Function = () => {};
+    let btn : HTMLButtonElement;
+    let btnState : string = "normal";
+    let showModal = false;
 
-
-export let type : ToolbarButtonType;
-export let text : string = "";
-export let func : Function = () => {};
-let btn : HTMLButtonElement;
-let btnState : string = "normal";
-let showModal = false;
-
-
-function toggleButton() {
-    if (btnState === "normal") {
-        btnState = "active";
-    } else {
-        btnState = "normal";
+    // Function to toggle button state
+    function toggleButton() {
+        if (btnState === "normal") {
+            btnState = "active";
+        } else {
+            btnState = "normal";
+        }
     }
-}
 
-onMount(() => {
-    if (type === "delete-element") {
-        btn.addEventListener("click", toggleButton);
-    }
-})
-
+    // Function on mount to add event listener to the button
+    onMount(() => {
+        if (type === "delete-element") {
+            btn.addEventListener("click", toggleButton);
+        }
+    })
 </script>
 
 {#if ["new-node", "new-edge", "generate-automata", "show-definition"].includes(type)}
@@ -46,16 +51,6 @@ onMount(() => {
             {type.split("-").map((word) => word.charAt(0).toUpperCase() + word.slice(1)).join(" ")}
 
             {#if type === "generate-automata"}
-                <!--                TODO: Czech version-->
-                <!--                <span class="ttip" use:tooltip={"Pravidla pište ve tvaru\n\n" +-->
-                <!--                                                "d(q0,a,Z)=(q0,A Z);\n" +-->
-                <!--                                                "d(q1,b,A)=(q2,B A);\n" +-->
-                <!--                                                "d(q2,c,B)=(q3,ε);\n" +-->
-                <!--                                                "\nPokud nedáte mezeru mezi charaktery,\n" +-->
-                <!--                                                "které se mají vložit na zásobník,\n" +-->
-                <!--                                                "pravidla se špatně načtou."}>-->
-                <!--                ?</span>-->
-
                 <span class="ttip" use:tooltip={"Write the rules in the form\n\n" +
                                                 "d(q0,a)=q0;\n" +
                                                 "d(q0,b)=q1;\n" +

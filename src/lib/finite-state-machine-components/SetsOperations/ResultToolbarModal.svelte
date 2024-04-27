@@ -1,3 +1,9 @@
+<!--
+    ResultToolbarModal.svelte
+    This component is used to display a modal window with a form for creating a new node or edge in the graph.
+    Author: Marek Krúpa
+-->
+
 <script lang="ts">
     import type {ToolbarButtonType} from "../../../types/ToolbarButtonType";
     import {
@@ -12,11 +18,7 @@
     import SecondStateMultiSelect from "./SecondStateMultiSelect.svelte";
     import SecondTransitionFuncInput from "./SecondTransitionFuncInput.svelte";
 
-    let currentState = false;
-    let startNode  : string;
-    let endNode : string;
-    let alphabet : string;
-
+    // variables
     export let showModal : boolean;
     export let type : ToolbarButtonType;
     export let func : Function;
@@ -26,8 +28,10 @@
     let config : string = "";
     let label : string, source : string, target : string, rules : string;
 
+    // show modal
     $: if (dialog && showModal) dialog.showModal();
 
+    // If the modal is shown, generate configuration
     $: if (showModal && type === "show-definition") {
         func();
 
@@ -38,6 +42,7 @@
         }
     }
 
+    // Generate configuration
     function generateConfiguration() {
         config = "";
         // states from nodes
@@ -66,11 +71,13 @@
         config += `F: {${$result_configuration_store.final_states.join(", ")}}\n`;
     }
 
+    // Reset input
     function resetInput() {
         label = "", source = "", target = "", rules = "";
         return true;
     }
 
+    // Function to check input
     function checkInput(type) {
         if (!["new-node", "new-edge"].includes(type)) {
             func();
@@ -296,7 +303,6 @@
         border-radius: 0.25rem;
         outline: none;
         border: none;
-        /*box-shadow: rgba(0, 0, 0, .2) 0 3px 5px -1px,rgba(0, 0, 0, .14) 0 6px 10px 0,rgba(0, 0, 0, .12) 0 1px 18px 0;*/
         background-color: #9CC6FB;
         color: #363636;
         padding: 0.5rem 1rem;
@@ -326,8 +332,4 @@
         outline: 2px solid #4285f4;
     }
 
-    .single-button {
-        display: block;
-        margin: auto;
-    }
 </style>

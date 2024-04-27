@@ -1,3 +1,9 @@
+<!--
+    FirstTransitionFuncInput.svelte
+    This component is used to input the transition function of the first graph.
+    Author: Marek Krúpa
+-->
+
 <script lang="ts">
 
     import {first_graph_store, resetInputVar} from "../../../stores/graphInitStore";
@@ -5,6 +11,7 @@
     import type {GraphNodeMeta} from "../../../types/GraphNodeMeta";
     import {input_error_store} from "../../../stores/inputErrorStore";
 
+    // Variables
     let transitions : TransitionMeta[] = [];
     let alphabet : string[] = [];
     let textInput : string = "";
@@ -12,10 +19,12 @@
     let backdrop: HTMLDivElement;
     let correctInput: boolean = true;
 
+    // Reset input
     $: if ($resetInputVar) {
         textInput = "";
     }
 
+    // Function to parse the input
     function parseRow(row : string) {
         let rowSplit = row.split(/[=,\n)(;]/);
 
@@ -91,16 +100,13 @@
                     }
                 }
             }
-
             alphabet.push(rowSplit[1]);
         }
-
         alphabet = alphabet.filter((item, index) => alphabet.indexOf(item) === index);
-
     }
 
+    // Function to store nodes
     function storeNodes() {
-        //get nodes from transitions
         let nodes : GraphNodeMeta[] = [];
         for (let transition of transitions) {
             if (!nodes.find(node => node.id === transition.state)) {
@@ -123,12 +129,11 @@
             n.nodes = nodes;
             return n;
         });
-        console.log("Nodes: ", nodes);
     }
 
+    // Function to process transitions
     function processTransitions() {
         transitions = [];
-        console.log("Here start transitions: ", transitions);
 
         let rows = textInput.split("\n").filter(Boolean);
 
@@ -159,9 +164,6 @@
             console.log("Invalid type");
         }
 
-
-        console.log("Is input correct: ", correctInput);
-
         input_error_store.update((n) => {
             n.transitions = correctInput;
             return n;
@@ -172,21 +174,22 @@
             n.input_alphabet = alphabet;
             return n;
         });
-
-
         storeNodes();
     }
 
+    // Function to validate transition NFA
     function validateTransition(transition) {
         let regex = /d\(([A-Za-z0-9]|[A-Za-z][0-9]),(ε|[A-Za-z0-9])\)=([A-Za-z0-9]|[A-Za-z][0-9]);$/;
         return regex.test(transition);
     }
 
+    // Function to validate transition for DFA
     function validateTransitionDFA(transition) {
         let regex = /^d\(([A-Za-z0-9]|[A-Za-z][0-9]),[^ε]\)=([A-Za-z0-9]|[A-Za-z][0-9]);$/;
         return regex.test(transition);
     }
 
+    // Function to apply highlights for DFA
     function applyHighlightsDFA(text) {
         return text
             .replace(/\n$/g, '\n\n')
@@ -199,6 +202,7 @@
             });
     }
 
+    // Function to apply highlights for NFA
     function applyHighlights(text) {
         if ($first_graph_store.type == "DFA") {
             return text
@@ -223,11 +227,11 @@
         }
     }
 
+    // Function to handle scroll
     function handleScroll() {
         let scrollTop = textarea.scrollTop;
         backdrop.scrollTop = scrollTop;
     }
-
 
 </script>
 
@@ -258,7 +262,6 @@
         position: absolute;
         z-index: 2;
         margin: 0;
-        /*border: 2px solid #74637f;*/
         color: #444;
         background-color: transparent;
         overflow: auto;
@@ -269,7 +272,6 @@
         margin: 0;
         border-radius: 0;
     }
-
 
     .highlights{
         letter-spacing: 1px;
@@ -288,7 +290,6 @@
     .backdrop {
         position: absolute;
         z-index: 1;
-        /*border: 2px solid #685972;*/
         background-color: #fff;
         overflow: auto;
         pointer-events: none;
@@ -309,7 +310,6 @@
         width: 10.5rem;
     }
 
-
     .backdrop {
         background-color: #fff; /* or whatever */
     }
@@ -322,8 +322,6 @@
 
     :global(body.dark-mode) .function-input {
         border: 0.1rem solid #9c81da;
-
-        /*background-color: #2f3941;*/
         background-color: transparent;
         color: #f4f9ff;
     }

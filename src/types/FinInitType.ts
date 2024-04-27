@@ -1,10 +1,10 @@
 import type {TransitionMeta} from "./TransitionMeta";
 import type {GraphNodeMeta} from "./GraphNodeMeta";
 
-export type InitializationType = {
+export type FinInitializationType = {
     type: string,
     nodes: GraphNodeMeta[],
-    startState: string,
+    startState: string[],
     finalStates: string[],
     transitions: TransitionMeta[],
 }

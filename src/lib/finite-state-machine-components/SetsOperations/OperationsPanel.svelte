@@ -1,6 +1,11 @@
+<!--
+    OperationPanel.svelte
+    Svelte component for the operations panel of the set operations page.
+    Author: Marek Krúpa
+-->
+
 <script lang="ts">
     import {tooltip} from "../../tooltipUtils";
-
 </script>
 
 <div class="control-panel">
@@ -83,6 +88,4 @@
     .tooltip-wrapper :global(#tooltip) {
         transform: translate(-110%, 0%);
     }
-
-
 </style>

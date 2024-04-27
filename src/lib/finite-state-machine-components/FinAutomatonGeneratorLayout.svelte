@@ -1,6 +1,11 @@
-<script lang="ts">
+<!--
+    FinAutomatonGeneratorLayout.svelte
+    This component is used to create a layout for the finite automaton generator.
+    Author: Marek Krúpa
+-->
 
-    import {first_graph_store, graph_store} from "../../stores/graphInitStore";
+<script lang="ts">
+    import {graph_store} from "../../stores/graphInitStore";
 </script>
 
 <slot name="type-switch"/>
@@ -46,21 +51,13 @@
                              "multi transitions transitions";
     }
 
-    .epsilon {
-        font-size: 0.8rem;
-        color: #a4a4a4;
-        text-align: center;
-    }
-
     .transitions-box {
         grid-area: transitions;
-        /*grid-area: 1 / 2 / 3 / 3;*/
         display: flex;
         justify-content: center;
     }
 
     .start-state-box {
-        /*grid-area: 1 / 1 / 2 / 2;*/
         grid-area: combo;
         display: flex;
         justify-content: center;
@@ -68,7 +65,6 @@
 
     .final-states-box {
         grid-area: multi;
-        /*grid-area: 2 / 1 / 3 / 2;*/
         display: flex;
         align-items: center;
         justify-content: center;
@@ -80,5 +76,4 @@
         justify-content: flex-end;
         align-items: center;
     }
-
 </style>

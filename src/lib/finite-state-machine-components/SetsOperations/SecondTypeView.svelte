@@ -1,5 +1,10 @@
-<script lang="ts">
+<!--
+    SecondTypeView.svelte
+    This component is responsible for displaying the type of the second graph.
+    Author: Marek Krúpa
+-->
 
+<script lang="ts">
     import {second_graph_store} from "../../../stores/graphInitStore";
 </script>
 

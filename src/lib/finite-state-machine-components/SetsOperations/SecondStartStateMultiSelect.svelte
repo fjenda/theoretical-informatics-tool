@@ -1,16 +1,27 @@
+<!--
+    SecondStartStateMultiSelect.svelte
+    This component is used to select multiple start states in the second graph.
+    Author: Marek Krúpa
+-->
+
 <script>
 
     import {input_error_store} from "../../../stores/inputErrorStore";
     import {resetInputVar, second_graph_store} from "../../../stores/graphInitStore";
 
+    // Variables
     let selectedOptions = [];
     let selectedOptionsId = [];
+
+    // Get options from the second graph nodes
     $: options = $second_graph_store.nodes?.map(node => node);
 
+    // Reset selected options
     $: if ($resetInputVar) {
         selectedOptions = [];
     }
 
+    // Function to find IDs of selected options
     function findIDs() {
         let finalStates = [];
         for (let i = 0; i < selectedOptions.length; i++) {
@@ -23,6 +34,7 @@
         return finalStates;
     }
 
+    // Function to handle select event
     function handleSelect(event) {
         input_error_store.update((n) => {
             n.startState = true;
@@ -34,7 +46,6 @@
             n.startState = selectedOptionsId;
             return n;
         });
-        console.log("Start states v boxu" + $second_graph_store.startState)
     }
 </script>
 

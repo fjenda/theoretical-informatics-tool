@@ -1,10 +1,15 @@
+<!--
+    FinToolbarModal.svelte
+    This component is used to create a modal dialog for the toolbar buttons.
+    Author: Marek Krúpa
+-->
+
 <script lang="ts">
     import type {ToolbarButtonType} from "../../types/ToolbarButtonType";
     import FinAutomatonGeneratorLayout from "./FinAutomatonGeneratorLayout.svelte";
     import ToggleSwitch from "./ToggleSwitch.svelte";
     import FinStateComboBox from "./FinStateComboBox.svelte";
     import StateMultiSelect from "../StateMultiSelect.svelte";
-
     import FinTransitionFuncInput from "./FinTransitionFuncInput.svelte";
     import {
         configuration_store,
@@ -14,7 +19,7 @@
     import {input_error_store} from "../../stores/inputErrorStore";
     import StartStateMultiSelect from "../StartStateMultiSelect.svelte";
 
-
+    // Variables
     export let showModal : boolean;
     export let type : ToolbarButtonType;
     export let func : Function;
@@ -28,8 +33,10 @@
     let config : string = "";
     let label : string, source : string, target : string, rules : string;
 
+    // Show modal dialog
     $: if (dialog && showModal) dialog.showModal();
 
+    // If Show Definition button is clicked generate configuration
     $: if (showModal && type === "show-definition") {
         func();
 
@@ -40,6 +47,7 @@
         }
     }
 
+    // Generate configuration
     function generateConfiguration() {
         config = "";
         // states from nodes
@@ -69,6 +77,7 @@
         config += `F: {${$configuration_store.final_states.join(", ")}}\n`;
     }
 
+    // Reset input fields
     function resetInput() {
         label = "", source = "", target = "", rules = "";
         isFinishState = false;
@@ -80,6 +89,7 @@
         return true;
     }
 
+    // Check input fields
     function checkInput(type) {
         errorType = "";
         showError = false;
@@ -171,6 +181,7 @@
         }
     }
 
+    // Insert ε into the input field
     function insertEps() {
         console.log("inserting ε");
         const transitions = document.getElementById("function-input");
@@ -374,7 +385,6 @@
         border-radius: 0.25rem;
         outline: none;
         border: none;
-        /*box-shadow: rgba(0, 0, 0, .2) 0 3px 5px -1px,rgba(0, 0, 0, .14) 0 6px 10px 0,rgba(0, 0, 0, .12) 0 1px 18px 0;*/
         background-color: #9CC6FB;
         color: #363636;
         padding: 0.5rem 1rem;
