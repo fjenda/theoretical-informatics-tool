@@ -40,11 +40,6 @@
         scrollToTop();
     }
 
-    // Function that initializes the graph using the controller
-    function graphInit() {
-        PDAController.initGraph();
-    }
-
     // Function that scrolls to the top of the stack
     function scrollToTop() {
         stack_wrapper.scrollTop = 0;
@@ -96,7 +91,7 @@
     ];
 
     onMount(() => {
-        graphInit();
+        PDAController.initGraph();
 
         if ($pda_graph_store.type === "cfg") {
             pda_graph_store.update((n) => {

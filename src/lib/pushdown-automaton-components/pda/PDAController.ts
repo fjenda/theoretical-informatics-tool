@@ -403,13 +403,13 @@ export class PDAController {
                     }
 
                     // update the graph store
-                    pda_graph_store.update((n) => {
-                        n.edges = graphData.edges;
-                        n.finalStates = graphData.finishState;
-                        n.nodes = graphData.nodes;
-                        n.startState = graphData.startState;
-                        n.transitions = graphData.transitions;
+                    pda_backup_store.update((n) => {
                         n.type = graphData.type;
+                        n.startState = graphData.startState;
+                        n.finalStates = graphData.finishState;
+                        n.transitions = graphData.transitions;
+                        n.nodes = graphData.nodes;
+                        n.stackBottom = "Z"
                         return n;
                     });
 
