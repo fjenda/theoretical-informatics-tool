@@ -1,4 +1,6 @@
 import {type Writable, writable} from "svelte/store";
+import type {InputError} from "../types/InputError";
+
 
 export const input_error_store = function() {
     const {set, update, subscribe} : Writable<Partial<InputError>> = writable({

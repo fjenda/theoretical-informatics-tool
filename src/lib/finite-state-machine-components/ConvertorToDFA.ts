@@ -1,11 +1,25 @@
+/*
+    ConvertorToDFA.ts
+    Clas for converting NFA to DFA
+
+    Author: Marek Krúpa
+*/
+
+// types
 import type {TransitionMeta} from "../../types/TransitionMeta";
 import type {GraphNodeMeta} from "../../types/GraphNodeMeta";
-import {FiniteStateAutomaton} from "./FiniteStateAutomaton";
 import type {ConvertorTab} from "../../types/ConvertorTab";
+
+// classes
+import {FiniteStateAutomaton} from "./FiniteStateAutomaton";
+
 
 export class ConvertorToDFA  {
 
-    static generateConverTable = (stateRecorder: Map<string, number>, nfaAutomaton : FiniteStateAutomaton ): ConvertorTab => {
+    // Method for generating conversion table for NFA to DFA
+    static generateConverTable = (stateRecorder: Map<string, number>, nfaAutomaton : FiniteStateAutomaton ): ConvertorTab[] => {
+
+        // variables
         let alphabet = nfaAutomaton.input_alphabet;
         let statesForInput : string = "";
         let stateResult : string[] = [];
@@ -13,10 +27,13 @@ export class ConvertorToDFA  {
         let startState = false;
         let finishState = false;
 
+        //if alphabet has epsilon, remove it
         if (alphabet.includes("ε")) {
             alphabet = alphabet.filter(item => item !== "ε");
         }
-        for(let key of stateRecorder.keys()){
+
+        //for each key in stateRecorder map generate new state key and values for each input in alphabet
+        for(let key  of stateRecorder.keys()){
             let parseKeys = key.split(",");
             for(let c of alphabet){
                 for(let id of parseKeys){
@@ -38,8 +55,8 @@ export class ConvertorToDFA  {
                             statesForInput = "Ø";
                         }
                     }
-
                 }
+                //convert statesForInput to string with labels of nodes
                 let splitedStates = statesForInput.split(",");
                 let newSplitedStates = "";
                 for(let split of splitedStates){
@@ -54,10 +71,13 @@ export class ConvertorToDFA  {
                     });
                 }
 
+                // push result to stateResult array
                 stateResult.push("{"+newSplitedStates+"}");
                 statesForInput = "";
                 newSplitedStates = "";
             }
+
+            //check if key is start or finish state
             for(let nodeID of parseKeys){
 
                 if(nfaAutomaton.startState.some(state => String(state) == nodeID)){
@@ -67,6 +87,8 @@ export class ConvertorToDFA  {
                     finishState = true;
                 }
             }
+
+            //convert key to string with labels of nodes
             let newKey = "";
             for(let id of parseKeys){
                 nfaAutomaton.nodes.forEach(node => {
@@ -80,6 +102,7 @@ export class ConvertorToDFA  {
                 });
             }
 
+            //push result to newConvertorTab array
             if(startState && finishState){
                 newConvertorTab.push({key:  "<-->q" + stateRecorder.get(key).toString() + "{"+newKey+"}", values: stateResult});
                 startState = false;
@@ -95,7 +118,6 @@ export class ConvertorToDFA  {
             } else {
                 newConvertorTab.push({key:  "q" + stateRecorder.get(key).toString() + "{"+newKey+"}", values: stateResult});
             }
-            // newConvertorTab.push({key:  "q" + stateRecorder.get(key).toString() + "{"+key+"}", values: stateResult});
             stateResult = [];
             newKey = "";
         }
@@ -111,22 +133,21 @@ export class ConvertorToDFA  {
                 }
             }
         }
-
-        console.log("New Convertor Tab: ", newConvertorTab);
         return newConvertorTab;
     }
 
-
+    // Method for converting NFA to DFA
     static convertToDFA = (nfaAutomaton : FiniteStateAutomaton)  => {
-        console.log("Tady je nfaAutomaton: ", nfaAutomaton);
-
+        // variables
         let newTransitions : TransitionMeta[] = [];
         const stateRecorder: Map<string, number> = new Map<string, number>();
         let newStates : GraphNodeMeta[] = [];
         let currentStatesId : number[];
         let alphabet = nfaAutomaton.input_alphabet;
-
         let finishStates : number[] = [];
+        let stateCounter = 0;
+
+        //check if finish states are string, array or number
         if (typeof nfaAutomaton.finishState === "string") {
             finishStates.push(parseInt(nfaAutomaton.finishState));
         } else if (Array.isArray(nfaAutomaton.finishState)) {
@@ -135,6 +156,7 @@ export class ConvertorToDFA  {
             finishStates.push(nfaAutomaton.finishState);
         }
 
+        //check if start state is string or array
         if (typeof nfaAutomaton.startState === "string") {
             currentStatesId = [parseInt(nfaAutomaton.startState)];
         } else {
@@ -146,10 +168,7 @@ export class ConvertorToDFA  {
             alphabet = alphabet.filter(item => item !== "ε");
         }
 
-        console.log("Start States: " + currentStatesId)
-
-        let stateCounter = 0;
-
+        // for each state in current states, generate new states and transitions for DFA
         for (let i: number = 0; i <= stateCounter; i++) {
 
             if(i == stateCounter && i != 0) {
@@ -173,25 +192,21 @@ export class ConvertorToDFA  {
                 }
             }
 
-            console.log("Current States before expand: " + currentStatesId)
             ConvertorToDFA.expendCurrentStates(currentStatesId, nfaAutomaton);
-            console.log("Current States after expand: " + currentStatesId)
             let key = ConvertorToDFA.buildStateKey(currentStatesId);
 
             if (i == 0){
                 let nodeClass = "start";
-                //check if nfaAuitomaton finish states are in the current states
+                //check if nfaAutomaton finish states are in the current states
                 for (let id of currentStatesId) {
-                    if (finishStates.includes(parseInt(id))) {
+                    if (finishStates.includes(id)) {
                         nodeClass = "finish start";
                     }
                 }
 
                 stateCounter++;
                 let value = stateCounter;
-                console.log("Key: " + key + " Value: " + value);
                 stateRecorder.set(key, value);
-                console.log("StateRecorder: " + stateRecorder.get(key));
                 newStates.push({id: stateRecorder.get(key).toString(), label: "q" + stateRecorder.get(key).toString(), class: nodeClass});
             }
 
@@ -250,8 +265,6 @@ export class ConvertorToDFA  {
                     state: stateRecorder.get(key).toString(),
                     stateLabel: "q" + stateRecorder.get(key).toString(),
                     input: c,
-                    stack: "",
-                    stackAfter: "",
                     stateAfter: stateRecorder.get(valueState).toString(),
                     stateAfterLabel: newStateAfterLabel
                 });
@@ -260,20 +273,20 @@ export class ConvertorToDFA  {
 
         }
 
+        // add transitions for 99 state
         if(stateRecorder.has("99")){
             for(let c of alphabet){
                 newTransitions.push({
                     state: "99",
                     stateLabel: "Ø",
                     input: c,
-                    stack: "",
-                    stackAfter: "",
                     stateAfter: "99",
                     stateAfterLabel: "Ø"
                 });
             }
         }
 
+        // check if start state is finish state and if finish state is start state
         let startNodeIds: string[] = newStates
             .filter(node => node.class === "start" || node.class === "finish start")
             .map(node => node.id);
@@ -283,9 +296,9 @@ export class ConvertorToDFA  {
             .map(node => node.id);
 
         return {newFa: new FiniteStateAutomaton(newStates, newTransitions, startNodeIds, endNodeIds, "DFA"), stateRecorder: stateRecorder};
-        // return new FiniteStateAutomaton(newStates, newTransitions, startNodeIds, endNodeIds, "DFA");
     }
 
+    // Method for expanding current states, if there is epsilon transition in the NFA
     private static expendCurrentStates(currentStatesId: number[], nfaAutomaton: FiniteStateAutomaton) {
         let newCurrentStatesId : number[] = currentStatesId.slice();
 
@@ -295,6 +308,7 @@ export class ConvertorToDFA  {
 
     }
 
+    // Method for checking if there is epsilon transition in the NFA
     private static haseEpsilonTransition(newCurrentStates: number[], nfaAutomaton: FiniteStateAutomaton) : boolean {
         for (let id of newCurrentStates) {
             if (nfaAutomaton.transitions.some(transition => transition.input === "ε" && transition.state.toString() == id.toString())) {
@@ -304,8 +318,8 @@ export class ConvertorToDFA  {
         return false;
     }
 
+    // Method for adding state to current states, if there is epsilon transition in the NFA
     private static addStateToCurrentStates(lastAdded: number[], currentStatesId: number[], nfaAutomaton: FiniteStateAutomaton) : number[] {
-
         let newCurrentStatesId : number[] =[];
         let epsilons : TransitionMeta[] = [];
 
@@ -328,10 +342,10 @@ export class ConvertorToDFA  {
                 }
             }
         }
-
         return newCurrentStatesId;
     }
 
+    // Method for building state key, that's used in conversion
     private static buildStateKey(listOfIds: number[]) : string {
         listOfIds.sort((a, b) => a - b);
         let key = "";
@@ -343,10 +357,6 @@ export class ConvertorToDFA  {
                 key += ","+ listOfIds[id];
             }
         }
-
         return key;
     }
-
-
-
 }

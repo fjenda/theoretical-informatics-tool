@@ -1,25 +1,38 @@
+/*
+    FiniteStateAutomaton.ts
+    Class for creating finite state automaton from regular expression
+
+    Author: Marek Krúpa
+*/
+
+//types
 import type {TransitionMeta} from "../../../types/TransitionMeta";
 import {FiniteStateAutomaton} from "../FiniteStateAutomaton";
+import type {GraphNodeMeta} from "../../../types/GraphNodeMeta";
+
+//classes
 import {TreeNode} from "./TreeNode";
+
 
 export class  RegexAutomaton{
 
+    // properties
     finAut : FiniteStateAutomaton;
     regex : string;
     position : number;
+
+    // constructor
     constructor(regex : string){
         this.regex = regex;
         this.position = 0;
-        this.finAut = new FiniteStateAutomaton([], [], [], [], [], "DFA");
+        this.finAut = new FiniteStateAutomaton([], [], [], [], "DFA");
     };
 
+    // Method for printing the parse tree
     printTree(node: TreeNode | null, depth: number = 0): void {
         if (node === null) {
-            console.log("".padStart(depth * 4) + "null");
             return;
         }
-
-        console.log("".padStart(depth * 4) + node.label);
 
         if (node.children) {
             for (const child of node.children) {
@@ -28,26 +41,24 @@ export class  RegexAutomaton{
         }
     }
 
+    //
     regexProcessFunc() : FiniteStateAutomaton | null {
-        const queue: { state: string; index: number; path: TransitionMeta[] }[] = [
-            { state: this.finAut.startState, index: 0, path: [] },
-        ];
-
         //remove . from the this.regex
         this.regex = this.regex.replace(/\./g, "");
-
 
         let tree = this.parse();
 
         if (tree === null) {
             return null;
         }
-        console.log("Regex Tree:");
-        this.printTree(tree);
+        //Uncomment for printing the parse tree
+        // console.log("Regex Tree:");
+        // this.printTree(tree);
 
         return this.fromTreeToAutomaton(tree);
     }
 
+    // Method for converting parse tree to finite state automaton, recursively goes through the tree
     fromTreeToAutomaton(root: TreeNode | null) : FiniteStateAutomaton | null {
         if (root.label === "expression") {
             let term = this.fromTreeToAutomaton(root.children[0]);
@@ -71,12 +82,6 @@ export class  RegexAutomaton{
                 if (root.children[1].label === "*") {
                     return this.closure(atom);
                 }
-                if (root.children[1].label === "+") {
-                    return this.oneOrMore(atom);
-                }
-                if (root.children[1].label === "?") {
-                    return this.zeroOrOne(atom);
-                }
             }
             return atom;
         }
@@ -98,6 +103,7 @@ export class  RegexAutomaton{
         return null;
     }
 
+    // Method for getting the next character in the regex
     peek() : string | null {
         if (this.position < this.regex.length) {
             return this.regex[this.position];
@@ -106,10 +112,12 @@ export class  RegexAutomaton{
         }
     }
 
+    // Method for parsing the regex to a parse tree
     parse() : TreeNode | null {
         return this.expression();
     }
 
+    // Method for matching the character in the regex
     match(c : string) : boolean {
         if (this.peek() === c) {
             this.position++;
@@ -118,14 +126,17 @@ export class  RegexAutomaton{
         return false;
     }
 
+    // Method for checking if there are more characters in the regex
     hasMore() : boolean {
         return this.position < this.regex.length;
     }
 
+    // Method for checking if the character is a metacharacter
     isMetaChar(c : string) : boolean {
         return c === "*";
     }
 
+    // Method for getting the next character in the regex return character or null
     next() : string | null {
         let ch = this.peek();
         this.match(ch);
@@ -133,6 +144,7 @@ export class  RegexAutomaton{
         return ch;
     }
 
+    // Method for expression in the regex
     expression(): TreeNode | null {
         let term = this.term();
         while (this.hasMore() && this.peek() === "+") {
@@ -144,6 +156,7 @@ export class  RegexAutomaton{
         return new TreeNode("expression", [term]);
     }
 
+    // Method for term in the regex
     term(): TreeNode | null {
         let factor = this.factor();
 
@@ -156,6 +169,7 @@ export class  RegexAutomaton{
         return new TreeNode("term", [factor]);
     }
 
+    // Method for factor in the regex
     factor(): TreeNode | null {
         let atom = this.atom();
 
@@ -167,6 +181,7 @@ export class  RegexAutomaton{
         return new TreeNode("factor", [atom]);
     }
 
+    // Method for atom in the regex
     atom(): TreeNode | null {
         if (this.peek() === "(") {
             this.match("(");
@@ -179,6 +194,7 @@ export class  RegexAutomaton{
         return new TreeNode("atom", [ch]);
     }
 
+    // Method for character in the regex
     char(): TreeNode | null {
         if (this.isMetaChar(this.peek())) {
             return null;
@@ -194,8 +210,9 @@ export class  RegexAutomaton{
         return new TreeNode("char", [new TreeNode(ch, null)]);
     }
 
+    // Method for creating union of two automata in regex
     union(first : FiniteStateAutomaton, second : FiniteStateAutomaton) : FiniteStateAutomaton{
-        let nodes : GrapNodeMeta[] = [];
+        let nodes : GraphNodeMeta[] = [];
         let transitions : TransitionMeta[] = [];
 
         let startNode = {id: "0", label: "q0", class: "start"};
@@ -313,8 +330,9 @@ export class  RegexAutomaton{
         return new FiniteStateAutomaton(nodes, transitions, [startNode.id], [end.id], "NFA");
     }
 
+
     concat(first : FiniteStateAutomaton, second : FiniteStateAutomaton) : FiniteStateAutomaton{
-        let nodes : GrapNodeMeta[] = first.getNodes();
+        let nodes : GraphNodeMeta[] = first.getNodes();
         let transitions : TransitionMeta[] = first.getTransitions();
 
         let lastStateOfFirst = nodes[nodes.length - 1].id;
@@ -372,6 +390,7 @@ export class  RegexAutomaton{
         return new FiniteStateAutomaton(nodes, transitions, [nodes[0].id], [nodes[nodes.length - 1].id], "NFA");
     }
 
+    // Method for creating closure of automaton in regex
     closure(automaton : FiniteStateAutomaton) : FiniteStateAutomaton{
         let nodes : GraphNodeMeta[] = [];
         let transitions : TransitionMeta[] = [];
@@ -452,150 +471,7 @@ export class  RegexAutomaton{
         return new FiniteStateAutomaton(nodes, transitions, [startNode.id], [endNode.id], "NFA");
     }
 
-    oneOrMore(automaton : FiniteStateAutomaton) : FiniteStateAutomaton{
-        let nodes : GraphNodeMeta[] = [];
-        let transitions : TransitionMeta[] = [];
-
-        let startNode = {id: "0", label: "q0", class: "start"};
-        nodes.push(startNode);
-
-        let automatonNodes = automaton.getNodes();
-        automatonNodes.forEach((node : GraphNodeMeta) => {
-            let newID = (parseInt(node.id) + 1).toString();
-            nodes.push({id: newID, label: "q" + newID});
-        });
-
-        let automatonTransitions = automaton.getTransitions();
-        automatonTransitions.forEach((transition : TransitionMeta) => {
-            let newState = (parseInt(transition.state) + 1).toString();
-            let newStateAfter = (parseInt(transition.stateAfter) + 1).toString();
-            transitions.push({
-                state:  newState,
-                stateLabel: "q" + newState,
-                input: transition.input,
-                stateAfter: newStateAfter,
-                stateAfterLabel: "q" + newStateAfter
-            });
-        });
-
-        let firstState = nodes[1].id;
-        let lastState = nodes[nodes.length - 1].id;
-
-        let endNode = {id: (parseInt(lastState) + 1).toString(), label: "q" + (parseInt(lastState) + 1).toString(), class: "finish"};
-        nodes.push(endNode);
-
-        transitions.push({
-            state:  "0",
-            stateLabel: "q0",
-            input: "ε",
-            stateAfter: firstState,
-            stateAfterLabel: "q" + firstState
-        });
-
-        let foundEpsilonToEnd = false;
-        transitions.forEach((transition : TransitionMeta) => {
-            if (transition.input === "ε"){
-                if (transition.state === lastState){
-                    if (transition.stateAfter === firstState){
-                        foundEpsilonToEnd = true;
-                    }
-                }
-            }
-        });
-
-        if (!foundEpsilonToEnd){
-            transitions.push({
-                state:  lastState,
-                stateLabel: "q" + lastState,
-                input: "ε",
-                stateAfter: firstState,
-                stateAfterLabel: "q" + firstState
-            });
-        }
-
-        transitions.push({
-            state:  lastState,
-            stateLabel: "q" + lastState,
-            input: "ε",
-            stateAfter: endNode.id,
-            stateAfterLabel: "q" + endNode.id
-        });
-
-        return new FiniteStateAutomaton(nodes, transitions, [startNode.id], [endNode.id], "NFA");
-    }
-
-    zeroOrOne(automaton : FiniteStateAutomaton) : FiniteStateAutomaton{
-        let nodes : GraphNodeMeta[] = [];
-        let transitions : TransitionMeta[] = [];
-
-        let startNode = {id: "0", label: "q0", class: "start"};
-        nodes.push(startNode);
-
-        let automatonNodes = automaton.getNodes();
-        automatonNodes.forEach((node : GraphNodeMeta) => {
-            let newID = (parseInt(node.id) + 1).toString();
-            nodes.push({id: newID, label: "q" + newID});
-        });
-
-        let automatonTransitions = automaton.getTransitions();
-        automatonTransitions.forEach((transition : TransitionMeta) => {
-            let newState = (parseInt(transition.state) + 1).toString();
-            let newStateAfter = (parseInt(transition.stateAfter) + 1).toString();
-            transitions.push({
-                state:  newState,
-                stateLabel: "q" + newState,
-                input: transition.input,
-                stateAfter: newStateAfter,
-                stateAfterLabel: "q" + newStateAfter
-            });
-        });
-
-        let firstState = nodes[1].id;
-        let lastState = nodes[nodes.length - 1].id;
-
-        let endNode = {id: (parseInt(lastState) + 1).toString(), label: "q" + (parseInt(lastState) + 1).toString(), class: "finish"};
-        nodes.push(endNode);
-
-        transitions.push({
-            state:  "0",
-            stateLabel: "q0",
-            input: "ε",
-            stateAfter: firstState,
-            stateAfterLabel: "q" + firstState
-        });
-
-        transitions.push({
-            state:  "0",
-            stateLabel: "q0",
-            input: "ε",
-            stateAfter:  endNode.id,
-            stateAfterLabel: "q" +  endNode.id
-        });
-
-        let foundEpsilonToEnd = false;
-        transitions.forEach((transition : TransitionMeta) => {
-            if (transition.input === "ε"){
-                if (transition.state === lastState){
-                    if (transition.stateAfter === endNode.id){
-                        foundEpsilonToEnd = true;
-                    }
-                }
-            }
-        });
-
-        if (!foundEpsilonToEnd){
-            transitions.push({
-                state:  lastState,
-                stateLabel: "q" + lastState,
-                input: "ε",
-                stateAfter: endNode.id,
-                stateAfterLabel: "q" + endNode.id
-            });
-        }
-
-        return new FiniteStateAutomaton(nodes, transitions, [startNode.id], [endNode.id], "NFA");
-    }
-
+    // Method for creating automaton from symbol
     fromSymbol(edgeLabel : string) : FiniteStateAutomaton{
         let nodes : GraphNodeMeta[] = [];
         let transitions : TransitionMeta[] = [];
