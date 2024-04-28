@@ -90,6 +90,14 @@
 
         graphObject.generateGraphFromTransitions();
 
+        // find following id
+        let maxId = 0;
+        graphObject.nodes.forEach((node : GraphNodeMeta) => {
+            if (parseInt(node.id) > maxId) {
+                maxId = parseInt(node.id);
+            }
+        });
+
         createGraph(false);
         graph_store.update((n) => {
             n.input_alphabet = graphObject.input_alphabet;
@@ -100,6 +108,7 @@
             n.type = graphObject.type;
             n.generated = true;
             n.hideConvertTable = false;
+            n.followingID = maxId + 1;
             return n;
         });
 
