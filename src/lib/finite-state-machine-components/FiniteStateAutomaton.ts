@@ -316,6 +316,7 @@ export  class FiniteStateAutomaton{
         if (this.graph === null) {
             return;
         }
+
         this.graph.style()
             .selector("node").style({
             "background-color": isDarkMode ?  "#f4f9ff" : "#808080",
@@ -334,11 +335,11 @@ export  class FiniteStateAutomaton{
             "transition-property": "line-color, target-arrow-color, background-color",
             "transition-duration": 100,
         })
-            .selector(".start").style({
-            "border-color": "#00ff00",
-        })
             .selector(".finish").style({
             "border-color": "#ff0000",
+        })
+            .selector(".start").style({
+            "border-color": "#00ff00",
         })
             .update();
     }

@@ -52,13 +52,15 @@
             {type.split("-").map((word) => word.charAt(0).toUpperCase() + word.slice(1)).join(" ")}
 
             {#if type === "generate-automata"}
-                <span class="ttip" use:tooltip={"Write the rules in the form\n\n" +
+                <span class="ttip" use:tooltip={"Write the rules in this format\n\n" +
                                                 "d(q0,a)=q0;\n" +
                                                 "d(q0,b)=q1;\n" +
                                                 "d(q1,b)=q0;\n" +
                                                 "d(q0,ε)=q1;\n" +
-                                                "\nFor NFA you can choose \n" +
-                                                "more then one Start state"}>
+                                                "\nNFA - You can choose more than one starting state \n" +
+                                                "and use epsilon transitions.\n" +
+                                                "DFA - There is only one initial state and no epsilon \n" +
+                                                 "transitions."}>
                 ?</span>
             {/if}
         </h2>
