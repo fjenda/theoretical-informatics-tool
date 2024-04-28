@@ -1,13 +1,12 @@
+<!--
+    OperationButton.svelte
+    Svelte component for displaying a buttons in Set operation page.
+    Author: Marek Krúpa
+-->
+
 <script lang="ts">
-
-    import type {ButtonType} from "../../../types/ButtonType";
-    import {navigate} from "svelte-routing";
-
-    // export let type : ButtonType;
-    export let url : string = "";
     export let func : Function = () => {};
     export let text : string = "";
-
 </script>
 
 <div class="op_box">
@@ -17,17 +16,8 @@
 </div>
 
 <style>
-    .op-box {
-        display: flex;
-        justify-content: center;
-        margin: auto 2rem 1rem 2rem;
-
-        height: 3vh;
-        width: 3vh;
-    }
 
     .op_button {
-        /*appearance: none;*/
         align-items: center;
         background-color: #9CC6FB;
         border-radius: 0.5rem;
@@ -37,14 +27,11 @@
         color: #363636;
         cursor: pointer;
         display: inline-flex;
-        /*fill: currentcolor;*/
-        /*font-family: "Google Sans",Roboto,Arial,sans-serif;*/
         font-size: 1.25rem;
         font-weight: 500;
         height: 2.75rem;
         justify-content: center;
         letter-spacing: .016rem;
-        /*line-height: normal;*/
         max-width: 100%;
         min-width: 12rem;
         overflow: visible;
@@ -82,7 +69,6 @@
     }
 
     .op_button:focus {
-        /*outline: none;*/
         outline: 2px solid #4285f4;
     }
 

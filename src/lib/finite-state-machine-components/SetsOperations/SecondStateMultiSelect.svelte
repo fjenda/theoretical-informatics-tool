@@ -1,26 +1,37 @@
+<!--
+    SecondStateMultiSelect.svelte
+    This component is used to select multiple final states in the graph.
+    Author: Marek Krúpa
+-->
+
 <script>
 
     import {input_error_store} from "../../../stores/inputErrorStore";
-    import {resetInputVar, second_graph_store} from "../../../stores/graphInitStore";
+    import {resetInputVar, second_backup_store} from "../../../stores/graphInitStore";
 
+    // Variables
     let selectedOptions = [];
     let selectedOptionsId = [];
-    let selectHeight = "10.6rem"; // Výchozí výška
+    let selectHeight = "10.6rem"; // Default height
 
-    $: options = $second_graph_store.nodes?.map(node => node);
+    // Load options
+    $: options = $second_backup_store.nodes?.map(node => node);
 
+    // Reset selected options
     $: if ($resetInputVar) {
         selectedOptions = [];
     }
 
-    $: if ($second_graph_store.type === "DFA") {
-        selectHeight = "10.6rem"; // Výška pro typ DFA
-    } else if ($second_graph_store.type === "NFA") {
-        selectHeight = "5.9rem"; // Výška pro typ NFA
+    // Set height of select based on graph type
+    $: if ($second_backup_store.type === "DFA") {
+        selectHeight = "10.6rem"; // Height for DFA
+    } else if ($second_backup_store.type === "NFA") {
+        selectHeight = "5.9rem"; // Height for NFA
     } else {
-        selectHeight = "10.6rem"; // Výška pro ostatní typy
+        selectHeight = "10.6rem"; // Height for Other
     }
 
+    // Function to find IDs of selected options
     function findIDs() {
         let finalStates = [];
         for (let i = 0; i < selectedOptions.length; i++) {
@@ -33,6 +44,7 @@
         return finalStates;
     }
 
+    // Function to handle select
     function handleSelect(event) {
         input_error_store.update((n) => {
             n.finishState = true;
@@ -40,9 +52,7 @@
         });
         selectedOptionsId = findIDs();
         selectedOptions = Array.from(event.target.selectedOptions, option => option.label);
-        console.log(selectedOptionsId);
-        console.log(selectedOptions);
-        second_graph_store.update(n => {
+        second_backup_store.update(n => {
             n.finishState = selectedOptionsId;
             return n;
         });
@@ -74,7 +84,6 @@
 
     select {
         width: 7.5rem;
-        /*height: 5.9rem;*/
         padding: 0.5rem;
 
         border: 0.1rem solid #ccc;

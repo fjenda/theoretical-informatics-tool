@@ -1,5 +1,10 @@
-<script lang="ts">
+<!--
+    FirstTypeView.svelte
+    This component is responsible for displaying the type of the first graph.
+    Author: Marek Krúpa
+-->
 
+<script lang="ts">
     import {first_graph_store} from "../../../stores/graphInitStore";
 </script>
 

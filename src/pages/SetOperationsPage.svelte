@@ -10,18 +10,15 @@
     import ResultTable from "../lib/finite-state-machine-components/SetsOperations/ResultTable.svelte";
     import OperationsPanel from "../lib/finite-state-machine-components/SetsOperations/OperationsPanel.svelte";
     import OperationButton from "../lib/finite-state-machine-components/SetsOperations/OperationButton.svelte";
-    import FirstToolbar from "../lib/finite-state-machine-components/SetsOperations/FirstToolbar.svelte";
     import FirstToolbarButton from "../lib/finite-state-machine-components/SetsOperations/FirstToolbarButton.svelte";
-    import SecondToolbar from "../lib/finite-state-machine-components/SetsOperations/SecondToolbar.svelte";
     import SecondToolbarButton from "../lib/finite-state-machine-components/SetsOperations/SecondToolbarButton.svelte";
     import FirstTypeView from "../lib/finite-state-machine-components/SetsOperations/FirstTypeView.svelte";
     import SecondTypeView from "../lib/finite-state-machine-components/SetsOperations/SecondTypeView.svelte";
-    import ResultToolbar from "../lib/finite-state-machine-components/SetsOperations/ResultToolbar.svelte";
     import ResultToolbarButton from "../lib/finite-state-machine-components/SetsOperations/ResultToolbarButton.svelte";
-    import FinTestInput from "../lib/finite-state-machine-components/FinTestInput.svelte";
     import ResultTestInput from "../lib/finite-state-machine-components/SetsOperations/ResultTestInput.svelte";
     import Button from "../lib/Button.svelte";
     import ResultTypeView from "../lib/finite-state-machine-components/SetsOperations/ResultTypeView.svelte";
+    import FinGraphToolbar from "../lib/finite-state-machine-components/FinGraphToolbar.svelte";
 
     const landingPageUrl = "/Theoretical-informatics-tool";
     const automatonUrl = "/Theoretical-informatics-tool/tool/finite-state-automaton";
@@ -39,12 +36,12 @@
     <ThemeToggle />
     <SetOperationsLayout title="Set operations">
         <FirstGraphWindow bind:toolbarFunctions={toolbarFunctions} slot="first-automaton" >
-            <FirstToolbar>
+            <FinGraphToolbar>
                 <FirstToolbarButton type="generate-automata" text="Generate graph" func={toolbarFunctions?.generateGraphFromTransitions} />
                 <FirstToolbarButton type="load-graph" text="Load graph" func={toolbarFunctions?.loadGraph} />
                 <FirstToolbarButton type="reset-layout" text="Reset layout" func={toolbarFunctions?.resetLayout} />
                 <FirstToolbarButton type="show-definition" text="Show definition" func={toolbarFunctions?.generateConfiguration} />
-            </FirstToolbar>
+            </FinGraphToolbar>
             <FirstTypeView slot="type"/>
         </FirstGraphWindow>
         <FirstTable slot="first_table" />
@@ -57,21 +54,21 @@
             <OperationButton  text="Complement" func={resutlToolbarFunctions?.complementFunc} />
         </OperationsPanel>
         <SecondGraphWindow bind:secondToolbarFunctions={secondToolbarFunctions} slot="second-automaton">
-            <SecondToolbar>
+            <FinGraphToolbar>
                 <SecondToolbarButton type="generate-automata" text="Generate graph" func={secondToolbarFunctions?.generateGraphFromTransitions} />
                 <SecondToolbarButton type="load-graph" text="Load graph" func={secondToolbarFunctions?.loadGraph} />
                 <SecondToolbarButton type="reset-layout" text="Reset layout" func={secondToolbarFunctions?.resetLayout} />
                 <SecondToolbarButton type="show-definition" text="Show definition" func={secondToolbarFunctions?.generateConfiguration} />
-            </SecondToolbar>
+            </FinGraphToolbar>
             <SecondTypeView slot="type"/>
         </SecondGraphWindow>
         <SecondTable slot="second-table" />
         <ResultGrapWindow bind:resutlToolbarFunctions={resutlToolbarFunctions}  slot="result-automaton">
-            <ResultToolbar>
+            <FinGraphToolbar>
                 <ResultToolbarButton type="save-graph" text="Save graph" func={resutlToolbarFunctions?.saveGraph}  />
                 <ResultToolbarButton type="reset-layout" text="Reset layout" func={resutlToolbarFunctions?.resetLayout} />
                 <ResultToolbarButton type="show-definition" text="Show definition" func={resutlToolbarFunctions?.generateConfiguration} />
-            </ResultToolbar>
+            </FinGraphToolbar>
             <ResultTypeView slot="type"/>
         </ResultGrapWindow>
         <ResultTable slot="result-table" />

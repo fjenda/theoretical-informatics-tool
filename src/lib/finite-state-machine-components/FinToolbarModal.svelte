@@ -1,20 +1,25 @@
+<!--
+    FinToolbarModal.svelte
+    This component is used to create a modal dialog for the toolbar buttons.
+    Author: Marek Krúpa
+-->
+
 <script lang="ts">
     import type {ToolbarButtonType} from "../../types/ToolbarButtonType";
     import FinAutomatonGeneratorLayout from "./FinAutomatonGeneratorLayout.svelte";
     import ToggleSwitch from "./ToggleSwitch.svelte";
     import FinStateComboBox from "./FinStateComboBox.svelte";
     import StateMultiSelect from "../StateMultiSelect.svelte";
-
     import FinTransitionFuncInput from "./FinTransitionFuncInput.svelte";
     import {
-        configuration_store,
+        configuration_store, fin_backup_store,
         graph_store,
         resetInputVar
     } from "../../stores/graphInitStore";
     import {input_error_store} from "../../stores/inputErrorStore";
     import StartStateMultiSelect from "../StartStateMultiSelect.svelte";
 
-
+    // Variables
     export let showModal : boolean;
     export let type : ToolbarButtonType;
     export let func : Function;
@@ -28,8 +33,10 @@
     let config : string = "";
     let label : string, source : string, target : string, rules : string;
 
+    // Show modal dialog
     $: if (dialog && showModal) dialog.showModal();
 
+    // If Show Definition button is clicked generate configuration
     $: if (showModal && type === "show-definition") {
         func();
 
@@ -40,6 +47,7 @@
         }
     }
 
+    // Generate configuration
     function generateConfiguration() {
         config = "";
         // states from nodes
@@ -69,6 +77,7 @@
         config += `F: {${$configuration_store.final_states.join(", ")}}\n`;
     }
 
+    // Reset input fields
     function resetInput() {
         label = "", source = "", target = "", rules = "";
         isFinishState = false;
@@ -80,6 +89,7 @@
         return true;
     }
 
+    // Check input fields
     function checkInput(type) {
         errorType = "";
         showError = false;
@@ -153,7 +163,7 @@
                 } else {
                     func({id: folowingID.toString(), label: label});
                 }
-                func({ id: folowingID.toString(), label: label});
+                // func({ id: folowingID.toString(), label: label});
                 $graph_store.followingID++;
                 return true;
             }
@@ -164,15 +174,14 @@
                 const modifiedTarget = target.trim();
                 let sourceID = $graph_store.nodes.find(node => node.label === modifiedSource)?.id;
                 let targetID = $graph_store.nodes.find(node => node.label === modifiedTarget)?.id;
-                console.log("new-edge - " + label.trim() + " " + sourceID + " -> " + targetID);
                 func({id: `${sourceID}-${targetID}`, label: label, source: sourceID, target: targetID});
                 return true;
             }
         }
     }
 
+    // Insert ε into the input field
     function insertEps() {
-        console.log("inserting ε");
         const transitions = document.getElementById("function-input");
         transitions.value += "ε";
         transitions.focus();
@@ -209,7 +218,7 @@
                 <FinStateComboBox key={125} slot="start-state" />
 
                 <StartStateMultiSelect key={126} slot="multi-select-start" />
-                <StateMultiSelect key={127} slot="multi-select" options={$graph_store.nodes}/>
+                <StateMultiSelect key={127} slot="multi-select" options={$fin_backup_store.nodes}/>
 
                 <FinTransitionFuncInput slot="transitions" />
 
@@ -232,14 +241,12 @@
                         <p class="error-text" style="color: #ff6969;">{errorType}</p>
                     {/if}
                     <input class={showError ? "errHigh" : ""} bind:value={label} maxlength="8" placeholder="Label">
-                    {#if !$configuration_store.initial_state || $configuration_store.initial_state.length === 0}
                         <div class="checkbox-box">
                             <label>
                                 <input id="start-state-checkbox" type="checkbox" bind:checked={isStartState} />
                                 Start state
                             </label>
                         </div>
-                    {/if}
                     <div class="checkbox-box">
                         <label>
                             <input id="finish-state-checkbox" type="checkbox" bind:checked={isFinishState} />
@@ -374,7 +381,6 @@
         border-radius: 0.25rem;
         outline: none;
         border: none;
-        /*box-shadow: rgba(0, 0, 0, .2) 0 3px 5px -1px,rgba(0, 0, 0, .14) 0 6px 10px 0,rgba(0, 0, 0, .12) 0 1px 18px 0;*/
         background-color: #9CC6FB;
         color: #363636;
         padding: 0.5rem 1rem;

@@ -1,3 +1,9 @@
+<!--
+    SetOperationsLayout.svelte
+    This component is used to display the layout of the set operations page.
+    Author: Marek Krúpa
+-->
+
 <script lang="ts">
     import Button from "../../Button.svelte";
 
@@ -47,18 +53,15 @@
 
 <style lang="scss">
   h1 {
-    //margin: 2rem 1rem;
     margin-right: 2rem;
     font-size: 2.5rem;
   }
 
   .wrap {
     overflow-y: auto; /* Add vertical scroll if content exceeds viewport height */
-    //max-height: calc(100vh - 60px); /* Adjust as needed depending on your header size */
   }
 
   .layout {
-    //width: 100vw;
     height: calc(100vh - 8rem);
     margin-top: 1rem;
     display: grid;
@@ -88,7 +91,6 @@
 
   .operation_bar {
     width: 100%;
-    //height: fit-content;
     display: flex;
     justify-content: center;
     align-items: flex-start;

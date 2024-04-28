@@ -1,4 +1,4 @@
-/*
+ /*
     ConvertorToDFA.ts
     Clas for converting NFA to DFA
 
@@ -24,8 +24,9 @@ export class ConvertorToDFA  {
         let statesForInput : string = "";
         let stateResult : string[] = [];
         let newConvertorTab : ConvertorTab[] = [];
-        let startState = false;
+        let startState = true;
         let finishState = false;
+        let endStates: number[] = [];
 
         //if alphabet has epsilon, remove it
         if (alphabet.includes("ε")) {
@@ -36,26 +37,29 @@ export class ConvertorToDFA  {
         for(let key  of stateRecorder.keys()){
             let parseKeys = key.split(",");
             for(let c of alphabet){
+                endStates = [];
                 for(let id of parseKeys){
-                    for (let i = 0; i < parseKeys.length; i++){
                         if (!nfaAutomaton.transitions.some(transition => transition.state.toString() == id.toString())) {
                             continue;
                         }
-                        let endStates: number[] = nfaAutomaton.transitions.filter(transition => transition.input === c && transition.state.toString() == id.toString()).map(transition => Number(transition.stateAfter));
+                        endStates.push(...nfaAutomaton.transitions.filter(transition => transition.input === c && transition.state.toString() == id.toString()).map(transition => Number(transition.stateAfter)));
                         if (endStates.length === 0) {
                             continue;
                         }
 
                         this.expendCurrentStates(endStates, nfaAutomaton);
 
-                        //convert endStates to string divered by ","
-                        statesForInput = ConvertorToDFA.buildStateKey(endStates);
 
-                        if (statesForInput === "{}") {
-                            statesForInput = "Ø";
-                        }
-                    }
                 }
+                //remove duplicates from endStates
+                endStates = endStates.filter((value, index, self) => self.indexOf(value) === index);
+
+                statesForInput = ConvertorToDFA.buildStateKey(endStates);
+
+                if (statesForInput === "{}") {
+                    statesForInput = "Ø";
+                }
+
                 //convert statesForInput to string with labels of nodes
                 let splitedStates = statesForInput.split(",");
                 let newSplitedStates = "";
@@ -79,10 +83,6 @@ export class ConvertorToDFA  {
 
             //check if key is start or finish state
             for(let nodeID of parseKeys){
-
-                if(nfaAutomaton.startState.some(state => String(state) == nodeID)){
-                    startState = true;
-                }
                 if(nfaAutomaton.finishState.some(state => String(state) == nodeID)){
                     finishState = true;
                 }
@@ -120,6 +120,7 @@ export class ConvertorToDFA  {
             }
             stateResult = [];
             newKey = "";
+            startState = false;
         }
 
         //convert key 99 to Ø and values "" to Ø

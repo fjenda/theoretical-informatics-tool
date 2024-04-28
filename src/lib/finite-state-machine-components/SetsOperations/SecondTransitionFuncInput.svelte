@@ -1,10 +1,21 @@
+<!--
+    SecondTransitionFuncInput.svelte
+    This component is used to input transition functions for the second graph.
+    Author: Marek Krúpa
+-->
+
 <script lang="ts">
 
-    import {first_graph_store, resetInputVar, second_graph_store} from "../../../stores/graphInitStore";
+    import {
+        first_graph_store,
+        resetInputVar,
+        second_backup_store
+    } from "../../../stores/graphInitStore";
     import type {TransitionMeta} from "../../../types/TransitionMeta";
     import type {GraphNodeMeta} from "../../../types/GraphNodeMeta";
     import {input_error_store} from "../../../stores/inputErrorStore";
 
+    // Variables
     let transitions : TransitionMeta[] = [];
     let alphabet : string[] = [];
     let textInput : string = "";
@@ -12,10 +23,12 @@
     let backdrop: HTMLDivElement;
     let correctInput: boolean = true;
 
+    // Reset input on change
     $: if ($resetInputVar) {
         textInput = "";
     }
 
+    // Parse input rows
     function parseRow(row : string) {
         let rowSplit = row.split(/[=,\n)(;]/);
 
@@ -54,51 +67,49 @@
                         state: stateId,
                         stateLabel: rowSplit[0],
                         input: rowSplit[1],
-                        stateAfter: $second_graph_store.followingID,
+                        stateAfter: $second_backup_store.followingID,
                         stateAfterLabel: rowSplit[2],
                     });
-                    $second_graph_store.followingID++;
+                    $second_backup_store.followingID++;
                 }
             } else {
                 if(stateAfterId >= 0) {
                     transitions.push({
-                        state: $second_graph_store.followingID,
+                        state: $second_backup_store.followingID,
                         stateLabel: rowSplit[0],
                         input: rowSplit[1],
                         stateAfter: stateAfterId,
                         stateAfterLabel: rowSplit[2],
                     });
-                    $second_graph_store.followingID++;
+                    $second_backup_store.followingID++;
                 } else {
                     if (rowSplit[0] == rowSplit[2]) {
                         transitions.push({
-                            state: $second_graph_store.followingID,
+                            state: $second_backup_store.followingID,
                             stateLabel: rowSplit[0],
                             input: rowSplit[1],
-                            stateAfter: $second_graph_store.followingID,
+                            stateAfter: $second_backup_store.followingID,
                             stateAfterLabel: rowSplit[2],
                         });
-                        $second_graph_store.followingID++;
+                        $second_backup_store.followingID++;
                     } else {
                         transitions.push({
-                            state: $second_graph_store.followingID,
+                            state: $second_backup_store.followingID,
                             stateLabel: rowSplit[0],
                             input: rowSplit[1],
-                            stateAfter: $second_graph_store.followingID + 1,
+                            stateAfter: $second_backup_store.followingID + 1,
                             stateAfterLabel: rowSplit[2],
                         });
-                        $second_graph_store.followingID += 2;
+                        $second_backup_store.followingID += 2;
                     }
                 }
             }
-
             alphabet.push(rowSplit[1]);
         }
-
         alphabet = alphabet.filter((item, index) => alphabet.indexOf(item) === index);
-
     }
 
+    // Store nodes
     function storeNodes() {
         //get nodes from transitions
         let nodes : GraphNodeMeta[] = [];
@@ -119,13 +130,13 @@
             }
         }
 
-        second_graph_store.update((n) => {
+        second_backup_store.update((n) => {
             n.nodes = nodes;
             return n;
         });
-        console.log("Nodes: ", nodes);
     }
 
+    // Check if label is new
     function isNewLabel(row: string) {
         let rowSplit = row.split(/[=,\n)(;]/);
 
@@ -149,12 +160,13 @@
         }
     }
 
+    // Process transitions
     function processTransitions() {
         transitions = [];
 
         let rows = textInput.split("\n").filter(Boolean);
 
-        if ($second_graph_store.type == "DFA") {
+        if ($second_backup_store.type == "DFA") {
             applyHighlightsDFA(textInput);
 
             for (let row of rows) {
@@ -165,7 +177,7 @@
                     correctInput = false;
                 }
             }
-        } else if ($second_graph_store.type == "NFA") {
+        } else if ($second_backup_store.type == "NFA") {
             applyHighlights(textInput);
 
             for (let row of rows) {
@@ -181,34 +193,33 @@
             console.log("Invalid type");
         }
 
-
-        console.log("Is input correct: ", correctInput);
-
         input_error_store.update((n) => {
             n.transitions = correctInput;
             return n;
         });
 
-        second_graph_store.update((n) => {
+        second_backup_store.update((n) => {
             n.transitions = transitions;
             n.input_alphabet = alphabet;
             return n;
         });
 
-
         storeNodes();
     }
 
+    // Function for validating transitions NFA
     function validateTransition(transition) {
         let regex = /d\(([A-Za-z0-9]|[A-Za-z][0-9]),(ε|[A-Za-z0-9])\)=([A-Za-z0-9]|[A-Za-z][0-9]);$/;
         return regex.test(transition);
     }
 
+    // Function for validating transitions DFA
     function validateTransitionDFA(transition) {
         let regex = /^d\(([A-Za-z0-9]|[A-Za-z][0-9]),[^ε]\)=([A-Za-z0-9]|[A-Za-z][0-9]);$/;
         return regex.test(transition);
     }
 
+    // Function for applying highlights DFA
     function applyHighlightsDFA(text) {
         return text
             .replace(/\n$/g, '\n\n')
@@ -221,8 +232,9 @@
             });
     }
 
+    // Function for applying highlights NFA
     function applyHighlights(text) {
-        if ($second_graph_store.type == "DFA") {
+        if ($second_backup_store.type == "DFA") {
             return text
                 .replace(/\n$/g, '\n\n')
                 .replace(/(d\(([A-Za-z0-9]|[A-Za-z][0-9]),([A-Za-z0-9])\)=([A-Za-z0-9]|[A-Za-z][0-9]);)|(.*)/g, function (match, validTransition, other) {
@@ -232,7 +244,7 @@
                         return '<mark>' + match + '</mark>';  // If it's not a valid transition, wrap it in <mark> tags
                     }
                 });
-        } else if ($second_graph_store.type == "NFA") {
+        } else if ($second_backup_store.type == "NFA") {
             return text
                 .replace(/\n$/g, '\n\n')
                 .replace(/(d\(([A-Za-z0-9]|[A-Za-z][0-9]),(ε|[A-Za-z0-9])\)=([A-Za-z0-9]|[A-Za-z][0-9]);)|(.*)/g, function (match, validTransition, other) {
@@ -245,6 +257,7 @@
         }
     }
 
+    // Function for handling scroll
     function handleScroll() {
         let scrollTop = textarea.scrollTop;
         backdrop.scrollTop = scrollTop;
@@ -280,7 +293,6 @@
         position: absolute;
         z-index: 2;
         margin: 0;
-        /*border: 2px solid #74637f;*/
         color: #444;
         background-color: transparent;
         overflow: auto;
@@ -310,7 +322,6 @@
     .backdrop {
         position: absolute;
         z-index: 1;
-        /*border: 2px solid #685972;*/
         background-color: #fff;
         overflow: auto;
         pointer-events: none;
@@ -333,19 +344,18 @@
 
 
     .backdrop {
-        background-color: #fff; /* or whatever */
+        background-color: #fff;
     }
 
     :global(mark) {
         color: transparent;
         border-radius: 0.2rem;
-        background-color: #f36969; /* or whatever */
+        background-color: #f36969;
     }
 
     :global(body.dark-mode) .function-input {
         border: 0.1rem solid #9c81da;
 
-        /*background-color: #2f3941;*/
         background-color: transparent;
         color: #f4f9ff;
     }

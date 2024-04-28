@@ -1,3 +1,9 @@
+<!--
+    FiniteStateMachineLayout.svelte
+    This component is used to create a layout for the finite state machine page.
+    Author: Marek Krúpa
+-->
+
 <script lang="ts">
     import Button from "../Button.svelte";
 
@@ -29,7 +35,6 @@
   h1 {
     margin: 2rem;
     font-size: 2.5rem;
-    //text-align: center;
   }
 
   .layout {
@@ -51,15 +56,10 @@
 
   .table {
     grid-area: 1 / 4 / 3 / 5;
-    //min-height: 0.5rem;
-    //width: 100%; /* Make the container take up the full width of its parent */
-    //overflow-x: auto;
   }
 
   .convert-table {
     grid-area: 3 / 4 / 5 / 5;
-    //display: flex;
-    //justify-content: center;
   }
 
   .window {
@@ -67,31 +67,6 @@
     display: flex;
     justify-content: center;
   }
-
-  //@media screen and (max-width: 1150px) {
-  //  .layout {
-  //    display: grid;
-  //    grid-template-columns: repeat(2, 1fr);
-  //    grid-template-rows: 0.5fr 1fr;
-  //    grid-column-gap: 0;
-  //    grid-row-gap: 0;
-  //
-  //    height: auto;
-  //    overflow: hidden auto;
-  //  }
-  //
-  //  .control-panel {
-  //    grid-area: 1 / 1 / 2 / 2;
-  //  }
-  //
-  //  .table {
-  //    grid-area: 1 / 2 / 2 / 3;
-  //  }
-  //
-  //  .window {
-  //    grid-area: 2 / 1 / 3 / 3;
-  //  }
-  //}
 
   .header {
     display: flex;
@@ -104,7 +79,4 @@
     gap: 1.5rem;
   }
 
-  .wrap {
-
-  }
 </style>

@@ -71,7 +71,7 @@ export  class FiniteStateAutomaton{
                 const isAccepted = index === this.word.length && this.finishState.includes(state);
 
                 if (isAccepted) {
-                    console.log("Accepted");
+                    // console.log("Accepted");
                     this.isAccepted = true;
                     this.correctStartState = startState;
                     return path; // String is accepted
@@ -106,7 +106,7 @@ export  class FiniteStateAutomaton{
         }
 
 
-        console.log("declined");
+        // console.log("declined");
         this.isAccepted = false;
         if (closestDeclinedPath) {
             return closestDeclinedPath;
@@ -265,7 +265,6 @@ export  class FiniteStateAutomaton{
         }
 
         if (!this.traversal[this.currentStatus.step]) {
-            console.log(this.isAccepted);
             this.status = "idle";
             let myIsAccepted = this.isAccepted;
             return { myIsAccepted};

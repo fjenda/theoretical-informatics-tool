@@ -1,8 +1,17 @@
+<!--
+    SecondGraphWindow.svelte
+    This component is a window for the second graph in the application. It contains the graph itself and the type of the graph.
+    It also contains the toolbar functions for the graph.
+    Author: Marek Krúpa
+-->
+
 <script lang="ts">
+    // Imports
     import {FiniteStateAutomaton} from "../FiniteStateAutomaton";
     import {onMount} from "svelte";
     import {
-        resetInputVar,
+        first_graph_store,
+        resetInputVar, second_backup_store,
         second_configuration_store,
         second_graph_store
     } from "../../../stores/graphInitStore";
@@ -10,13 +19,16 @@
     import cola from "cytoscape-cola";
     cytoscape.use(cola);
     import {input_error_store} from "../../../stores/inputErrorStore";
+    import {get} from "svelte/store";
+    import {SetOperations} from "./SetOperations";
 
+    // variables
     let graphObject = new FiniteStateAutomaton([], [], [], [], [], "DFA");
-    let deleteButtonActive : boolean = false;
+
+    // Toolbar functions
     export const secondToolbarFunctions = {
         addNode,
         addEdge,
-        toggleDelete,
         saveGraph,
         loadGraph,
         deleteGraph,
@@ -25,83 +37,19 @@
         generateGraphFromTransitions,
     } as ToolbarFunctions;
 
+    // Check if the type of the graph has changed
+    $: if ($second_graph_store.type) {
+        updateConfiguration("type");
+    }
+
+    // Check if the theme of the graph has changed
     $: if ($second_graph_store.theme){
         if (graphObject != undefined){
             graphObject.changeGraphStyle();
         }
     }
 
-
-    function toggleDelete() {
-        deleteButtonActive = !deleteButtonActive;
-
-        if (deleteButtonActive) {
-            deleteGraphElement();
-        } else {
-            graphObject.graph.removeAllListeners();
-        }
-    }
-
-    function deleteGraphElement() {
-        graphObject.graph.on("click", "*", function() {
-
-            //if clicked object is edge
-            if (this.isEdge()) {
-                let tmpEdge = this.id();
-                let tmpEdgeSource = this.source().id();
-                let tmpEdgeTarget = this.target().id();
-
-                // remove edge from graphEdges
-                if (graphObject.edges[tmpEdge].length > 1) {
-                    graphObject.edges[tmpEdge] = graphObject.edges[tmpEdge].filter((edge : GraphEdgeMeta) => edge.id !== tmpEdge);
-                } else {
-                    delete graphObject.edges[tmpEdge];
-                }
-
-                // remove edge from graphTransitions
-                graphObject.transitions = graphObject.transitions.filter((transition : TransitionMeta) => {
-                    return !(transition.state === tmpEdgeSource && transition.stateAfter === tmpEdgeTarget);
-                });
-                updateConfiguration("edge");
-            } else {
-
-                // if node has class final
-                if (this.hasClass("finish")) {
-                    // get the number of finish nodes
-                    let finishNodes = graphObject.finishState.length;
-                    //let finishNodes = graphObject.nodes.slice().filter((node : GraphNodeMeta) => node.class.includes("finish")).length;
-                    if (finishNodes === 1) {
-                        console.log("cannot remove a finish class");
-                        return;
-                    } else {
-                        // remove node from finishState
-                        graphObject.finishState = graphObject.finishState.filter((node : string) => node !== this.id());
-                    }
-                }
-
-                //if node has class start
-                if (this.hasClass("start")) {
-                    graphObject.startState = "";
-                }
-                // remove node from graphNodes
-                graphObject.nodes = graphObject.nodes.filter((node : GraphNodeMeta) => node.id !== this.id());
-
-                // remove edges from graphEdges
-                for (const edge in graphObject.edges) {
-                    graphObject.edges[edge] = graphObject.edges[edge].filter((edge : GraphEdgeMeta) => edge.source !== this.id() && edge.target !== this.id());
-                }
-
-                // remove transitions from graphTransitions
-                graphObject.transitions = graphObject.transitions.filter((transition : TransitionMeta) => {
-                    return !(transition.state === this.id() || transition.stateAfter === this.id());
-                });
-
-                updateConfiguration("node");
-            }
-            graphObject.graph.remove("#" + this.id());
-        });
-    }
-
+    // Function for deleting a graph
     function deleteGraph() {
         graphObject.graph.elements().remove();
         graphObject.nodes = [];
@@ -113,6 +61,7 @@
         second_configuration_store.reset();
     }
 
+    // Function for saving the graph
     function saveGraph () {
         const simplifiedGraphObject = {
             edges: graphObject.edges,
@@ -126,9 +75,6 @@
         // save graphObject into json
         let jsonData = JSON.stringify(simplifiedGraphObject, null, 4);
 
-        // let jsonData = graphObject.graph.json(false);
-        // jsonData = JSON.stringify(jsonData, null, 4);
-
         const blob = new Blob([jsonData], { type: "application/json" });
         const url = URL.createObjectURL(blob);
 
@@ -138,9 +84,9 @@
         a.click();
 
         URL.revokeObjectURL(url);
-
     }
 
+    // Function for loading the graph
     function loadGraph() {
         const input = document.createElement("input");
         input.type = "file";
@@ -156,18 +102,42 @@
                     const content = readerEvent.target.result;
                     const graphData = JSON.parse(content.toString());
 
-                    deleteGraph();
+
 
                     if (!graphData.nodes || !graphData.edges || graphData.transitions.length === 0 || !graphData.startState || !graphData.finishState || !graphData.type) {
                         return;
                     }
-                    second_graph_store.update((n) => {
-                        n.edges = graphData.edges;
+
+                    //check if in graphDate are not same label as in second_graph_store.nodes
+                    let sameLabel = false;
+                    graphData.nodes.forEach((node : GraphNodeMeta) => {
+                        if (get(first_graph_store).nodes.find((n : GraphNodeMeta) => n.label === node.label)) {
+                            sameLabel = true;
+                        }
+                    });
+
+                    if (sameLabel) {
+                        alert("The graph cannot be loaded because it contains nodes with the same label as the first graph.");
+                        return;
+                    }
+
+                    deleteGraph();
+
+                    //find in graphDate.nodes biggest id and set it to graphObject.followingID +1
+                    let maxId = 0;
+                    graphData.nodes.forEach((node : GraphNodeMeta) => {
+                        if (parseInt(node.id) > maxId) {
+                            maxId = parseInt(node.id);
+                        }
+                    });
+
+                    second_backup_store.update((n) => {
                         n.finishState = graphData.finishState;
                         n.nodes = graphData.nodes;
                         n.startState = graphData.startState;
                         n.transitions = graphData.transitions;
                         n.type = graphData.type;
+                        n.followingID = maxId + 1;
                         return n;
                     });
 
@@ -179,11 +149,10 @@
                 console.log(e);
             }
         };
-
         input.click();
-
     }
 
+    // Function for generating the configuration
     function generateConfiguration() {
         if (graphObject.nodes.length === 0 || graphObject.transitions.length === 0) {
             //erase configuration
@@ -237,6 +206,7 @@
         Object.assign($second_configuration_store, configuration);
     }
 
+    // Function for updating the configuration
     function updateConfiguration(mode : string) {
         let configuration : AutomatonConfiguration = {};
 
@@ -288,27 +258,27 @@
         Object.assign($second_configuration_store, configuration);
     }
 
+    // Function for checking the input for generating the graph
     function checkGenerationInput(){
         if($input_error_store.transitions == false){
             return false;
         }
         input_error_store.reset();
-        console.log($second_graph_store);
-        if ($second_graph_store.transitions === undefined || $second_graph_store.transitions.length === 0) {
+        if ($second_backup_store.transitions === undefined || $second_backup_store.transitions.length === 0) {
             input_error_store.update((n) => {
                 n.transitions = false;
                 return n;
             });
         }
 
-        if ($second_graph_store.startState === undefined) {
+        if ($second_backup_store.startState === undefined) {
             input_error_store.update((n) => {
                 n.startState = false;
                 return n;
             });
         }
 
-        if ($second_graph_store.finishState === undefined && $second_graph_store.type !== "empty") {
+        if ($second_backup_store.finishState === undefined && $second_backup_store.type !== "empty") {
             input_error_store.update((n) => {
                 n.finishState = false;
                 return n;
@@ -320,14 +290,15 @@
             $input_error_store.finishState === false);
     }
 
+    // Function for resetting the layout
     function resetLayout() {
         const layout = graphObject.graph.makeLayout({ name: "cola", edgeLength: 150, randomize: true, avoidOverlap: true, handleDisconnected: true});
         layout.run();
     }
 
+    // Function for adding a node
     function addNode(node : GraphNodeMeta) {
         try {
-            // console.log('Before add node: ', $graph_store);
             graphObject.addNode(node);
         } catch (e) {
             console.log(e);
@@ -337,11 +308,11 @@
                 n.nodes = graphObject.nodes;
                 return n;
             });
-            // console.log('After add node: ', $graph_store);
             resetLayout();
         }
     }
 
+    // Function for adding an edge
     function addEdge(edge : GraphEdgeMeta) {
         try {
             graphObject.addEdge(edge);
@@ -349,10 +320,10 @@
             console.log(e);
         } finally {
             updateConfiguration("edge");
-            // resetLayout();
         }
     }
 
+    // Function for creating a graph
     function createGraph(genTransitions : boolean = false) {
         graphObject.nodes.forEach((node : GraphNodeMeta) => {
             addNode(node);
@@ -372,19 +343,37 @@
         resetLayout();
     }
 
+    // Function for generating a graph from transitions
     function generateGraphFromTransitions() {
         if (!checkGenerationInput()) {
             return false;
         }
         $second_graph_store.hideConvertTable = true;
         deleteGraph();
-        // console.log($graph_store);
+
+        second_graph_store.update((n) => {
+            n.type = get(second_backup_store).type;
+            n.startState = get(second_backup_store).startState;
+            n.finishState = get(second_backup_store).finishState;
+            n.transitions = get(second_backup_store).transitions;
+            n.nodes = get(second_backup_store).nodes;
+            n.input_alphabet = get(second_backup_store).input_alphabet;
+            n.followingID = get(second_backup_store).followingID;
+            return n;
+        });
+
+
         Object.assign(graphObject, $second_graph_store);
 
+        if(!SetOperations.checkIfDfa(graphObject)){
+            graphObject.type = "NFA";
+            second_graph_store.update((n) => {
+                n.type = "NFA";
+                return n;
+            });
+        }
+
         graphObject.generateGraphFromTransitions();
-
-
-
 
         createGraph(false);
         second_graph_store.update((n) => {
@@ -396,15 +385,12 @@
         resetInputVar.set(false);
         input_error_store.reset();
 
-
-
         graphObject.startState = $second_graph_store.startState;
-
-
 
         return true;
     }
 
+    // Function for graph constructor
     function graphConstructor(){
         graphObject.graph = cytoscape({
 
@@ -521,24 +507,28 @@
         }
     ];
 
+    // Initialize the graph
     onMount(() => {
         graphConstructor();
 
         second_graph_store.update((n) => {
+            n.hideConvertTable = true;
+            n.theme = "dark";
+            return n;
+        });
+
+        second_backup_store.update((n) => {
             n.type = "DFA";
             n.transitions = exampleTransition;
             n.nodes = exampleNodes;
             n.startState = ["0"];
             n.finishState = ["1"];
             n.input_alphabet = ["a", "b"];
-            n.hideConvertTable = true;
-            n.theme = "dark";
+            n.followingID = 2;
             return n;
         });
-        $second_graph_store.followingID = 2;
+
         generateGraphFromTransitions();
-        console.log($second_graph_store);
-        // createGraph();
     });
 
 </script>
@@ -559,10 +549,7 @@
 <style lang="scss">
   .window {
     width: 90%;
-    //min-width: 35rem;
     height: 90%;
-    //min-height: 28rem;
-    //margin: 2.5% auto;
 
     border-radius: 0.5rem;
     background: #f7f7f8;
@@ -578,7 +565,6 @@
   .graph {
     overflow: hidden;
 
-    /*border-radius: 2vw;*/
     border-radius: 0.5rem;
 
     height: calc(100% - 5vh);

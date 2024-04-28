@@ -1,3 +1,9 @@
+<!--
+    SecondToolbarModal.svelte
+    This component is used to create a modal dialog for the toolbar buttons.
+    Author: Marek Krúpa
+-->
+
 <script lang="ts">
     import type {ToolbarButtonType} from "../../../types/ToolbarButtonType";
     import {
@@ -13,11 +19,7 @@
     import SecondStateMultiSelect from "./SecondStateMultiSelect.svelte";
     import SecondTransitionFuncInput from "./SecondTransitionFuncInput.svelte";
 
-    let currentState = false;
-    let startNode  : string;
-    let endNode : string;
-    let alphabet : string;
-
+    // variables
     export let showModal : boolean;
     export let type : ToolbarButtonType;
     export let func : Function;
@@ -27,8 +29,10 @@
     let config : string = "";
     let label : string, source : string, target : string, rules : string;
 
+    // Show modal dialog
     $: if (dialog && showModal) dialog.showModal();
 
+    // If the modal is shown-definition, generate configuration
     $: if (showModal && type === "show-definition") {
         func();
 
@@ -39,6 +43,7 @@
         }
     }
 
+    // Generate configuration
     function generateConfiguration() {
         config = "";
         // states from nodes
@@ -61,17 +66,19 @@
         config += "}\n";
 
         // start state
-        config += `S: {${$second_configuration_store.initial_state.join(", ")}}\n`;
+        config += `I: {${$second_configuration_store.initial_state.join(", ")}}\n`;
 
         // final states
         config += `F: {${$second_configuration_store.final_states.join(", ")}}\n`;
     }
 
+    // Reset input
     function resetInput() {
         label = "", source = "", target = "", rules = "";
         return true;
     }
 
+    // Check input
     function checkInput(type) {
         if (!["new-node", "new-edge"].includes(type)) {
             func();
@@ -94,9 +101,7 @@
 
         switch (type) {
             case "new-node": {
-                console.log("new-node - " + modifiedLabel);
                 let folowingID = $second_graph_store.followingID;
-                console.log('new node string: ' + folowingID.toString());
                 func({ id: folowingID.toString(), label: label});
                 $second_graph_store.followingID++;
                 return true;
@@ -107,15 +112,14 @@
                 const modifiedTarget = target.trim();
                 let sourceID = $second_graph_store.nodes.find(node => node.label === modifiedSource)?.id;
                 let targetID = $second_graph_store.nodes.find(node => node.label === modifiedTarget)?.id;
-                console.log("new-edge - " + modifiedLabel + " " + sourceID + " -> " + targetID);
                 func({id: `${sourceID}-${targetID}`, label: label, source: sourceID, target: targetID});
                 return true;
             }
         }
     }
 
+    // Insert epsilon
     function insertEps() {
-        console.log("inserting ε");
         const transitions = document.getElementById("function-input-sec");
         transitions.value += "ε";
         transitions.focus();
@@ -135,7 +139,7 @@
         {#if type === "show-definition"}
             <textarea id="transitions"
                       class="transitions-input"
-                      cols="30" rows="20"
+                      cols="40" rows="15"
                       readonly = {true}
                       value={config}
                       placeholder="Transitions"></textarea>
@@ -288,12 +292,15 @@
     }
 
     #transitions {
-        pointer-events: none;
         background: #f7f7f8;
         color: #363636;
         border: none;
         outline: 0.05rem solid #363636;
-        padding: 0.2rem;
+        padding: 0.75rem;
+        overflow: auto;
+        font: 1rem / 1.5rem 'Open Sans', sans-serif;
+        border-radius: 0.5rem;
+        margin-bottom: 0.75rem;
     }
 
     :global(body.dark-mode) #transitions {
@@ -306,7 +313,6 @@
         border-radius: 0.25rem;
         outline: none;
         border: none;
-        /*box-shadow: rgba(0, 0, 0, .2) 0 3px 5px -1px,rgba(0, 0, 0, .14) 0 6px 10px 0,rgba(0, 0, 0, .12) 0 1px 18px 0;*/
         background-color: #9CC6FB;
         color: #363636;
         padding: 0.5rem 1rem;
@@ -335,9 +341,5 @@
     button:focus {
         outline: 2px solid #4285f4;
     }
-
-    .single-button {
-        display: block;
-        margin: auto;
-    }
+    
 </style>

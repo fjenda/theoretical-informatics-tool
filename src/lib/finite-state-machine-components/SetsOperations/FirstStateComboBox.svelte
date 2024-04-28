@@ -1,51 +1,59 @@
+<!--
+    FirstStateComboBox.svelte
+    This component is as combo box for selecting the start state of the graph.
+    It is used in the the first automaton on Set operations page.
+    Author: Marek Krúpa
+-->
+
 <script lang="ts">
     import {input_error_store} from "../../../stores/inputErrorStore";
-    import {first_graph_store, resetInputVar} from "../../../stores/graphInitStore";
+    import {first_backup_store, resetInputVar} from "../../../stores/graphInitStore";
 
+    // Variables
     export let type = 'startState';
-
     let isOpen = false;
     let selectedOption = "";
     let selectedOptionsID = "";
-    $: options = $first_graph_store.nodes?.map(node => node);
+    $: options = $first_backup_store.nodes?.map(node => node);
 
+    // Reset the selected option when the resetInputVar is changed
     $: if ($resetInputVar) {
         selectedOption = "";
     }
 
+    // Function to toggle the dropdown
     function toggleDropdown() {
         isOpen = !isOpen;
     }
 
+    // Function to select the option
     function selectOption(option) {
         selectedOptionsID = option.id;
         selectedOption = option.label;
 
         if (type === "startState") {
-            first_graph_store.update((n) => {
+            first_backup_store.update((n) => {
                 n.startState =  [selectedOptionsID];
                 return n;
             });
         }
-        console.log($first_graph_store.startState);
-
         isOpen = false;
     }
 </script>
 
 <div class="combo-box">
-    <div class="selected-option {$input_error_store.startState}" on:click={toggleDropdown}>
+    <button class="selected-option {$input_error_store.startState}" on:click={toggleDropdown}>
         {selectedOption || 'Start state'}
-    </div>
+    </button>
     {#if isOpen}
         <ul class="dropdown active">
             {#each options as option}
-                <li class="option" on:click={() => {
+                <button class="option" on:click={() => {
                                              selectOption(option);
                                              input_error_store.update((n) => {
                                                  n.startState = true;
                                                  return n;
-                                             });}}>{option.label}</li>
+                                             });}}>{option.label}</button>
             {/each}
         </ul>
     {/if}
@@ -58,7 +66,12 @@
         background-color: #ff6969 !important;
     }
 
+    :global(body.dark-mode) .option {
+        color: #f4f9ff;
+    }
+
     .combo-box, .dropdown {
+        color: #101820;
         box-sizing: content-box; /* or box-sizing: border-box; */
         width: 7.5rem;
     }
@@ -77,11 +90,15 @@
         outline: 0.1rem solid #9c81da;
     }
 
+    :global(body.dark-mode) .selected-option {
+        color: #f4f9ff;
+    }
+
     .selected-option {
+        color: #101820;
         padding: 0.6rem;
         cursor: pointer;
 
-        /*border-radius: 2rem;*/
         border-radius: 0.5rem;
 
         text-align: center;
@@ -95,11 +112,10 @@
         display: none;
         outline: 0.1rem solid #ccc;
 
-        /*border-radius: 2rem;*/
         border-radius: 0.5rem;
 
-        margin: 0; /* Reset margin */
-        padding: 0; /* Reset padding */
+        margin: 0;
+        padding: 0;
     }
 
     :global(body.dark-mode) .dropdown {
@@ -112,9 +128,22 @@
     }
 
     .option {
+        color: #101820;
         padding: 0.6rem;
         cursor: pointer;
         text-align: center;
         list-style: none;
+    }
+
+    button {
+        width: 100%;
+        height: 100%;
+
+        background: none;
+        border: none;
+
+        color: #f4f9ff;
+        font-synthesis: none;
+        font: normal normal 400 medium / 1.5 Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
     }
 </style>

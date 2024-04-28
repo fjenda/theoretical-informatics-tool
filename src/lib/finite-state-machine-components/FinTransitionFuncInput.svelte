@@ -1,9 +1,15 @@
+<!--
+    FinTransitionFuncInput.svelte
+    This component is used to input transition functions for the graph.
+    Author: Marek Krúpa
+-->
 
 <script lang="ts">
 
-    import {configuration_store, graph_store, resetInputVar} from "../../stores/graphInitStore";
+    import {fin_backup_store, resetInputVar} from "../../stores/graphInitStore";
     import {input_error_store} from "../../stores/inputErrorStore";
 
+    // Variables
     let transitions : TransitionMeta[] = [];
     let alphabet : string[] = [];
     let textInput : string = "";
@@ -11,10 +17,11 @@
     let backdrop: HTMLDivElement;
     let correctInput: boolean = true;
 
+    // Reset input
     $: if ($resetInputVar) {
         textInput = "";
     }
-
+    // Parse row of input
     function parseRow(row : string) {
         let rowSplit = row.split(/[=,\n)(;]/);
 
@@ -53,51 +60,49 @@
                         state: stateId,
                         stateLabel: rowSplit[0],
                         input: rowSplit[1],
-                        stateAfter: $graph_store.followingID,
+                        stateAfter: $fin_backup_store.followingID,
                         stateAfterLabel: rowSplit[2],
                     });
-                    $graph_store.followingID++;
+                    $fin_backup_store.followingID++;
                 }
             } else {
                 if(stateAfterId >= 0) {
                     transitions.push({
-                        state: $graph_store.followingID,
+                        state: $fin_backup_store.followingID,
                         stateLabel: rowSplit[0],
                         input: rowSplit[1],
                         stateAfter: stateAfterId,
                         stateAfterLabel: rowSplit[2],
                     });
-                    $graph_store.followingID++;
+                    $fin_backup_store.followingID++;
                 } else {
                     if (rowSplit[0] == rowSplit[2]) {
                         transitions.push({
-                            state: $graph_store.followingID,
+                            state: $fin_backup_store.followingID,
                             stateLabel: rowSplit[0],
                             input: rowSplit[1],
-                            stateAfter: $graph_store.followingID,
+                            stateAfter: $fin_backup_store.followingID,
                             stateAfterLabel: rowSplit[2],
                         });
-                        $graph_store.followingID++;
+                        $fin_backup_store.followingID++;
                     } else {
                         transitions.push({
-                            state: $graph_store.followingID,
+                            state: $fin_backup_store.followingID,
                             stateLabel: rowSplit[0],
                             input: rowSplit[1],
-                            stateAfter: $graph_store.followingID + 1,
+                            stateAfter: $fin_backup_store.followingID + 1,
                             stateAfterLabel: rowSplit[2],
                         });
-                        $graph_store.followingID += 2;
+                        $fin_backup_store.followingID += 2;
                     }
                 }
             }
-
             alphabet.push(rowSplit[1]);
         }
-
         alphabet = alphabet.filter((item, index) => alphabet.indexOf(item) === index);
-
     }
 
+    // Function to store nodes
     function storeNodes() {
         //get nodes from transitions
         let nodes : GraphNodeMeta[] = [];
@@ -117,21 +122,19 @@
                 });
             }
         }
-
-        graph_store.update((n) => {
+        fin_backup_store.update((n) => {
             n.nodes = nodes;
             return n;
         });
-        console.log("Nodes: ", nodes);
     }
 
+    // Function to process transitions
     function processTransitions() {
         transitions = [];
-        console.log("Here start transitions: ", transitions);
 
         let rows = textInput.split("\n").filter(Boolean);
 
-        if ($graph_store.type == "DFA") {
+        if ($fin_backup_store.type == "DFA") {
             applyHighlightsDFA(textInput);
 
             for (let row of rows) {
@@ -142,7 +145,7 @@
                     correctInput = false;
                 }
             }
-        } else if ($graph_store.type == "NFA") {
+        } else if ($fin_backup_store.type == "NFA") {
             applyHighlights(textInput);
 
             for (let row of rows) {
@@ -158,34 +161,33 @@
             console.log("Invalid type");
         }
 
-
-        console.log("Is input correct: ", correctInput);
-
         input_error_store.update((n) => {
             n.transitions = correctInput;
             return n;
         });
 
-        graph_store.update((n) => {
+        fin_backup_store.update((n) => {
             n.transitions = transitions;
             n.input_alphabet = alphabet;
             return n;
         });
 
-
         storeNodes();
     }
 
+    // Function to validate transition in NFA
     function validateTransition(transition) {
         let regex = /d\(([A-Za-z0-9]|[A-Za-z][0-9]),(ε|[A-Za-z0-9])\)=([A-Za-z0-9]|[A-Za-z][0-9]);$/;
         return regex.test(transition);
     }
 
+    // Function to validate transition in DFA
     function validateTransitionDFA(transition) {
         let regex = /^d\(([A-Za-z0-9]|[A-Za-z][0-9]),[^ε]\)=([A-Za-z0-9]|[A-Za-z][0-9]);$/;
         return regex.test(transition);
     }
 
+    // Function to apply highlights in DFA
     function applyHighlightsDFA(text) {
         return text
             .replace(/\n$/g, '\n\n')
@@ -198,8 +200,9 @@
             });
     }
 
+    // Function to apply highlights in NFA
     function applyHighlights(text) {
-        if ($graph_store.type == "DFA") {
+        if ($fin_backup_store.type == "DFA") {
             return text
                 .replace(/\n$/g, '\n\n')
                 .replace(/(d\(([A-Za-z0-9]|[A-Za-z][0-9]),([A-Za-z0-9])\)=([A-Za-z0-9]|[A-Za-z][0-9]);)|(.*)/g, function (match, validTransition, other) {
@@ -209,7 +212,7 @@
                         return '<mark>' + match + '</mark>';  // If it's not a valid transition, wrap it in <mark> tags
                     }
                 });
-        } else if ($graph_store.type == "NFA") {
+        } else if ($fin_backup_store.type == "NFA") {
             return text
                 .replace(/\n$/g, '\n\n')
                 .replace(/(d\(([A-Za-z0-9]|[A-Za-z][0-9]),(ε|[A-Za-z0-9])\)=([A-Za-z0-9]|[A-Za-z][0-9]);)|(.*)/g, function (match, validTransition, other) {
@@ -222,11 +225,11 @@
         }
     }
 
+    // Function to handle scroll
     function handleScroll() {
         let scrollTop = textarea.scrollTop;
         backdrop.scrollTop = scrollTop;
     }
-
 
 </script>
 
@@ -257,7 +260,6 @@
         position: absolute;
         z-index: 2;
         margin: 0;
-        /*border: 2px solid #74637f;*/
         color: #444;
         background-color: transparent;
         overflow: auto;
@@ -268,7 +270,6 @@
         margin: 0;
         border-radius: 0;
     }
-
 
     .highlights{
         letter-spacing: 1px;
@@ -287,7 +288,6 @@
     .backdrop {
         position: absolute;
         z-index: 1;
-        /*border: 2px solid #685972;*/
         background-color: #fff;
         overflow: auto;
         pointer-events: none;
@@ -308,21 +308,19 @@
         width: 10.5rem;
     }
 
-
     .backdrop {
-        background-color: #fff; /* or whatever */
+        background-color: #fff;
     }
 
     :global(mark) {
         color: transparent;
         border-radius: 0.2rem;
-        background-color: #f36969; /* or whatever */
+        background-color: #f36969;
     }
 
     :global(body.dark-mode) .function-input {
         border: 0.1rem solid #9c81da;
 
-        /*background-color: #2f3941;*/
         background-color: transparent;
         color: #f4f9ff;
     }

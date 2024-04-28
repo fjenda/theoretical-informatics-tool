@@ -1,4 +1,12 @@
+<!--
+    ResultGraphWindow.svelte
+    This component is a window for the finite state automaton graph.
+    It contains the graph itself and the toolbar with functions for the graph manipulation.
+    Author: Marek Krúpa
+-->
+
 <script lang="ts">
+    // Imports
     import {FiniteStateAutomaton} from "../FiniteStateAutomaton";
     import {
         first_graph_store, resetInputVar,
@@ -12,10 +20,11 @@
     import {onMount} from "svelte";
     import {input_error_store} from "../../../stores/inputErrorStore";
 
+    // Variables
     let graphObject = new FiniteStateAutomaton([], [], [], [], [], "DFA");
-
     let highlightedNodesIS : String[] = [];
 
+    // Functions and Toolbar functions
     export const resutlToolbarFunctions = {
         unionFunc,
         intersectionFunc,
@@ -32,12 +41,19 @@
         generateConfiguration,
     } as ToolbarFunctions;
 
+    // Check if the type of the graph has changed
+    $: if ($result_graph_store.type) {
+        updateConfiguration("type");
+    }
+
+    // Check if the theme of the graph has changed
     $: if ($result_graph_store.theme){
         if (graphObject != undefined){
             graphObject.changeGraphStyle();
         }
     }
 
+    // Function to test the input
     function testInput(wordCh : string[]){
         resetTestInput();
         removeHighlighted();
@@ -54,8 +70,6 @@
 
         if (graphObject.type === "DFA") {
             let tmpNode: GraphNodeMeta;
-
-            //finin  graphObject.nodes node eith id as startstate and store it ot the tmpNode
             tmpNode = graphObject.nodes.find((node: GraphNodeMeta) => {
                 if (Array.isArray(graphObject.startState))
                     return graphObject.startState.includes(node.id);
@@ -78,7 +92,6 @@
                 return n;
             });
         } else {
-            // console.log("Jsem v NFA větvi");
             graphObject.startState = $result_graph_store.startState;
             graphObject.traversal = graphObject.preprocessGraphInputNFA();
             highlightElement(graphObject.correctStartState);
@@ -90,14 +103,13 @@
             });
         }
 
-
         result_graph_store.update((n) => {
             n.traversal = graphObject.traversal;
             return n;
         });
-
     }
 
+    // Function to move to the next transition
     function nextTransition(){
         removeHighlighted();
 
@@ -126,18 +138,16 @@
 
             graphObject.currentStatus.state = graphObject.traversal[graphObject.currentStatus.step].stateAfter;
             graphObject.currentStatus.step++;
-            // console.log(graphObject.currentStatus);
-
         }, 250);
 
         result_graph_store.update((n) => {
             n.currentStatus = graphObject.currentStatus;
             n.currentStep++;
-            // console.log("updating current status", n.currentStatus);
             return n;
         });
     }
 
+    // Function to move to the previous transition
     function previousTransition(){
         removeHighlighted();
 
@@ -164,6 +174,7 @@
         });
     }
 
+    // Function to reset the test input
     function resetTestInput(){
         removeHighlighted();
 
@@ -176,6 +187,7 @@
         graphObject.resetTestInput();
     }
 
+    // Function to remove the highlighted elements
     function removeHighlighted() {
         graphObject.graph.elements().forEach(graphElement => {
             if (highlightedNodesIS.includes(graphElement.id())) {
@@ -186,6 +198,7 @@
         highlightedNodesIS = [];
     }
 
+    // Function to highlight the element
     function highlightElement(id : string | number) {
         graphObject.graph.elements().forEach(graphElement => {
             if (id == graphElement.id()) {
@@ -195,8 +208,8 @@
         });
     }
 
+    // Function to call union function of first and second graph
     function unionFunc() {
-        console.log("union");
         let firstAutomaton = new FiniteStateAutomaton(
             $first_graph_store.nodes,
             $first_graph_store.transitions,
@@ -213,8 +226,6 @@
             $second_graph_store.type
         )
 
-        console.log("first automaton: ", firstAutomaton);
-        console.log("second automaton: ",secondAutomaton);
         deleteGraph();
         let newFa : FiniteStateAutomaton;
         if (firstAutomaton.type === "NFA" || secondAutomaton.type === "NFA") {
@@ -247,8 +258,6 @@
             });
         }
 
-
-        console.log("newFa: ", graphObject);
         graphObject.generateGraphFromTransitions();
 
         createGraph(false);
@@ -266,11 +275,10 @@
 
         resetInputVar.set(false);
         input_error_store.reset();
-
     }
 
+    // Function to call intersection function of first and second graph
     function intersectionFunc() {
-        console.log("intersection");
         let firstAutomaton = new FiniteStateAutomaton(
             $first_graph_store.nodes,
             $first_graph_store.transitions,
@@ -314,8 +322,6 @@
 
         secondAutomaton.input_alphabet = secondAutomatonAlphabet;
 
-        console.log("first automaton: ", firstAutomaton);
-        console.log("second automaton: ",secondAutomaton);
         deleteGraph();
         let newFa : FiniteStateAutomaton;
         if (firstAutomaton.type === "NFA" || secondAutomaton.type === "NFA") {
@@ -340,7 +346,6 @@
         graphObject.finishState = newFa.finishState;
         graphObject.type = newFa.type;
 
-        console.log("newFa: ", graphObject);
         graphObject.generateGraphFromTransitions();
 
         createGraph(false);
@@ -358,13 +363,10 @@
 
         resetInputVar.set(false);
         input_error_store.reset();
-
-
-
     }
 
+    // Function to call complement function of first graph
     function complementFunc() {
-        console.log("complement");
         let firstAutomaton = new FiniteStateAutomaton(
             $first_graph_store.nodes,
             $first_graph_store.transitions,
@@ -387,8 +389,6 @@
 
         firstAutomaton.input_alphabet = firstAutomatonAlphabet;
 
-
-        console.log("first automaton: ", firstAutomaton);
         deleteGraph();
         let newFa : FiniteStateAutomaton;
         if(firstAutomaton.type === "NFA") {
@@ -421,7 +421,6 @@
             });
         }
 
-        console.log("newFa: ", graphObject);
         graphObject.generateGraphFromTransitions();
 
         createGraph(false);
@@ -439,12 +438,10 @@
 
         resetInputVar.set(false);
         input_error_store.reset();
-
     }
 
+    // Function to call concatenation function of first and second graph
     function concatenationFunc() {
-        console.log("concatenation");
-
         let firstAutomaton = new FiniteStateAutomaton(
             $first_graph_store.nodes,
             $first_graph_store.transitions,
@@ -460,9 +457,6 @@
             $second_graph_store.finishState,
             $second_graph_store.type
         )
-
-        console.log("first automaton: ", firstAutomaton);
-        console.log("second automaton: ",secondAutomaton);
 
         deleteGraph();
         let newFa : FiniteStateAutomaton;
@@ -496,7 +490,6 @@
             });
         }
 
-        console.log("newFa: ", graphObject);
         graphObject.generateGraphFromTransitions();
 
         createGraph(false);
@@ -514,12 +507,10 @@
 
         resetInputVar.set(false);
         input_error_store.reset();
-
-
     }
 
+    // Function to call difference function of first and second graph
     function differenceFunc(){
-        console.log("difference");
         let firstAutomaton = new FiniteStateAutomaton(
             $first_graph_store.nodes,
             $first_graph_store.transitions,
@@ -547,7 +538,6 @@
         //remove epsilon from alphabet
         firstAutomatonAlphabet = firstAutomatonAlphabet.filter((item) => item !== "ε");
 
-
         firstAutomaton.input_alphabet = firstAutomatonAlphabet;
 
         let secondAutomatonAlphabet = [];
@@ -563,8 +553,6 @@
 
         secondAutomaton.input_alphabet = secondAutomatonAlphabet;
 
-        console.log("first automaton: ", firstAutomaton);
-        console.log("second automaton: ",secondAutomaton);
         deleteGraph();
         let newFa : FiniteStateAutomaton;
         if (firstAutomaton.type === "NFA" || secondAutomaton.type === "NFA") {
@@ -597,7 +585,6 @@
             });
         }
 
-        console.log("newFa: ", graphObject);
         graphObject.generateGraphFromTransitions();
 
         createGraph(false);
@@ -616,8 +603,9 @@
         resetInputVar.set(false);
         input_error_store.reset();
     }
+
+    // Function to call iteration function of first graph
     function iterationFunc(){
-        console.log("iteration");
         let firstAutomaton = new FiniteStateAutomaton(
             $first_graph_store.nodes,
             $first_graph_store.transitions,
@@ -626,11 +614,9 @@
             $first_graph_store.type
         )
 
-        console.log("first automaton: ", firstAutomaton);
         deleteGraph();
         let newFa : FiniteStateAutomaton;
         newFa = SetOperations.dfaIteration(firstAutomaton);
-
 
         let alphabet = new Set();
         newFa.transitions.forEach((transition) => {
@@ -655,7 +641,6 @@
             });
         }
 
-        console.log("newFa: ", graphObject);
         graphObject.generateGraphFromTransitions();
 
         createGraph(false);
@@ -675,6 +660,7 @@
         input_error_store.reset();
     }
 
+    // Function to delete the graph
     function deleteGraph () {
         graphObject.graph.elements().remove();
         graphObject.nodes = [];
@@ -686,6 +672,7 @@
         result_configuration_store.reset();
     }
 
+    // Function to create the graph
     function createGraph(genTransitions : boolean = false) {
         graphObject.nodes.forEach((node : GraphNodeMeta) => {
             addNode(node);
@@ -705,6 +692,7 @@
         resetLayout();
     }
 
+    // Function to generate the configuration
     function generateConfiguration() {
         if (graphObject.nodes.length === 0 || graphObject.transitions.length === 0) {
             //erase configuration
@@ -720,7 +708,6 @@
             states.add(node.label);
         });
         configuration.nodes = Array.from(states);
-
 
         // input alphabet
         const alphabet = new Set();
@@ -741,7 +728,6 @@
             });
         });
 
-
         let startStateLabel = graphObject.startState.map((node : string) => graphObject.nodes.find((n : GraphNodeMeta) => n.id === node).label);
         let finishStatesLabel = graphObject.finishState.map((node : string) => graphObject.nodes.find((n : GraphNodeMeta) => n.id === node).label);
 
@@ -759,6 +745,7 @@
         Object.assign($result_configuration_store, configuration);
     }
 
+    // Function to add node
     function addNode(node : GraphNodeMeta) {
         try {
             graphObject.addNode(node);
@@ -774,6 +761,7 @@
         }
     }
 
+    // Function to add edge
     function addEdge(edge : GraphEdgeMeta) {
         try {
             graphObject.addEdge(edge);
@@ -781,10 +769,10 @@
             console.log(e);
         } finally {
             updateConfiguration("edge");
-            // resetLayout();
         }
     }
 
+    // Function to update the configuration
     function updateConfiguration(mode : string) {
         let configuration : AutomatonConfiguration = {};
 
@@ -836,11 +824,13 @@
         Object.assign($result_configuration_store, configuration);
     }
 
+    // Function to reset the layout
     function resetLayout() {
         const layout = graphObject.graph.makeLayout({ name: "cola", edgeLength: 150, randomize: true, avoidOverlap: true, handleDisconnected: true});
         layout.run();
     }
 
+    // Function to save the graph
     function saveGraph() {
         const simplifiedGraphObject = {
             edges: graphObject.edges,
@@ -854,9 +844,6 @@
         // save graphObject into json
         let jsonData = JSON.stringify(simplifiedGraphObject, null, 4);
 
-        // let jsonData = graphObject.graph.json(false);
-        // jsonData = JSON.stringify(jsonData, null, 4);
-
         const blob = new Blob([jsonData], { type: "application/json" });
         const url = URL.createObjectURL(blob);
 
@@ -868,11 +855,11 @@
         URL.revokeObjectURL(url);
     }
 
+    // Function to set graph properties
     function graphConstructor(){
         graphObject.graph = cytoscape({
 
             container: graphObject.div,
-            // wheelSensitivity: 0.2,
             minZoom: 0.5,
             maxZoom: 2,
 
@@ -951,10 +938,9 @@
         });
     }
 
+    // Initial graph creation
     onMount(() => {
         graphConstructor();
-
-
     });
 
 
@@ -976,7 +962,6 @@
     min-width: 35rem;
     height: 90%;
     min-height: 25rem;
-    //margin: 2.5% auto;
 
     border-radius: 0.5rem;
     background: #f7f7f8;
@@ -992,7 +977,6 @@
   .graph {
     overflow: hidden;
 
-    /*border-radius: 2vw;*/
     border-radius: 0.5rem;
 
     height: calc(100% - 5vh);
