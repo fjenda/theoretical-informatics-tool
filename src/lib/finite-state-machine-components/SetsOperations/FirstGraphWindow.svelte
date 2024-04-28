@@ -160,6 +160,12 @@
                             n.type = "NFA";
                             return n;
                         });
+                    } else {
+                        graphObject.type = "DFA";
+                        first_graph_store.update((n) => {
+                            n.type = "DFA";
+                            return n;
+                        });
                     }
 
                     generateGraphFromTransitions();
@@ -390,6 +396,12 @@
             graphObject.type = "NFA";
             first_graph_store.update((n) => {
                 n.type = "NFA";
+                return n;
+            });
+        } else {
+            graphObject.type = "DFA";
+            first_graph_store.update((n) => {
+                n.type = "DFA";
                 return n;
             });
         }

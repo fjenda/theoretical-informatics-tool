@@ -371,6 +371,12 @@
                 n.type = "NFA";
                 return n;
             });
+        } else {
+            graphObject.type = "DFA";
+            second_graph_store.update((n) => {
+                n.type = "DFA";
+                return n;
+            });
         }
 
         graphObject.generateGraphFromTransitions();

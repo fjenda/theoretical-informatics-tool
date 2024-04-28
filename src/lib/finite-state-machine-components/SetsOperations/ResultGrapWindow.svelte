@@ -256,6 +256,12 @@
                 n.type = "NFA";
                 return n;
             });
+        } else {
+            graphObject.type = "DFA";
+            result_graph_store.update((n) => {
+                n.type = "DFA";
+                return n;
+            });
         }
 
         graphObject.generateGraphFromTransitions();
@@ -419,6 +425,12 @@
                 n.type = "NFA";
                 return n;
             });
+        } else {
+            graphObject.type = "DFA";
+            result_graph_store.update((n) => {
+                n.type = "DFA";
+                return n;
+            });
         }
 
         graphObject.generateGraphFromTransitions();
@@ -486,6 +498,12 @@
             graphObject.type = "NFA";
             result_graph_store.update((n) => {
                 n.type = "NFA";
+                return n;
+            });
+        } else {
+            graphObject.type = "DFA";
+            result_graph_store.update((n) => {
+                n.type = "DFA";
                 return n;
             });
         }
@@ -583,6 +601,12 @@
                 n.type = "NFA";
                 return n;
             });
+        } else {
+            graphObject.type = "DFA";
+            result_graph_store.update((n) => {
+                n.type = "DFA";
+                return n;
+            });
         }
 
         graphObject.generateGraphFromTransitions();
@@ -637,6 +661,12 @@
             graphObject.type = "NFA";
             result_graph_store.update((n) => {
                 n.type = "NFA";
+                return n;
+            });
+        } else {
+            graphObject.type = "DFA";
+            result_graph_store.update((n) => {
+                n.type = "DFA";
                 return n;
             });
         }

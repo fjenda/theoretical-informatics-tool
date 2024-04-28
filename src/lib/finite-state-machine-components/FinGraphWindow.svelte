@@ -536,6 +536,12 @@
                     n.type = "NFA";
                     return n;
                 });
+            } else {
+                graphObject.type = "DFA";
+                graph_store.update((n) => {
+                    n.type = "DFA";
+                    return n;
+                });
             }
 
             let inputAlphabet = new Set();
@@ -601,7 +607,7 @@
 
                 //if node has class start
                 if (this.hasClass("start")) {
-                    graphObject.startState = "";
+                    graphObject.startState = graphObject.startState.filter((node : string) => node !== this.id());
                 }
                 // remove node from graphNodes
                 graphObject.nodes = graphObject.nodes.filter((node : GraphNodeMeta) => node.id !== this.id());
@@ -629,6 +635,20 @@
             let inputAlphabetArrNoDuplicates = inputAlphabetArr.filter((item, index) => inputAlphabetArr.indexOf(item) === index);
             graphObject.input_alphabet = inputAlphabetArrNoDuplicates;
 
+            if(!SetOperations.checkIfDfa(graphObject)){
+                graphObject.type = "NFA";
+                graph_store.update((n) => {
+                    n.type = "NFA";
+                    return n;
+                });
+            } else {
+                graphObject.type = "DFA";
+                graph_store.update((n) => {
+                    n.type = "DFA";
+                    return n;
+                });
+            }
+
             graph_store.update((n) => {
                 n.nodes = graphObject.nodes;
                 n.edges = graphObject.edges;
@@ -651,6 +671,7 @@
         } else {
             graphObject.graph.removeAllListeners();
         }
+
     }
 
     // Function for saving the graph
@@ -895,6 +916,12 @@
             graphObject.type = "NFA";
             graph_store.update((n) => {
                 n.type = "NFA";
+                return n;
+            });
+        } else {
+            graphObject.type = "DFA";
+            graph_store.update((n) => {
+                n.type = "DFA";
                 return n;
             });
         }
