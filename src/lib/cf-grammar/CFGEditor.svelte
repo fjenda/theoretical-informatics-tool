@@ -4,10 +4,18 @@
 -->
 
 <script lang="ts">
+    import {tooltip} from "../tooltipUtils";
 
 </script>
 
 <div class="cfg-editor">
+    <span class="ttip" use:tooltip={"Use this editor to create your grammar.\n\n" +
+                                    "The start symbol will always be \"S\".\n" +
+                                    "Use the standard pipe character for \"or\" [ | ].\n" +
+                                    "If you want to write ε leave the field empty.\n" +
+                                    "To remove a space press \"Backspace\" on an empty field.\n" +
+                                    "To remove a row press the delete button on the left."}>
+                ?</span>
     <div class="definition-button">
         <slot name="definition"/>
     </div>
@@ -64,5 +72,20 @@
     position: absolute;
     top: 1rem;
     right: 1rem;
+  }
+
+  .ttip {
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    position: absolute;
+    top: 1rem;
+    left: 1.5rem;
+    white-space: break-spaces;
+    text-align: left;
+  }
+
+  .cfg-editor :global(#tooltip) {
+    transform: translate(-5%, 0%);
   }
 </style>

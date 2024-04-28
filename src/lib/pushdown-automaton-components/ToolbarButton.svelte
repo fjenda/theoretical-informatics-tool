@@ -63,7 +63,8 @@ onMount(() => {
                                                 "Automaton Type:\n" +
                                                 "   Empty - Accepts with empty stack\n" +
                                                 "   Final    - Accepts in final state\n" +
-                                                "   Both    - Accepts in final state with empty stack"}>
+                                                "   Both    - Accepts in final state with empty stack\n\n" +
+                                                "You can choose the start and final states\nafter writing the rules."}>
                 ?</span>
             {/if}
         </h2>
@@ -126,7 +127,7 @@ onMount(() => {
     }
 
     .header :global(#tooltip) {
-        transform: translate(-110%, -22.5%);
+        transform: translate(-100%, 0%);
     }
 </style>
 
