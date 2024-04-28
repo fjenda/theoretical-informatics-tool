@@ -709,11 +709,11 @@ export class PDAController {
                 "transition-property": "line-color, target-arrow-color, background-color",
                 "transition-duration": 100,
             })
-                .selector(".start").style({
-                "border-color": "#00ff00",
-            })
                 .selector(".finish").style({
                 "border-color": "#ff0000",
+            })
+                .selector(".start").style({
+                "border-color": "#00ff00",
             })
         .update();
     }
@@ -743,7 +743,7 @@ export class PDAController {
                 {
                     selector: ".finish",
                     style: {
-                        "border-width": 3.5,
+                        "border-width": 5,
                         "border-style": "double",
                         "border-color": "#ff0000",
                     }
@@ -751,7 +751,7 @@ export class PDAController {
                 {
                     selector: ".start",
                     style: {
-                        "border-width": 3,
+                        "border-width": 5,
                         "border-color": "#00ff00",
                     }
                 },

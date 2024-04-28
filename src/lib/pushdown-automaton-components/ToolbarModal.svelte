@@ -15,7 +15,7 @@
         resetInputVar,
         pda_configuration_store,
         user_grammar_store,
-        pda_backup_store, pda_graph_store
+        pda_backup_store, pda_graph_store, graph_store
     } from "../../stores/graphInitStore";
     import AutomatonGeneratorLayout from "./AutomatonGeneratorLayout.svelte";
     import {input_error_store} from "../../stores/inputErrorStore";
@@ -151,7 +151,6 @@
         switch (type) {
             // add a new node
             case "new-node": {
-                // console.log("new-node - " + modifiedLabel);
                 if (isStartState && isFinishState) {
                     func({id: label, label: label, class: "finish start"});
                 } else if (isStartState)
@@ -248,12 +247,14 @@
                             </label>
                         </div>
                     {/if}
+                    {#if $pda_graph_store.type !== "empty"}
                     <div class="checkbox-box">
                         <label>
                             <input id="finish-state-checkbox" type="checkbox" bind:checked={isFinishState} />
                             Final state
                         </label>
                     </div>
+                    {/if}
                 {:else if type === "new-edge"}
                     <div class="edge-box">
                         <div class="label-box">
