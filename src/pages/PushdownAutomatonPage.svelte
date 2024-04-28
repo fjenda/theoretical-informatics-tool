@@ -49,7 +49,7 @@
                 <ToolbarButton type="reset-layout" text="Reset layout" func={PDAController.resetLayout} />
                 <ToolbarButton type="show-definition" text="Show definition" func={PDAController.generateConfiguration} />
             </GraphToolbar>
-            <TypeView slot="type" type={$pda_graph_store.type}/>
+            <TypeView slot="type" type={$pda_graph_store.type} />
             <StackVisualiser slot="stack"/>
         </GraphWindow>
         <ConfigurationTable slot="table"/>

@@ -19,6 +19,7 @@
 
     import {PDAController} from "./pda/PDAController";
     import type {ToolbarFunctions} from "../../types/ToolbarFunctions";
+    import {get} from "svelte/store";
 
     let stack_wrapper: HTMLDivElement;
 
@@ -49,7 +50,7 @@
     let tmp_nodes = [
         { id: "q0", label: "q0", class: "start" },
         { id: "q1", label: "q1" },
-        { id: "qF", label: "qF", class: "finish" },
+        { id: "q2", label: "q2" },
     ];
 
     let tmp_transitions = [
@@ -71,21 +72,21 @@
             state: "q1",
             input: "a",
             stack: "A",
-            stateAfter: "qF",
+            stateAfter: "q2",
             stackAfter: ["ε"],
         },
         {
             state: "q1",
             input: "ε",
             stack: "Z",
-            stateAfter: "qF",
+            stateAfter: "q2",
             stackAfter: ["ε"],
         },
         {
-            state: "qF",
+            state: "q2",
             input: "ε",
             stack: "Z",
-            stateAfter: "qF",
+            stateAfter: "q2",
             stackAfter: ["ε"],
         }
     ];
@@ -102,8 +103,8 @@
             pda_backup_store.update((n) => {
                 n.type = "empty";
                 n.startState = "q0";
-                n.finalStates = ["qF"];
                 n.stackBottom = "Z";
+                n.finalStates = [];
                 n.transitions = tmp_transitions;
                 n.nodes = tmp_nodes;
                 return n;

@@ -20,14 +20,16 @@
 
 </script>
 
-<div class="stack">
-    <div class="stack__title">Stack</div>
-    <div class="stack__elements">
-        {#each stackElements as element}
-            <div class="stack__element">{element}</div>
-        {/each}
+{#if $pda_graph_store.status === "testing"}
+    <div class="stack">
+        <div class="stack__title">Stack</div>
+        <div class="stack__elements">
+            {#each stackElements as element}
+                <div class="stack__element">{element}</div>
+            {/each}
+        </div>
     </div>
-</div>
+{/if}
 
 <style>
     .stack {
