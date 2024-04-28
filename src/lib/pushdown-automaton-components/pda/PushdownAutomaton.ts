@@ -54,7 +54,7 @@ export class PushdownAutomaton {
     startState: string = "q0";
 
     // The final states of the automaton
-    finalStates?: string[] = ["qF"];
+    finalStates?: string[] = [];
 
     // The stack bottom of the automaton
     stackBottom: string = "Z";

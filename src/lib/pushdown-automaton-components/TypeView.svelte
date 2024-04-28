@@ -6,6 +6,9 @@
 -->
 
 <script lang="ts">
+    import type {Writable} from "svelte/store";
+
+    export let store: Writable<any>;
     export let type: string = "";
 </script>
 

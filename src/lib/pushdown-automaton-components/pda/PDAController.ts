@@ -648,14 +648,16 @@ export class PDAController {
             } else {
                 // if node has class final
                 if (this.hasClass("finish")) {
-                    // get the number of finish nodes
-                    let finishNodes = get(pda_graph_store).finalStates.length;
-                    if (finishNodes === 1) {
-                        return;
-                    } else {
-                        // remove node from finishState
-                        get(pda_graph_store).finalStates = get(pda_graph_store).finalStates.filter((node : string) => node !== this.id());
-                    }
+                    // remove node from finishState
+                    get(pda_graph_store).finalStates = get(pda_graph_store).finalStates.filter((node : string) => node !== this.id());
+                }
+
+                // update type if no final states exist
+                if (get(pda_graph_store).finalStates.length === 0) {
+                    pda_graph_store.update((n) => {
+                        n.type = "empty";
+                        return n;
+                    });
                 }
 
                 // if node has class start

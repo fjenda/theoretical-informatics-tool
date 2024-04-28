@@ -161,6 +161,9 @@
                     func({id: label, label: label});
                 }
 
+                if (isFinishState && $pda_graph_store.type === "empty") {
+                    $pda_graph_store.type = "final";
+                }
                 return true;
             }
 
@@ -247,14 +250,12 @@
                             </label>
                         </div>
                     {/if}
-                    {#if $pda_graph_store.type !== "empty"}
                     <div class="checkbox-box">
                         <label>
                             <input id="finish-state-checkbox" type="checkbox" bind:checked={isFinishState} />
                             Final state
                         </label>
                     </div>
-                    {/if}
                 {:else if type === "new-edge"}
                     <div class="edge-box">
                         <div class="label-box">
