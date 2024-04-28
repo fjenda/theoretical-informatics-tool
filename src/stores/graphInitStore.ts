@@ -88,7 +88,11 @@ export const fin_backup_store = function () {
     const {set, update, subscribe} : Writable<Partial<FinInitializationType>> = writable({});
 
     const reset = () => {
-        set({});
+        set({
+            nodes: [],
+            type: "DFA",
+            followingID: 0,
+        });
     }
 
     return {
@@ -99,6 +103,43 @@ export const fin_backup_store = function () {
     }
 }();
 
+export const first_backup_store = function () {
+    const {set, update, subscribe} : Writable<Partial<FinInitializationType>> = writable({});
+
+    const reset = () => {
+        set({
+            nodes: [],
+            type: "DFA",
+            followingID: 0,
+        });
+    }
+
+    return {
+        set,
+        update,
+        subscribe,
+        reset,
+    }
+}();
+
+export const second_backup_store = function () {
+    const {set, update, subscribe} : Writable<Partial<FinInitializationType>> = writable({});
+
+    const reset = () => {
+        set({
+            nodes: [],
+            type: "DFA",
+            followingID: 0,
+        });
+    }
+
+    return {
+        set,
+        update,
+        subscribe,
+        reset,
+    }
+}();
 
 export const configuration_store = function() {
     const {set, update, subscribe} : Writable<Partial<AutomatonConfiguration>> = writable({});
@@ -163,13 +204,13 @@ export const result_configuration_store = function() {
 export const graph_store = function() {
     const {set, update, subscribe} : Writable<Partial<GraphObject>> = writable({
         nodes: [],
-        type: "empty",
+        type: "DFA",
     });
 
     const reset = () => {
         set({
             nodes: [],
-            type: "empty",
+            type: "DFA",
             followingID: 0,
         });
     }

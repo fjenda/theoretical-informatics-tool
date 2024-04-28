@@ -6,20 +6,20 @@
 -->
 
 <script lang="ts">
-    import {first_graph_store} from "../../../stores/graphInitStore";
+    import {first_backup_store} from "../../../stores/graphInitStore";
 
     let toggleState = "DFA";
 
     $: {
-        if ($first_graph_store.type == "empty") {
-            $first_graph_store.type = "DFA";
+        if ($first_backup_store.type == "empty") {
+            $first_backup_store.type = "DFA";
         }
     }
 
     // Function for changing the type of the graph
     const toggle = (newState) => {
         toggleState = newState;
-        first_graph_store.update((n) => {
+        first_backup_store.update((n) => {
             n.type = newState
             return n;
         });
@@ -30,13 +30,13 @@
     <div class="toggle-label">Type</div>
     <div class="toggle-switch">
         <button
-                class={$first_graph_store.type === "DFA" ? 'selected' : ''}
+                class={$first_backup_store.type === "DFA" ? 'selected' : ''}
                 on:click={() => toggle("DFA")}
         >
             DFA
         </button>
         <button
-                class={$first_graph_store.type === "NFA" ? 'selected' : ''}
+                class={$first_backup_store.type === "NFA" ? 'selected' : ''}
                 on:click={() => toggle("NFA")}
         >
             NFA

@@ -1,21 +1,21 @@
 <script>
 
-    import {graph_store, resetInputVar} from "../stores/graphInitStore";
+    import {fin_backup_store, resetInputVar} from "../stores/graphInitStore";
     import {input_error_store} from "../stores/inputErrorStore";
 
     let selectedOptions = [];
     let selectedOptionsId = [];
     let selectHeight = "10.6rem"; // Výchozí výška
 
-    $: options = $graph_store.nodes?.map(node => node);
+    $: options = $fin_backup_store.nodes?.map(node => node);
 
     $: if ($resetInputVar) {
         selectedOptions = [];
     }
 
-    $: if ($graph_store.type === "DFA") {
+    $: if ($fin_backup_store.type === "DFA") {
         selectHeight = "10.6rem"; // Výška pro typ DFA
-    } else if ($graph_store.type === "NFA") {
+    } else if ($fin_backup_store.type === "NFA") {
         selectHeight = "5.9rem"; // Výška pro typ NFA
     } else {
         selectHeight = "10.6rem"; // Výška pro ostatní typy
@@ -40,9 +40,7 @@
         });
         selectedOptionsId = findIDs();
         selectedOptions = Array.from(event.target.selectedOptions, option => option.label);
-        // console.log(selectedOptionsId);
-        // console.log(selectedOptions);
-        graph_store.update(n => {
+        fin_backup_store.update(n => {
             n.finishState = selectedOptionsId;
             return n;
         });

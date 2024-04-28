@@ -12,12 +12,18 @@
     import cola from "cytoscape-cola";
     cytoscape.use(cola);
     import {onMount} from "svelte";
-    import {configuration_store, graph_store, resetInputVar, result_graph_store} from "../../stores/graphInitStore";
+    import {
+        configuration_store,
+        fin_backup_store,
+        graph_store,
+        resetInputVar
+    } from "../../stores/graphInitStore";
     import {input_error_store} from "../../stores/inputErrorStore";
     import {FiniteStateAutomaton} from "./FiniteStateAutomaton";
     import {RegexAutomaton} from "./regex/RegexAutomaton";
     import {ConvertorToDFA} from "./ConvertorToDFA";
     import {SetOperations} from "./SetsOperations/SetOperations";
+    import {get} from "svelte/store";
 
     // Variables
     let graphObject = new FiniteStateAutomaton([], [], [], [], [], "DFA");
@@ -125,6 +131,14 @@
 
         graphObject.generateGraphFromTransitions();
 
+        // find following id
+        let maxId = 0;
+        graphObject.nodes.forEach((node : GraphNodeMeta) => {
+            if (parseInt(node.id) > maxId) {
+                maxId = parseInt(node.id);
+            }
+        });
+
         createGraph(false);
         graph_store.update((n) => {
             n.input_alphabet = graphObject.input_alphabet;
@@ -135,6 +149,7 @@
             n.type = graphObject.type;
             n.generated = true;
             n.hideConvertTable = true;
+            n.followingID = maxId + 1;
             return n;
         });
         resetInputVar.set(false);
@@ -411,21 +426,21 @@
         }
         input_error_store.reset();
 
-        if ($graph_store.transitions === undefined || $graph_store.transitions.length === 0) {
+        if ($fin_backup_store.transitions === undefined || $fin_backup_store.transitions.length === 0) {
             input_error_store.update((n) => {
                 n.transitions = false;
                 return n;
             });
         }
 
-        if ($graph_store.startState === undefined) {
+        if ($fin_backup_store.startState === undefined) {
             input_error_store.update((n) => {
                 n.startState = false;
                 return n;
             });
         }
 
-        if ($graph_store.finishState === undefined && $graph_store.type !== "empty") {
+        if ($fin_backup_store.finishState === undefined && $fin_backup_store.type !== "empty") {
             input_error_store.update((n) => {
                 n.finishState = false;
                 return n;
@@ -457,10 +472,6 @@
     function addNodeFromButton(node : GraphNodeMeta) {
         try {
 
-            if (graphObject.nodes.some((n : GraphNodeMeta) => n.label === node.label)) {
-                throw new Error("Node with same label already exists");
-            }
-
             graphObject.addNode(node);
 
         } catch (e) {
@@ -469,6 +480,8 @@
             updateConfiguration("node");
             graph_store.update((n) => {
                 n.nodes = graphObject.nodes;
+                n.startState = graphObject.startState;
+                n.finishState = graphObject.finishState;
                 return n;
             });
             resetLayout();
@@ -677,13 +690,22 @@
                     if (!graphData.nodes || !graphData.edges || graphData.transitions.length === 0 || !graphData.startState || !graphData.finishState || !graphData.type) {
                         return;
                     }
-                    graph_store.update((n) => {
-                        n.edges = graphData.edges;
+
+                    //find in graphDate.nodes biggest id and set it to graphObject.followingID +1
+                    let maxId = 0;
+                    graphData.nodes.forEach((node : GraphNodeMeta) => {
+                        if (parseInt(node.id) > maxId) {
+                            maxId = parseInt(node.id);
+                        }
+                    });
+
+                    fin_backup_store.update((n) => {
                         n.finishState = graphData.finishState;
                         n.nodes = graphData.nodes;
                         n.startState = graphData.startState;
                         n.transitions = graphData.transitions;
                         n.type = graphData.type;
+                        n.followingID = maxId + 1;
                         return n;
                     });
 
@@ -717,6 +739,7 @@
         deleteGraph();
 
         graph_store.update((n) => {
+            n.type = "DFA";
             n.nodes = [];
             n.edges = {};
             n.transitions = [];
@@ -725,6 +748,8 @@
             n.followingID = 0;
             n.input_alphabet = [];
             n.generated = true;
+            n.hideConvertTable = true;
+            n.currentStep = -1;
             return n;
         });
     }
@@ -844,6 +869,17 @@
         $graph_store.hideConvertTable = true;
         deleteGraph();
 
+        graph_store.update((n) => {
+            n.type = get(fin_backup_store).type;
+            n.startState = get(fin_backup_store).startState;
+            n.finishState = get(fin_backup_store).finishState;
+            n.transitions = get(fin_backup_store).transitions;
+            n.nodes = get(fin_backup_store).nodes;
+            n.input_alphabet = get(fin_backup_store).input_alphabet;
+            n.followingID = get(fin_backup_store).followingID;
+            return n;
+        });
+
         Object.assign(graphObject, $graph_store);
 
         if(!SetOperations.checkIfDfa(graphObject)){
@@ -904,17 +940,23 @@
         graphConstructor();
 
         graph_store.update((n) => {
+            n.hideConvertTable = true;
+            n.theme = "dark";
+            return n;
+        });
+
+        fin_backup_store.update((n) => {
             n.type = "DFA";
             n.transitions = exampleTransition;
             n.nodes = exampleNodes;
             n.startState = ["0"];
             n.finishState = ["1"];
             n.input_alphabet = ["a", "b"];
-            n.hideConvertTable = true;
-            n.theme = "dark";
+            n.followingID = 2;
             return n;
         });
-        $graph_store.followingID = 2;
+
+
         generateGraphFromTransitions();
     });
 

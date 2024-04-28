@@ -13,7 +13,7 @@
     let input : string = '';
 
     // Check if the input is valid
-    $: if (!/^[a-zA-Z0-9()+.*]+$/.test(input) && input !== '') {
+    $: if (!/^[a-zA-Z0-9()+.*ε]+$/.test(input) && input !== '') {
         alert("Test input can contain alphanumeric characters and special characters (, ), +, ., * only!");
         input = input.substring(0, input.length - 1);
     }

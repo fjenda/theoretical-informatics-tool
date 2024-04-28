@@ -7,14 +7,14 @@
 <script>
 
     import {input_error_store} from "../../../stores/inputErrorStore";
-    import {resetInputVar, second_graph_store} from "../../../stores/graphInitStore";
+    import {resetInputVar, second_backup_store} from "../../../stores/graphInitStore";
 
     // Variables
     let selectedOptions = [];
     let selectedOptionsId = [];
 
     // Get options from the second graph nodes
-    $: options = $second_graph_store.nodes?.map(node => node);
+    $: options = $second_backup_store.nodes?.map(node => node);
 
     // Reset selected options
     $: if ($resetInputVar) {
@@ -42,7 +42,7 @@
         });
         selectedOptionsId = findIDs();
         selectedOptions = Array.from(event.target.selectedOptions, option => option.label);
-        second_graph_store.update(n => {
+        second_backup_store.update(n => {
             n.startState = selectedOptionsId;
             return n;
         });

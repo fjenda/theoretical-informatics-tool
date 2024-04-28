@@ -7,12 +7,12 @@
 <script>
 
     import {input_error_store} from "../../../stores/inputErrorStore";
-    import {first_graph_store, resetInputVar} from "../../../stores/graphInitStore";
+    import {first_backup_store, resetInputVar} from "../../../stores/graphInitStore";
 
     // Variables
     let selectedOptions = [];
     let selectedOptionsId = [];
-    $: options = $first_graph_store.nodes?.map(node => node);
+    $: options = $first_backup_store.nodes?.map(node => node);
 
     // Reset the selected options
     $: if ($resetInputVar) {
@@ -40,7 +40,7 @@
         });
         selectedOptionsId = findIDs();
         selectedOptions = Array.from(event.target.selectedOptions, option => option.label);
-        first_graph_store.update(n => {
+        first_backup_store.update(n => {
             n.startState = selectedOptionsId;
             return n;
         });

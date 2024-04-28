@@ -5,6 +5,8 @@ export type FinInitializationType = {
     type: string,
     nodes: GraphNodeMeta[],
     startState: string[],
-    finalStates: string[],
+    finishState: string[],
     transitions: TransitionMeta[],
+    input_alphabet: string[],
+    followingID: number,
 }

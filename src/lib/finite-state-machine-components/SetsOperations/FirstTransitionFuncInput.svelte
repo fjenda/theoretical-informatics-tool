@@ -6,7 +6,7 @@
 
 <script lang="ts">
 
-    import {first_graph_store, resetInputVar} from "../../../stores/graphInitStore";
+    import {first_backup_store, resetInputVar} from "../../../stores/graphInitStore";
     import type {TransitionMeta} from "../../../types/TransitionMeta";
     import type {GraphNodeMeta} from "../../../types/GraphNodeMeta";
     import {input_error_store} from "../../../stores/inputErrorStore";
@@ -63,40 +63,40 @@
                         state: stateId,
                         stateLabel: rowSplit[0],
                         input: rowSplit[1],
-                        stateAfter: $first_graph_store.followingID,
+                        stateAfter: $first_backup_store.followingID,
                         stateAfterLabel: rowSplit[2],
                     });
-                    $first_graph_store.followingID++;
+                    $first_backup_store.followingID++;
                 }
             } else {
                 if(stateAfterId >= 0) {
                     transitions.push({
-                        state: $first_graph_store.followingID,
+                        state: $first_backup_store.followingID,
                         stateLabel: rowSplit[0],
                         input: rowSplit[1],
                         stateAfter: stateAfterId,
                         stateAfterLabel: rowSplit[2],
                     });
-                    $first_graph_store.followingID++;
+                    $first_backup_store.followingID++;
                 } else {
                     if (rowSplit[0] == rowSplit[2]) {
                         transitions.push({
-                            state: $first_graph_store.followingID,
+                            state: $first_backup_store.followingID,
                             stateLabel: rowSplit[0],
                             input: rowSplit[1],
-                            stateAfter: $first_graph_store.followingID,
+                            stateAfter: $first_backup_store.followingID,
                             stateAfterLabel: rowSplit[2],
                         });
-                        $first_graph_store.followingID++;
+                        $first_backup_store.followingID++;
                     } else {
                         transitions.push({
-                            state: $first_graph_store.followingID,
+                            state: $first_backup_store.followingID,
                             stateLabel: rowSplit[0],
                             input: rowSplit[1],
-                            stateAfter: $first_graph_store.followingID + 1,
+                            stateAfter: $first_backup_store.followingID + 1,
                             stateAfterLabel: rowSplit[2],
                         });
-                        $first_graph_store.followingID += 2;
+                        $first_backup_store.followingID += 2;
                     }
                 }
             }
@@ -125,7 +125,7 @@
             }
         }
 
-        first_graph_store.update((n) => {
+        first_backup_store.update((n) => {
             n.nodes = nodes;
             return n;
         });
@@ -137,7 +137,7 @@
 
         let rows = textInput.split("\n").filter(Boolean);
 
-        if ($first_graph_store.type == "DFA") {
+        if ($first_backup_store.type == "DFA") {
             applyHighlightsDFA(textInput);
 
             for (let row of rows) {
@@ -148,7 +148,7 @@
                     correctInput = false;
                 }
             }
-        } else if ($first_graph_store.type == "NFA") {
+        } else if ($first_backup_store.type == "NFA") {
             applyHighlights(textInput);
 
             for (let row of rows) {
@@ -169,7 +169,7 @@
             return n;
         });
 
-        first_graph_store.update((n) => {
+        first_backup_store.update((n) => {
             n.transitions = transitions;
             n.input_alphabet = alphabet;
             return n;
@@ -204,7 +204,7 @@
 
     // Function to apply highlights for NFA
     function applyHighlights(text) {
-        if ($first_graph_store.type == "DFA") {
+        if ($first_backup_store.type == "DFA") {
             return text
                 .replace(/\n$/g, '\n\n')
                 .replace(/(d\(([A-Za-z0-9]|[A-Za-z][0-9]),([A-Za-z0-9])\)=([A-Za-z0-9]|[A-Za-z][0-9]);)|(.*)/g, function (match, validTransition, other) {
@@ -214,7 +214,7 @@
                         return '<mark>' + match + '</mark>';  // If it's not a valid transition, wrap it in <mark> tags
                     }
                 });
-        } else if ($first_graph_store.type == "NFA") {
+        } else if ($first_backup_store.type == "NFA") {
             return text
                 .replace(/\n$/g, '\n\n')
                 .replace(/(d\(([A-Za-z0-9]|[A-Za-z][0-9]),(ε|[A-Za-z0-9])\)=([A-Za-z0-9]|[A-Za-z][0-9]);)|(.*)/g, function (match, validTransition, other) {

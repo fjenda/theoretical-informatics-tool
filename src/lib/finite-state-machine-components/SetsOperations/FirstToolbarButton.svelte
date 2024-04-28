@@ -7,7 +7,7 @@
 <script lang="ts">
     import {onMount} from "svelte";
     import {tooltip} from "../../tooltipUtils";
-    import {first_graph_store, resetInputVar} from "../../../stores/graphInitStore";
+    import {first_backup_store, resetInputVar} from "../../../stores/graphInitStore";
     import FirstToolbarModal from "./FirstToolbarModal.svelte";
 
     // Variables
@@ -38,7 +38,7 @@
 
 {#if ["new-node", "new-edge", "generate-automata", "show-definition"].includes(type)}
     {#if type === "generate-automata"}
-        <button on:click={() => {showModal = true; resetInputVar.set(true); first_graph_store.reset(); }}>
+        <button on:click={() => {showModal = true; resetInputVar.set(true); first_backup_store.reset(); }}>
             {text}
         </button>
     {:else}

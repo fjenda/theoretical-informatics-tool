@@ -6,7 +6,7 @@
 
 <script lang="ts">
 
-    import {graph_store, resetInputVar} from "../../stores/graphInitStore";
+    import {fin_backup_store, resetInputVar} from "../../stores/graphInitStore";
     import {input_error_store} from "../../stores/inputErrorStore";
 
     // Variables
@@ -60,40 +60,40 @@
                         state: stateId,
                         stateLabel: rowSplit[0],
                         input: rowSplit[1],
-                        stateAfter: $graph_store.followingID,
+                        stateAfter: $fin_backup_store.followingID,
                         stateAfterLabel: rowSplit[2],
                     });
-                    $graph_store.followingID++;
+                    $fin_backup_store.followingID++;
                 }
             } else {
                 if(stateAfterId >= 0) {
                     transitions.push({
-                        state: $graph_store.followingID,
+                        state: $fin_backup_store.followingID,
                         stateLabel: rowSplit[0],
                         input: rowSplit[1],
                         stateAfter: stateAfterId,
                         stateAfterLabel: rowSplit[2],
                     });
-                    $graph_store.followingID++;
+                    $fin_backup_store.followingID++;
                 } else {
                     if (rowSplit[0] == rowSplit[2]) {
                         transitions.push({
-                            state: $graph_store.followingID,
+                            state: $fin_backup_store.followingID,
                             stateLabel: rowSplit[0],
                             input: rowSplit[1],
-                            stateAfter: $graph_store.followingID,
+                            stateAfter: $fin_backup_store.followingID,
                             stateAfterLabel: rowSplit[2],
                         });
-                        $graph_store.followingID++;
+                        $fin_backup_store.followingID++;
                     } else {
                         transitions.push({
-                            state: $graph_store.followingID,
+                            state: $fin_backup_store.followingID,
                             stateLabel: rowSplit[0],
                             input: rowSplit[1],
-                            stateAfter: $graph_store.followingID + 1,
+                            stateAfter: $fin_backup_store.followingID + 1,
                             stateAfterLabel: rowSplit[2],
                         });
-                        $graph_store.followingID += 2;
+                        $fin_backup_store.followingID += 2;
                     }
                 }
             }
@@ -122,7 +122,7 @@
                 });
             }
         }
-        graph_store.update((n) => {
+        fin_backup_store.update((n) => {
             n.nodes = nodes;
             return n;
         });
@@ -134,7 +134,7 @@
 
         let rows = textInput.split("\n").filter(Boolean);
 
-        if ($graph_store.type == "DFA") {
+        if ($fin_backup_store.type == "DFA") {
             applyHighlightsDFA(textInput);
 
             for (let row of rows) {
@@ -145,7 +145,7 @@
                     correctInput = false;
                 }
             }
-        } else if ($graph_store.type == "NFA") {
+        } else if ($fin_backup_store.type == "NFA") {
             applyHighlights(textInput);
 
             for (let row of rows) {
@@ -166,7 +166,7 @@
             return n;
         });
 
-        graph_store.update((n) => {
+        fin_backup_store.update((n) => {
             n.transitions = transitions;
             n.input_alphabet = alphabet;
             return n;
@@ -202,7 +202,7 @@
 
     // Function to apply highlights in NFA
     function applyHighlights(text) {
-        if ($graph_store.type == "DFA") {
+        if ($fin_backup_store.type == "DFA") {
             return text
                 .replace(/\n$/g, '\n\n')
                 .replace(/(d\(([A-Za-z0-9]|[A-Za-z][0-9]),([A-Za-z0-9])\)=([A-Za-z0-9]|[A-Za-z][0-9]);)|(.*)/g, function (match, validTransition, other) {
@@ -212,7 +212,7 @@
                         return '<mark>' + match + '</mark>';  // If it's not a valid transition, wrap it in <mark> tags
                     }
                 });
-        } else if ($graph_store.type == "NFA") {
+        } else if ($fin_backup_store.type == "NFA") {
             return text
                 .replace(/\n$/g, '\n\n')
                 .replace(/(d\(([A-Za-z0-9]|[A-Za-z][0-9]),(ε|[A-Za-z0-9])\)=([A-Za-z0-9]|[A-Za-z][0-9]);)|(.*)/g, function (match, validTransition, other) {

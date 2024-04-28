@@ -6,7 +6,7 @@
 
 <script lang="ts">
     import {input_error_store} from "../../stores/inputErrorStore";
-    import {graph_store, resetInputVar} from "../../stores/graphInitStore";
+    import {fin_backup_store, resetInputVar} from "../../stores/graphInitStore";
 
     export let type = 'startState';
 
@@ -14,7 +14,7 @@
     let isOpen = false;
     let selectedOption = "";
     let selectedOptionsID = "";
-    $: options = $graph_store.nodes?.map(node => node);
+    $: options = $fin_backup_store.nodes?.map(node => node);
 
     // Reset the selected option when the resetInputVar is set to true
     $: if ($resetInputVar) {
@@ -32,7 +32,7 @@
         selectedOption = option.label;
 
         if (type === "startState") {
-            graph_store.update((n) => {
+            fin_backup_store.update((n) => {
                 n.startState =  [selectedOptionsID];
                 return n;
             });

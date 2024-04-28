@@ -66,7 +66,7 @@
         config += "}\n";
 
         // start state
-        config += `S: {${$second_configuration_store.initial_state.join(", ")}}\n`;
+        config += `I: {${$second_configuration_store.initial_state.join(", ")}}\n`;
 
         // final states
         config += `F: {${$second_configuration_store.final_states.join(", ")}}\n`;
@@ -139,7 +139,7 @@
         {#if type === "show-definition"}
             <textarea id="transitions"
                       class="transitions-input"
-                      cols="30" rows="20"
+                      cols="40" rows="15"
                       readonly = {true}
                       value={config}
                       placeholder="Transitions"></textarea>
@@ -292,12 +292,15 @@
     }
 
     #transitions {
-        pointer-events: none;
         background: #f7f7f8;
         color: #363636;
         border: none;
         outline: 0.05rem solid #363636;
-        padding: 0.2rem;
+        padding: 0.75rem;
+        overflow: auto;
+        font: 1rem / 1.5rem 'Open Sans', sans-serif;
+        border-radius: 0.5rem;
+        margin-bottom: 0.75rem;
     }
 
     :global(body.dark-mode) #transitions {

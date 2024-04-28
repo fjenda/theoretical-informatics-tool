@@ -6,7 +6,7 @@
 
 <script lang="ts">
 
-    import {first_graph_store} from "../../../stores/graphInitStore";
+    import {first_backup_store} from "../../../stores/graphInitStore";
 </script>
 
 <slot name="type-switch"/>
@@ -14,14 +14,14 @@
     <slot name="eps-button"/>
 </div>
 <div class="layout">
-    {#if $first_graph_store.type === "DFA"}
+    {#if $first_backup_store.type === "DFA"}
         <div class="start-state-box">
             <slot name="start-state" />
         </div>
         <div class="final-states-box">
             <slot name="multi-select"  />
         </div>
-    {:else if $first_graph_store.type === "NFA"}
+    {:else if $first_backup_store.type === "NFA"}
         <div class="start-state-box">
             <slot  name="multi-select-start"/>
         </div>

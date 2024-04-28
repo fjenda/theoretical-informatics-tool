@@ -7,14 +7,14 @@
 
 <script lang="ts">
     import {input_error_store} from "../../../stores/inputErrorStore";
-    import {first_graph_store, resetInputVar} from "../../../stores/graphInitStore";
+    import {first_backup_store, resetInputVar} from "../../../stores/graphInitStore";
 
     // Variables
     export let type = 'startState';
     let isOpen = false;
     let selectedOption = "";
     let selectedOptionsID = "";
-    $: options = $first_graph_store.nodes?.map(node => node);
+    $: options = $first_backup_store.nodes?.map(node => node);
 
     // Reset the selected option when the resetInputVar is changed
     $: if ($resetInputVar) {
@@ -32,7 +32,7 @@
         selectedOption = option.label;
 
         if (type === "startState") {
-            first_graph_store.update((n) => {
+            first_backup_store.update((n) => {
                 n.startState =  [selectedOptionsID];
                 return n;
             });

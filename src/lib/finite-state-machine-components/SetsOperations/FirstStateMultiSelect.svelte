@@ -7,7 +7,7 @@
 <script>
 
     import {input_error_store} from "../../../stores/inputErrorStore";
-    import {first_graph_store, resetInputVar} from "../../../stores/graphInitStore";
+    import {first_backup_store, resetInputVar} from "../../../stores/graphInitStore";
 
     // Variables
     let selectedOptions = [];
@@ -15,7 +15,7 @@
     let selectHeight = "10.6rem"; // Default height
 
     // Load options
-    $: options = $first_graph_store.nodes?.map(node => node);
+    $: options = $first_backup_store.nodes?.map(node => node);
 
     // Reset selected options
     $: if ($resetInputVar) {
@@ -23,9 +23,9 @@
     }
 
     // Set select height based on graph type
-    $: if ($first_graph_store.type === "DFA") {
+    $: if ($first_backup_store.type === "DFA") {
         selectHeight = "10.6rem"; // Height for DFA
-    } else if ($first_graph_store.type === "NFA") {
+    } else if ($first_backup_store.type === "NFA") {
         selectHeight = "5.9rem"; // Height for NFA
     } else {
         selectHeight = "10.6rem"; // Height for Other
@@ -52,7 +52,7 @@
         });
         selectedOptionsId = findIDs();
         selectedOptions = Array.from(event.target.selectedOptions, option => option.label);
-        first_graph_store.update(n => {
+        first_backup_store.update(n => {
             n.finishState = selectedOptionsId;
             return n;
         });

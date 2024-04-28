@@ -9,13 +9,18 @@
     // Imports
     import {FiniteStateAutomaton} from "../FiniteStateAutomaton";
     import {onMount} from "svelte";
-    import {first_graph_store, resetInputVar} from "../../../stores/graphInitStore";
+    import {
+        first_backup_store,
+        first_graph_store,
+        resetInputVar, second_graph_store
+    } from "../../../stores/graphInitStore";
     import cytoscape from "cytoscape";
     import cola from "cytoscape-cola";
     cytoscape.use(cola);
     import {input_error_store} from "../../../stores/inputErrorStore";
     import {first_configuration_store} from "../../../stores/graphInitStore.js";
     import {SetOperations} from "./SetOperations";
+    import {get} from "svelte/store";
 
     // Variables
     let graphObject = new FiniteStateAutomaton([], [], [], [], [], "DFA");
@@ -97,11 +102,26 @@
                     const content = readerEvent.target.result;
                     const graphData = JSON.parse(content.toString());
 
-                    deleteGraph();
+
 
                     if (!graphData.nodes || !graphData.edges || graphData.transitions.length === 0 || !graphData.startState || !graphData.finishState || !graphData.type) {
                         return;
                     }
+
+                    //check if in graphDate are not same label as in second_graph_store.nodes
+                    let sameLabel = false;
+                    graphData.nodes.forEach((node : GraphNodeMeta) => {
+                        if (get(second_graph_store).nodes.find((n : GraphNodeMeta) => n.label === node.label)) {
+                            sameLabel = true;
+                        }
+                    });
+
+                    if (sameLabel) {
+                        alert("The graph cannot be loaded because it contains nodes with the same label as the second graph.");
+                        return;
+                    }
+
+                    deleteGraph();
 
 
                     //from fist_graph_store.transitions fill fist_graph_store.input_alphabet
@@ -112,14 +132,22 @@
                         }
                     });
 
-                    first_graph_store.update((n) => {
-                        n.edges = graphData.edges;
+                    //find in graphDate.nodes biggest id and set it to graphObject.followingID +1
+                    let maxId = 0;
+                    graphData.nodes.forEach((node : GraphNodeMeta) => {
+                        if (parseInt(node.id) > maxId) {
+                            maxId = parseInt(node.id);
+                        }
+                    });
+
+                    first_backup_store.update((n) => {
                         n.finishState = graphData.finishState;
                         n.nodes = graphData.nodes;
                         n.startState = graphData.startState;
                         n.transitions = graphData.transitions;
                         n.type = graphData.type;
                         n.input_alphabet = Array.from(alphabet);
+                        n.followingID = maxId + 1;
                         return n;
                     });
 
@@ -197,7 +225,6 @@
         configuration.type = graphObject.type;
 
         Object.assign($first_configuration_store, configuration);
-        // console.log($first_configuration_store);
     }
 
     // Function for updating the configuration
@@ -259,21 +286,21 @@
         }
         input_error_store.reset();
 
-        if ($first_graph_store.transitions === undefined || $first_graph_store.transitions.length === 0) {
+        if ($first_backup_store.transitions === undefined || $first_backup_store.transitions.length === 0) {
             input_error_store.update((n) => {
                 n.transitions = false;
                 return n;
             });
         }
 
-        if ($first_graph_store.startState === undefined) {
+        if ($first_backup_store.startState === undefined) {
             input_error_store.update((n) => {
                 n.startState = false;
                 return n;
             });
         }
 
-        if ($first_graph_store.finishState === undefined && $first_graph_store.type !== "empty") {
+        if ($first_backup_store.finishState === undefined && $first_backup_store.type !== "empty") {
             input_error_store.update((n) => {
                 n.finishState = false;
                 return n;
@@ -345,6 +372,18 @@
         }
         $first_graph_store.hideConvertTable = true;
         deleteGraph();
+
+        first_graph_store.update((n) => {
+            n.type = get(first_backup_store).type;
+            n.startState = get(first_backup_store).startState;
+            n.finishState = get(first_backup_store).finishState;
+            n.transitions = get(first_backup_store).transitions;
+            n.nodes = get(first_backup_store).nodes;
+            n.input_alphabet = get(first_backup_store).input_alphabet;
+            n.followingID = get(first_backup_store).followingID;
+            return n;
+        });
+
         Object.assign(graphObject, $first_graph_store);
 
         if(!SetOperations.checkIfDfa(graphObject)){
@@ -524,17 +563,22 @@
         graphConstructor();
 
         first_graph_store.update((n) => {
+            n.hideConvertTable = true;
+            n.theme = "dark";
+            return n;
+        });
+
+        first_backup_store.update((n) => {
             n.type = "DFA";
             n.transitions = exampleTransition;
             n.nodes = exampleNodes;
             n.startState = ["0"];
             n.finishState = ["3"];
             n.input_alphabet = ["a", "b"];
-            n.hideConvertTable = true;
-            n.theme = "dark";
+            n.followingID = 4;
             return n;
         });
-        $first_graph_store.followingID = 2;
+
         generateGraphFromTransitions();
     });
 

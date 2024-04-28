@@ -847,6 +847,12 @@ export class SetOperations{
                 isDfa = false;
             }
         }
+
+        //check if only one start state
+        if (automaton.startState.length > 1){
+            isDfa = false;
+        }
+
         return isDfa;
     }
 

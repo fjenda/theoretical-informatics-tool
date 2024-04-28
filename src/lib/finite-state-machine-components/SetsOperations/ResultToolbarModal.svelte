@@ -65,7 +65,7 @@
         config += "}\n";
 
         // start state
-        config += `S: {${$result_configuration_store.initial_state.join(", ")}}\n`;
+        config += `I: {${$result_configuration_store.initial_state.join(", ")}}\n`;
 
         // final states
         config += `F: {${$result_configuration_store.final_states.join(", ")}}\n`;
@@ -100,9 +100,7 @@
 
         switch (type) {
             case "new-node": {
-                console.log("new-node - " + modifiedLabel);
                 let folowingID = $result_graph_store.followingID;
-                console.log('new node string: ' + folowingID.toString());
                 func({ id: folowingID.toString(), label: label});
                 $result_graph_store.followingID++;
                 return true;
@@ -113,7 +111,6 @@
                 const modifiedTarget = target.trim();
                 let sourceID = $result_graph_store.nodes.find(node => node.label === modifiedSource)?.id;
                 let targetID = $result_graph_store.nodes.find(node => node.label === modifiedTarget)?.id;
-                console.log("new-edge - " + modifiedLabel + " " + sourceID + " -> " + targetID);
                 func({id: `${sourceID}-${targetID}`, label: label, source: sourceID, target: targetID});
                 return true;
             }
@@ -134,7 +131,7 @@
         {#if type === "show-definition"}
             <textarea id="transitions"
                       class="transitions-input"
-                      cols="30" rows="20"
+                      cols="40" rows="15"
                       readonly = {true}
                       value={config}
                       placeholder="Transitions"></textarea>
@@ -285,12 +282,15 @@
     }
 
     #transitions {
-        pointer-events: none;
         background: #f7f7f8;
         color: #363636;
         border: none;
         outline: 0.05rem solid #363636;
-        padding: 0.2rem;
+        padding: 0.75rem;
+        overflow: auto;
+        font: 1rem / 1.5rem 'Open Sans', sans-serif;
+        border-radius: 0.5rem;
+        margin-bottom: 0.75rem;
     }
 
     :global(body.dark-mode) #transitions {

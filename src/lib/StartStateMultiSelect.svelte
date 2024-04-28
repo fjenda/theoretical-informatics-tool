@@ -1,11 +1,11 @@
 <script>
 
-    import {graph_store, resetInputVar} from "../stores/graphInitStore";
+    import {fin_backup_store, resetInputVar} from "../stores/graphInitStore";
     import {input_error_store} from "../stores/inputErrorStore";
 
     let selectedOptions = [];
     let selectedOptionsId = [];
-    $: options = $graph_store.nodes?.map(node => node);
+    $: options = $fin_backup_store.nodes?.map(node => node);
 
     $: if ($resetInputVar) {
         selectedOptions = [];
@@ -30,11 +30,10 @@
         });
         selectedOptionsId = findIDs();
         selectedOptions = Array.from(event.target.selectedOptions, option => option.label);
-        graph_store.update(n => {
+        fin_backup_store.update(n => {
             n.startState = selectedOptionsId;
             return n;
         });
-        // console.log("Start states v boxu" + $graph_store.startState)
     }
 </script>
 

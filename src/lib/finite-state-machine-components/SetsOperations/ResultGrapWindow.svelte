@@ -346,7 +346,6 @@
         graphObject.finishState = newFa.finishState;
         graphObject.type = newFa.type;
 
-        console.log("newFa: ", graphObject);
         graphObject.generateGraphFromTransitions();
 
         createGraph(false);

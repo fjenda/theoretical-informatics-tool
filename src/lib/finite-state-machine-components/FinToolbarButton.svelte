@@ -8,7 +8,7 @@
     import FinToolbarModal from "./FinToolbarModal.svelte";
     import {onMount} from "svelte";
     import {tooltip} from "../tooltipUtils";
-    import {graph_store, resetInputVar} from "../../stores/graphInitStore";
+    import {fin_backup_store, graph_store, resetInputVar} from "../../stores/graphInitStore";
 
     // Variables
     export let type : ToolbarButtonType;
@@ -35,9 +35,10 @@
     })
 </script>
 
+
 {#if ["new-node", "new-edge", "generate-automata", "show-definition"].includes(type)}
     {#if type === "generate-automata"}
-        <button on:click={() => {showModal = true; resetInputVar.set(true); graph_store.reset(); $graph_store.hideConvertTable = true; }}>
+        <button on:click={() => {showModal = true; resetInputVar.set(true); fin_backup_store.reset(); $graph_store.hideConvertTable = true;}}>
             {text}
         </button>
     {:else}
